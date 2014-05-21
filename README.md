@@ -38,7 +38,8 @@ Installation
 ============
 Hammr is based on python, consequently it supports all major operating systems.  The easiest way to install hammr is using `pip`.
 
-```pip install hammr
+```
+$ pip install hammr
 ```
 
 Installing From Source
@@ -46,20 +47,23 @@ Installing From Source
 Firstly clone the repository to get all the source files.
 Next go to the source directory where the `setup.py` file is located.
 To compile and install, run (as sudo):
-```$ sudo python setup.py build install`
+```
+$ sudo python setup.py build install`
 ```
 
 This will automatically create the hammr executable and install it properly on your system.
 
 To check that this was successful, run:
 
-```$ hammr —-version` 
+```
+$ hammr —-version` 
 ```
 
 Upgrading
 =========
 If you have already installed hammr, and you with to upgrade to the latest version, use:
-```$ pip install —upgrade hammr`
+```
+$ pip install —upgrade hammr`
 ```
 
 
