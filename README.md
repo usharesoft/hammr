@@ -38,7 +38,7 @@ Installation
 ============
 Hammr is based on python, consequently it supports all major operating systems.  The easiest way to install hammr is using `pip`.
 
-```$ pip install hammr
+```pip install hammr
 ```
 
 Installing From Source
