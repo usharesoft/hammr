@@ -1,0 +1,36 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal"
+    },
+    "bundles": [
+      {
+        "name": "wordpress",
+        "version": "3.5",
+        "destination": "/tmp/wordpress",
+        "files": [
+          {
+            "name": "wordpress.zip",
+            "source": "http://wordpress.org/wordpress-3.5.zip",
+            "destination": "/usr/local/wordpress",
+            "extract": true
+          }
+        ],
+        "license": {
+          "name": "license.html",
+          "source": "/home/joris/demo/apache-license.html"
+        }
+      }
+    ]
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}

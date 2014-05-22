@@ -1,0 +1,11 @@
+{
+  "accounts": [
+    {
+      "type": "vcenter",
+      "name": "My vCenter Account",
+      "hostname": "10.1.1.2",
+      "username": "joris",
+      "password": "mypassword"
+    }
+  ]
+}

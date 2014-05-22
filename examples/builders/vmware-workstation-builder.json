@@ -1,0 +1,11 @@
+{
+  "builders": [
+    {
+      "type": "vmware",
+      "hardwareSettings": {
+        "memory": 1024,
+        "hwType": 7
+      }
+    }
+  ]
+}

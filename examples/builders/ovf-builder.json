@@ -1,0 +1,11 @@
+{
+  "builders": [
+    {
+      "type": "ovf",
+      "hardwareSettings": {
+        "memory": 1024,
+        "hwType": 7
+      }
+    }
+  ]
+}

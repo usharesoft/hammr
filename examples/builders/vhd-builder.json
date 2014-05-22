@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "vhd",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

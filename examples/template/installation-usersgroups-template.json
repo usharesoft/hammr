@@ -1,0 +1,52 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal"
+    },
+    "installation": {
+      "users": [
+        {
+          "name": "joris",
+          "fullName": "joris",
+          "userId": 2222,
+          "primaryGroup": "joris",
+          "secondaryGroups": "dev,france",
+          "homeDir": "/home/joris",
+          "shell": "/bin/bash"
+        },
+        {
+          "name": "yann",
+          "fullName": "yann dorcet",
+          "systemUser": true,
+          "userId": 400,
+          "primaryGroup": "yann",
+          "secondaryGroups": "admin,dev,france",
+          "homeDir": "/home/ydorcet",
+          "shell": "/sbin/nologin"
+        }
+      ],
+      "groups": [
+        {
+          "name": "nginx",
+          "groupId": 1033
+        },
+        {
+          "name": "mongoDb",
+          "systemGroup": true,
+          "groupId": 245
+        }
+      ]
+    }
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}
+

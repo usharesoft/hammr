@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "kvm",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

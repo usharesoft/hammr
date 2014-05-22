@@ -1,0 +1,11 @@
+{
+  "accounts": [
+    {
+      "type": "cloudstack",
+      "name": "My CloudStack Account",
+      "endpoint": "http://10.1.2.214:8080/client/api",
+      "publicKey": "cqFaVLNrVzWDP3IsP7o8lYITDQL0WKuKVh_5S30brobdFG6Wv1aD-zEWYALxFYGOBXrUXYmilnvsK4cFgnaZwg",
+      "secretKey": "YjqaHb8rfqQ1fHgs_FAaLNchu3pssESEk2AcI09klFCgF6t_znV3a-NeU6BSbCYHLhCqhKBzMGQrWoI1oUztVg"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "accounts": [
+    {
+      "type": "vcd",
+      "name": "My VCD Account",
+      "hostname": "10.1.1.2",
+      "username": "joris",
+      "password": "mypassword"
+    }
+  ]
+}

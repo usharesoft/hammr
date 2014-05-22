@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "hyper-v",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

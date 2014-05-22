@@ -1,0 +1,24 @@
+{
+  "builders": [
+    {
+      "type": "flexiant-ova",
+      "account": {
+        "type": "flexiant",
+        "name": "My Flexiant Account",
+        "username": "test.test@test.fr/hsefjuhseufhew",
+        "password": "myPassWD",
+        "customerUUID": "uhdeuwhedkjhfdwejkfhew-werewi4732hfdw-asnd",
+        "wsdlURL": "https://20.20.20.20:4442/?wsdl"
+      },
+      "hardwareSettings": {
+        "memory": 1024
+      },
+      "installation": {
+        "diskSize": 2000
+      },
+      "imageName": "CentOS Core",
+      "datacenterUUID": "c8c1873f-799c-3453-b46c-f5db63116b05",
+      "productUUID": "61afdd81-43d9-39b5-9150-cffe9071b1b9"
+    }
+  ]
+}

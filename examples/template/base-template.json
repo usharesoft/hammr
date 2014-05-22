@@ -1,0 +1,17 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal"
+    }
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}

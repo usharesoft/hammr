@@ -1,0 +1,16 @@
+{
+  "builders": [
+    {
+      "type": "azure",
+      "account": {
+        "type": "azure",
+        "name": "My Azure Account",
+        "subscriptionId": "xxxbewssbewdsbew-sdsewjwdtg-ssatgh-xxxdft5f323",
+        "certKey": "/home/joris/accounts/azure/cert.pem",
+        "rsaPrivateKey": "/home/joris/accounts/azure/key.pem"
+      },
+      "storageAccount": "mystorageaccount",
+      "location": "West Europe"
+    }
+  ]
+}
