@@ -1,0 +1,23 @@
+{
+    "builders": [
+        {
+            "account": {
+                "endpoint": "http://ow2-04.xsalto.net:9292/v1",
+                "keystoneEndpoint": "http://ow2-04.xsalto.net:5000/v2.0",
+                "name": "Openstack account",
+                "password": "password",
+                "username": "test"
+            },
+            "hardwareSettings": {
+                "memory": 1024
+            },
+            "installation": {
+                "diskSize": 2000
+            },
+            "imageName": "joris-test",
+            "publicImage": "no",
+            "tenant": "opencloudware",
+            "type": "openstack"
+        }
+    ]
+}

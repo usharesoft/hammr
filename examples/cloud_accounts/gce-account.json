@@ -1,0 +1,11 @@
+{
+  "accounts": [
+    {
+        "type": "gce",
+        "name": "My GCE Account",
+        "username": "joris",
+        "certPassword": "myCertPassword",
+        "cert": "/home/joris/certs/gce.pem"
+    }
+  ]
+}

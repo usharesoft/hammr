@@ -1,0 +1,31 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal",
+      "pkgs": [
+        {
+          "name": "php"
+        },
+        {
+          "name": "php-cli"
+        },
+        {
+          "name": "php-common"
+        },
+        {
+          "name": "php-mysql"
+        }
+      ]
+    }
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}

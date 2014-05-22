@@ -1,0 +1,239 @@
+{
+ "builders" : [
+ {
+  "type" : "ovf",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "kvm",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "vbox",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "raw",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "hyper-v",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "qcow2",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "xen",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "vhd",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "vcd",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "nimbula-esx",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "nimbula-kvm",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "openstack",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "eucalyptus-xen",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  },
+  "account": {
+    "name": "My Eucalyptus"
+  }
+ },
+ {
+  "type" : "eucalyptus-kvm",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  },
+  "account": {
+    "name": "My Eucalyptus"
+  }
+ },
+ {
+  "type" : "flexiant-raw",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "flexiant-ova",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "flexiant-kvm",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "cloudstack-qcow2",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "cloudstack-vhd",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "cloudstack-ova",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "abiquo",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "azure",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "ami",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  },
+  "account": {
+    "name": "My amazon"
+  }
+ },
+ {
+  "type" : "iso",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "vagrant",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ }
+
+ ]
+}

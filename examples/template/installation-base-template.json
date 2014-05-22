@@ -1,0 +1,28 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal"
+    },
+    "installation": {
+      "timezone": "Europe\/London",
+      "internetSettings": "dhcp",
+      "kernelParams": [
+        "rhgb",
+        "quiet"
+      ],
+      "diskSize": 12288,
+      "swapSize": 512,
+      "displayLicenses": false
+    }
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}

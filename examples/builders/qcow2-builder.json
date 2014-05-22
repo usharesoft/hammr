@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "qcow2",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

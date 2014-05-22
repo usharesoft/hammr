@@ -1,0 +1,22 @@
+{
+  "builders": [
+    {
+      "type": "ami",
+      "account": {
+        "type": "ami",
+        "name": "My AWS Account",
+        "accountNumber": "111122223333",
+        "x509PrivateKey": "/home/joris/accounts/aws/pk509.pem",
+        "x509Cert": "/home/joris/accounts/aws/cert509.pem",
+        "accessKey": "789456123ajdiewjd",
+        "secretAccessKey": "ks30hPeH1xWqilJ04",
+        "keyPairPrivateKey": "/home/joris/accounts/aws/pk-mykeypair.pem"
+      },
+      "installation": {
+        "diskSize": 10240
+      },
+      "region": "eu-west-1",
+      "s3bucket": "joris-uss-bucket"
+    }
+  ]
+}

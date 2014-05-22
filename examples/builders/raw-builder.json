@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "raw",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

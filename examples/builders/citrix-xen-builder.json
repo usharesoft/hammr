@@ -1,0 +1,11 @@
+{
+  "builders": [
+    {
+      "type": "citrix-xen",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}
+

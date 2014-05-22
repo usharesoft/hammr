@@ -1,0 +1,12 @@
+{
+  "accounts": [
+    {
+        "type": "susecloud",
+        "name": "My SuseCloud Account",
+        "endpoint": "http://ow2-04.xsalto.net:9292/v1",
+        "keystoneEndpoint": "http://ow2-04.xsalto.net:5000/v2.0",
+        "username": "test",
+        "password": "password"
+    }
+  ]
+}

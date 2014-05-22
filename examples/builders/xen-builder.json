@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "xen",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

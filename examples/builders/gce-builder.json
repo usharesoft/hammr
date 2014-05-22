@@ -1,0 +1,21 @@
+{
+  "builders": [
+    {
+      "type": "gce",
+      "account": {
+        "type": "gce",
+        "name": "My GCE Account",
+        "username": "joris",
+        "certPassword": "myCertPassword",
+        "cert": "/home/joris/certs/gce.pem"
+      },
+      "computeZone": "europe-west1-a",
+      "bucketLocation": "EU",
+      "bucket": "jorisbucketname",
+      "projectId": "jorisproject",
+      "storageClass": "STANDARD",
+      "diskNamePrefix": "uss-",
+      "description": "CentOS Core machine image"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "stack": {
+    "name": "CentOS Base",
+    "version": "6.4",
+    "os": {
+      "name": "CentOS",
+      "version": "6.4",
+      "arch": "x86_64",
+      "profile": "Minimal"
+    },
+    "config": [
+      {
+        "name": "configure-mysql.sh",
+        "source": "/home/joris/demo/configure-mysql.sh",
+        "type": "bootscript",
+        "frequency": "firstboot"
+      },
+      {
+        "name": "check-stats.sh",
+        "source": "http://downloads.mysite.com/config/check-stats.sh",
+        "type": "bootscript",
+        "frequency": "everyboot"
+      }
+    ]
+  },
+  "builders": [
+    {
+      "type": "iso"
+    }
+  ]
+}

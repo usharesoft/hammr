@@ -1,0 +1,10 @@
+{
+  "builders": [
+    {
+      "type": "vbox",
+      "hardwareSettings": {
+        "memory": 1024
+      }
+    }
+  ]
+}

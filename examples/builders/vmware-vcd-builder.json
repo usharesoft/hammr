@@ -1,0 +1,24 @@
+{
+  "builders": [
+    {
+      "type": "vcd",
+      "account": {
+        "type": "vcd",
+        "name": "My VCD Account",
+        "hostname": "10.1.1.2",
+        "username": "joris",
+        "password": "mypassword"
+      },
+      "hardwareSettings": {
+        "memory": 1024,
+        "hwType": 7
+      },
+      "installation": {
+        "diskSize": 10240
+      },
+      "orgName": "HQProd",
+      "catalogName": "myCatalog",
+      "imageName": "CentOS Core"
+    }
+  ]
+}
