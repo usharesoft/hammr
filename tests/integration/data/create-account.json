@@ -1,0 +1,22 @@
+{
+ "accounts" : [
+ {
+  "type" : "openstack",
+  "name": "unittest1",
+  "endpoint": "http://127.0.0.1:9292/v1",
+  "keystoneEndpoint": "http://127.0.0.1:5000/v2.0",
+  "username": "test",
+  "password": "password"
+ },
+ {
+  "type" : "ami",
+  "name": "unittest2",
+  "accountNumber": "123456789012",
+  "x509PrivateKey": "data/pk.pem",
+  "x509Cert": "data/cert.pem",
+  "accessKey": "789456123oidftunr",
+  "secretAccessKey": "is40hPeH1xWppoJ05"
+ }
+]
+}
+

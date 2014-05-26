@@ -1,0 +1,40 @@
+{
+  "stack" : {
+    "name" : "unittest",
+    "version" : "1.0",
+    "installation" : {
+      "internetSettings" : "dhcp",
+      "diskSize" : 12288,
+      "swapSize" : 512
+    },
+    "os" : {
+      "name" : "CentOS",
+      "version" : "6.3",
+      "arch" : "x86_64",
+      "profile" : "Minimal"
+    }
+ },
+ "builders" : [
+ {
+  "type" : "kvm",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  }
+ },
+ {
+  "type" : "ami",
+  "hardwareSettings" : {
+  "memory" : 1024
+  },
+   "installation" : {
+   "diskSize" : 2000
+  },
+  "account": {
+    "name": "unittest2"
+  }
+ }
+ ]
+}
