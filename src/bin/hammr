@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+'''
+        CLI for uforge web service
+'''
+
+if __name__ == "__main__" :
+        import hammr.hammr
