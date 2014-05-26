@@ -44,9 +44,26 @@ $ pip install hammr
 
 Installing From Source
 ======================
-Firstly clone the repository to get all the source files.
+Hammr has a dependency to uforge_python_sdk. First, you need to install it:
+
+```
+$ pip install uforge_python_sdk
+```
+
+or download sources from pypi: https://pypi.python.org/pypi/uforge_python_sdk
+
+Go to the source directory where the `setup.py` file is located.
+
+To compile and install, run (as sudo):
+
+```
+$ sudo python setup.py build install
+```
+
+Now clone the Hammr git repository to get all the source files.
 Next go to the source directory where the `setup.py` file is located.
 To compile and install, run (as sudo):
+
 ```
 $ sudo python setup.py build install
 ```
