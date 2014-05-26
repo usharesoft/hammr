@@ -47,7 +47,7 @@ class Image(Cmd, HammrGlobal):
                                 images = generics_utils.oder_list_object_by(images.get_image(), "name")
                                 for image in images:
                                         imgStatus=self.get_image_status(image.status)
-                                        table.add_row([image.dbId, image.name, image.version, image.revision, image.format.name, image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
+                                        table.add_row([image.dbId, image.name, image.version, image.revision, generate_utils.map_format(image.format.name), image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
                                 print table.draw() + "\n"
                                 printer.out("Found "+str(len(images))+" images")
                          
@@ -62,7 +62,7 @@ class Image(Cmd, HammrGlobal):
                                 pimages = generics_utils.oder_list_object_by(pimages.get_publishImage(), "name")
                                 for pimage in pimages:
                                         pubStatus=self.get_publish_status(pimage.status)
-                                        table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri), pimage.credAccount.name if pimage.credAccount is not None else "-", pimage.format.name, pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
+                                        table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri), pimage.credAccount.name if pimage.credAccount is not None else "-", generate_utils.map_format(pimage.format.name), pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
                                 print table.draw() + "\n"
                                 printer.out("Found "+str(len(pimages))+" publications")
                              
@@ -193,7 +193,7 @@ class Image(Cmd, HammrGlobal):
                                 for image in images.get_image():
                                         if str(image.dbId) == str(doArgs.id):
                                                 imgStatus=self.get_image_status(image.status)
-                                                table.add_row([image.dbId, image.name, image.version, image.revision, image.format.name, image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
+                                                table.add_row([image.dbId, image.name, image.version, image.revision, generate_utils.map_format(image.format.name), image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
                                                 deleteImage=image
                                 if deleteImage is not None:
                                         print table.draw() + "\n"
@@ -242,7 +242,7 @@ class Image(Cmd, HammrGlobal):
                                 for image in images.get_image():
                                         if str(image.dbId) == str(doArgs.id):
                                                 imgStatus=self.get_image_status(image.status)
-                                                table.add_row([image.dbId, image.name, image.version, image.revision, image.format.name, image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
+                                                table.add_row([image.dbId, image.name, image.version, image.revision, generate_utils.map_format(image.format.name), image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size), "X" if image.compress else "", imgStatus])
                                                 print table.draw() + "\n"
                                                 cancelImage=image
                                 if cancelImage is None or cancelImage.status.complete or cancelImage.status.cancelled:

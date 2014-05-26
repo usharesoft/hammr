@@ -338,5 +338,13 @@ def get_memory_amount(builder, installProfile, is_mandatory):
                 else:
                         return installProfile
                     
-def unmap_format(formatName):
-        pass
+def map_format(formatName):
+        for mappedFormat in VIRTUAL_FORMATS:
+                if VIRTUAL_FORMATS[mappedFormat]==formatName:
+                        return mappedFormat
+        for mappedFormat in CLOUD_FORMATS:
+            if CLOUD_FORMATS[mappedFormat]==formatName:
+                return mappedFormat
+        for mappedFormat in PHYSICAL_FORMATS:
+            if PHYSICAL_FORMATS[mappedFormat]==formatName:
+                return mappedFormat
