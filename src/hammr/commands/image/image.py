@@ -425,7 +425,7 @@ class Image(Cmd, HammrGlobal):
                                         printer.out("Publication to '"+builder["account"]["name"]+"' is ok", printer.OK)
                                         rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(comliantImage.dbId).Pimages(rpImage.dbId).Get()
                                         if rpImage.cloudId is not None and rpImage.cloudId!="":
-                                                printer.out("Cloud ID : "+rImage.uri)
+                                                printer.out("Cloud ID : "+rpImage.uri)
                         return 0            
                 except KeyboardInterrupt:
                         printer.out("\n")
