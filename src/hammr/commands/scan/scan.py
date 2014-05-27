@@ -519,7 +519,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("Authentification error: "+e[0], printer.ERROR)
                         return 2
                 except Exception, e:
-                        printer.out("Caught exception: %s: %s' % (e.__class__, e)", printer.ERROR)
+                        printer.out("Caught exception: "+str(e), printer.ERROR)
                         #traceback.print_exc()
                         try:
                                 t.close()
