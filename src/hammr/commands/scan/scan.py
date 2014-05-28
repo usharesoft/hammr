@@ -272,8 +272,6 @@ class Scan(Cmd, HammrGlobal):
                                                 else:     
                                                         printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
                                                 i+=1
-                                        printer.out("Build finished")
-                                        
                                 else:
                                         printer.out("Impossible to generate this scan", printer.ERROR)
 
@@ -313,7 +311,7 @@ class Scan(Cmd, HammrGlobal):
         def do_import(self, args):
                 try:            
                         #add arguments
-                        doParser = self.arg_delete()
+                        doParser = self.arg_import()
                         #doParser.add_argument('--org', dest='org', required=False)
                         try:
                                 doArgs = doParser.parse_args(args.split())
