@@ -7,13 +7,13 @@ import os
 import hammr.commands
 from uforge.application import Api
 
-if len(sys.argv)!=4:
-        print "Usage: test.py LOGIN PASS URL"
+if not "TEST_USER" in os.environ or not "TEST_PASSWORD" in os.environ or not "TEST_URL" in os.environ:
+        print "Set env varaible [TEST_USER], [TEST_PASSWORD], and [TEST_URL]"
         sys.exit(1)
-else:
-        login=sys.argv[1]
-        password=sys.argv[2]
-        url=sys.argv[3]
+
+login=os.environ['TEST_USER']
+password=os.environ['TEST_PASSWORD']
+url=os.environ['TEST_URL']
 
 
 
@@ -259,7 +259,7 @@ class TestImage(unittest.TestCase):
 
 if __name__ == '__main__':
         v=sys.version_info
-	if v>=(2,7):	
+	if v>=(2,7):
                 import xmlrunner
                 unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
         else:
