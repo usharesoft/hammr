@@ -172,7 +172,7 @@ def remove_special_chars(string):
         return (re.sub('[-]', '_', string)).lower()
     
 def print_uforge_exception(e):
-        if len(e.args)>1 and type(e.args[0]) is uForgeError:
+        if len(e.args)>=1 and type(e.args[0]) is uForgeError:
                 return "UForge Error '"+str(e.args[0].statusCode)+"' with method: "+e.args[0].requestMethod+" "+e.args[0].requestUri+"\n"+"Message:\n\t"+e.args[0].errorMsg
         else:
                 traceback.print_exc()
