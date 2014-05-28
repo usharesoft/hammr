@@ -139,7 +139,7 @@ class Template(Cmd, HammrGlobal):
                         except SystemExit as e:
                                 return
                          #call UForge API
-                        return self.import_stack(doArgs.file, True)
+                        return self.import_stack(doArgs.file, True, False)
                 except ArgumentParserError as e:
                         printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
                         self.help_import()
@@ -187,7 +187,9 @@ class Template(Cmd, HammrGlobal):
                 mandatory = doParser.add_argument_group("mandatory arguments")
                 mandatory.add_argument('--file', dest='file', required=True, help="json file containing the template content")  
                 optional = doParser.add_argument_group("optional arguments")
-                optional.add_argument('--archive-path', dest='archive_path', required=False, help="path of where to store the archive of the created template. If provided hammr, creates an archive of the created template, equivalent to running template export") 
+                optional.add_argument('--archive-path', dest='archive_path', required=False, help="path of where to store the archive of the created template. If provided hammr, creates an archive of the created template, equivalent to running template export")
+                optional.add_argument('-f', '--force', dest='force', action='store_true', help='force template creation (delete template/bundle if already exist)', required = False)
+                optional.set_defaults(force=False)
                 return doParser
         
         def do_create(self, args):
@@ -271,7 +273,7 @@ class Template(Cmd, HammrGlobal):
                         tar.close()
                         
                         #arhive is created, doing import
-                        self.import_stack(tar_path, False)
+                        self.import_stack(tar_path, False, doArgs.force)
                         
                         #delete tmp dir
                         shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -422,7 +424,7 @@ class Template(Cmd, HammrGlobal):
                 
                 
                 
-        def import_stack(self, file, isImport):
+        def import_stack(self, file, isImport, isForce):
                 try:
                         if isImport:
                                 printer.out("Importing template from ["+file+"] archive ...")
@@ -432,7 +434,7 @@ class Template(Cmd, HammrGlobal):
                                 else:
                                         printer.out("Creating template from ["+file+"] archive ...")
                         file = open(file, "r")
-                        applianceImport = self.api.Users(self.login).Imports.Import(None, None, "true" if isImport else "false")
+                        applianceImport = self.api.Users(self.login).Imports.Import(None, None, "true" if isImport else "false", "true" if isForce else "false")
                         if applianceImport is None:
                                 if isImport:
                                         printer.out("error importing appliance", printer.ERROR)
