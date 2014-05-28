@@ -218,35 +218,36 @@ class Scan(Cmd, HammrGlobal):
                                                 format_type = builder["type"]
                                                 myimage = image()
 
+                                                myinstallProfile = installProfile()
+                                                if "swapSize" in builder["installation"]:
+                                                        myinstallProfile.swapSize = builder["installation"]["swapSize"]
+                                                myinstallProfile.diskSize = builder["installation"]["diskSize"]
+
                                                 if format_type in generate_utils.CLOUD_FORMATS:
                                                         func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
                                                         if func:
-                                                                myimage,myimageFormat = func(myimage, builder, self.api, self.login)
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile, self.api, self.login)
                                                         else:
                                                                 printer.out("Builder type unknown: "+format_type , printer.ERROR)
                                                                 return
                                                 elif format_type in generate_utils.VIRTUAL_FORMATS:
                                                         func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
                                                         if func:
-                                                                myimage,myimageFormat = func(myimage, builder)
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
                                                         else:
                                                                 printer.out("Builder type unknown: "+format_type , printer.ERROR)
                                                                 return
                                                 elif format_type in generate_utils.PHYSICAL_FORMATS:
                                                         func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
                                                         if func:
-                                                                myimage,myimageFormat = func(myimage, builder)
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
                                                         else:
                                                                 printer.out("Builder type unknown: "+format_type , printer.ERROR)
                                                                 return
                                                 else:                                                
                                                         printer.out("Builder type unknown: "+format_type , printer.ERROR)
                                                         return
-                                                myinstallProfile = installProfile()                             
-                                                if "swapSize" in builder["installation"]:
-                                                        myinstallProfile.swapSize = builder["installation"]["swapSize"]
-                                                myinstallProfile.diskSize = builder["installation"]["diskSize"]
-                                                myinstallProfile.memorySize = builder["hardwareSettings"]["memory"]
+
                                                 myimage.format = myimageFormat
                                                 myimage.installProfile = myinstallProfile
                                                 rImage = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(myScan.dbId).Images().Generate(myimage)
