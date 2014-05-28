@@ -7,10 +7,14 @@ import os
 import hammr.commands
 from uforge.application import Api
 
+if len(sys.argv)!=4:
+        print "Usage: test.py LOGIN PASS URL"
+        sys.exit(1)
+else:
+        login=sys.argv[1]
+        password=sys.argv[2]
+        url=sys.argv[3]
 
-login="unittest"
-password="unittest"
-url="http://1.1.2.1/ufws-3.3"
 
 
 def get_template_id(template, name):
