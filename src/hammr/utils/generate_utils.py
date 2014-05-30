@@ -89,6 +89,7 @@ def generate_eucalyptus_kvm(image, builder, installProfile, api, login):
         return generate_eucalyptus(image, builder, installProfile, api, login)
     
 def generate_flexiant(image, builder, installProfile, api, login):
+        installProfile = get_memory_amount(builder, installProfile, True)
         #Compress is mandatory
         image.compress=True
         myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
