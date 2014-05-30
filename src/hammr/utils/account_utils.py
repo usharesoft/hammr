@@ -406,9 +406,9 @@ def vcenter(myCredAccount, account):
         if "proxyPort" in account:
                 myCredAccount.proxyPort = account["proxyPort"]
         if "port" in account:
-                port = account["port"]
+                port = int(account["port"])
         else:
-                port="443"
+                port=443
         
         myCredAccount.type_ = "vcenter"
         myCredAccount.name = account["name"]
@@ -416,7 +416,6 @@ def vcenter(myCredAccount, account):
         myCredAccount.password = account["password"]
         myCredAccount.hostname = account["hostname"]
         myCredAccount.port = port
-        
         return myCredAccount
     
 def gce(myCredAccount, account):
