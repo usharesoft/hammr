@@ -270,7 +270,7 @@ def generate_vagrant(image, builder, installProfile):
                 return None,None,None
         
 
-        if "publicBaseBox" in builder and builder["publicBaseBox"]==true:
+        if "publicBaseBox" in builder and builder["publicBaseBox"]=="true":
                 #private vagrant
                 if not "osUser" in builder:
                         printer.out("osUser not found in vagrant builder", printer.ERROR)
