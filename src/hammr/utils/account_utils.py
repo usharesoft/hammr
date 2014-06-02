@@ -373,11 +373,11 @@ def vcd(myCredAccount, account):
         if "proxyPort" in account:
                 myCredAccount.proxyPort = account["proxyPort"]
         if "port" in account:
-                port = account["port"]
+            port = int(account["port"])
         else:
-                port="443"
+            port=443
         
-        myCredAccount.type_ = "vcloud"
+        myCredAccount.type_ = "vclouddirector"
         myCredAccount.name = account["name"]
         myCredAccount.login = account["username"]
         myCredAccount.password = account["password"]

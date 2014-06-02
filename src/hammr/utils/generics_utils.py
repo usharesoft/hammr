@@ -66,31 +66,29 @@ def check_mandatory_generate_scan(builders):
         return builders
     
 def check_mandatory_create_account(iterables, type):
+
         #iterables can be builders or accounts
         for iterable in iterables:
                 if type=="builders":
-                        if not "account" in iterable:
-                                printer.out("no attribute account in builder", printer.ERROR)
-                                return 
-                        if not "type" in iterable and not "type" in iterable["account"]:
-                                printer.out("no attribute type in builder", printer.ERROR)
-                                return
-                        if "file" in iterable["account"]:
-                                file = get_file(iterable["account"]["file"])
-                                if file is None:
-                                        return 2
-                                data = check_json_syntax(file)
-                                if data is None:
-                                        return 2
-                                if "accounts" in data:
-                                        return check_mandatory_create_account(data["accounts"], "accounts")
+                        if  "account" in iterable:
+                                if not "type" in iterable and not "type" in iterable["account"]:
+                                        printer.out("no attribute type in builder", printer.ERROR)
+                                        return
+                                if "file" in iterable["account"]:
+                                        file = get_file(iterable["account"]["file"])
+                                        if file is None:
+                                                return 2
+                                        data = check_json_syntax(file)
+                                        if data is None:
+                                                return 2
+                                        if "accounts" in data:
+                                                return check_mandatory_create_account(data["accounts"], "accounts")
                 if type=="accounts":
                         if not "type" in iterable:
                                 printer.out("no attribute type in accounts", printer.ERROR)
                                 return
                         
                 #TODO
-                
                 
         return iterables
 

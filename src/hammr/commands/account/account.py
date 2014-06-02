@@ -70,9 +70,11 @@ class Account(Cmd, HammrGlobal):
                         if data is None:
                                 return 2
                         if "builders" in data:
-                                iterables=generics_utils.check_mandatory_create_account(data["builders"], "builders")
+                                accounts_file_type = "builders"
+                                iterables=generics_utils.check_mandatory_create_account(data["builders"], accounts_file_type)
                         elif "accounts" in data:
-                                iterables=generics_utils.check_mandatory_create_account(data["accounts"], "accounts")
+                                accounts_file_type = "accounts"
+                                iterables=generics_utils.check_mandatory_create_account(data["accounts"], accounts_file_type)
                         else:
                                 printer.out("Error: no builders or accounts section found", printer.ERROR)
                                 return 2
@@ -82,25 +84,25 @@ class Account(Cmd, HammrGlobal):
                                 for iterable in iterables:
                                             if "type" in iterable:
                                                     account_type=iterable["type"]
-                                            else:
+                                            elif "account" in iterable:
                                                     account_type=iterable["account"]["type"]
-                                            printer.out("Create account for '"+account_type+"'...")
-                                            myCredAccount = credAccount()                                            
                                             func = getattr(account_utils, generics_utils.remove_special_chars(account_type), None)
                                             if func:
-                                                    if "account" in iterable:
-                                                            myCredAccount = func(myCredAccount, iterable["account"])
+                                                    if accounts_file_type == "builders" and "account" in iterable:
+                                                            myCredAccount = func(credAccount(), iterable["account"])
+                                                    elif accounts_file_type == "accounts":
+                                                            myCredAccount = func(credAccount(), iterable)
                                                     else:
-                                                            myCredAccount = func(myCredAccount, iterable)
+                                                            pass
+                                                            #DO NOTHING - no account in builder to create
 
                                             #TODO
                                             #the account type must be in the account part, if no builder part (independant file)
-                                            else:
-                                                    printer.out("Account type unknown: "+account_type, printer.ERROR)
-                                                    return 2
-                                            if myCredAccount is not None:
-                                                    self.api.Users(self.login).Accounts.Create(myCredAccount)
-                                                    printer.out("Account create successfully for ["+account_type+"]", printer.OK)
+                                                    if myCredAccount is not None:
+                                                            printer.out("Create account for '"+account_type+"'...")
+                                                            self.api.Users(self.login).Accounts.Create(myCredAccount)
+                                                            printer.out("Account create successfully for ["+account_type+"]", printer.OK)
+                                                            myCredAccount=None
                                                     
                                 return 0       
                             
