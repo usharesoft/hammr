@@ -366,14 +366,14 @@ class Template(Cmd, HammrGlobal):
                                                         printer.out("Builder type unknown: "+format_type, printer.ERROR)    
                                                         return 2
                                         else:                                                
-                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)    
+                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)
                                                 return 2
                                         
                                         if myimage is None:
                                                 return 2
                                         
                                         myimage.format = myimageFormat
-                                        myimage.installProfile = myinstallProfile                                        
+                                        myimage.installProfile = myinstallProfile
                                         rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
                                         
                                         status = rImage.status

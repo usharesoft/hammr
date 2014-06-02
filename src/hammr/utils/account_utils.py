@@ -410,7 +410,7 @@ def vcenter(myCredAccount, account):
         else:
                 port=443
         
-        myCredAccount.type_ = "vcenter"
+        myCredAccount.type_ = "vsphere"
         myCredAccount.name = account["name"]
         myCredAccount.login = account["username"]
         myCredAccount.password = account["password"]
