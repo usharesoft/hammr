@@ -274,5 +274,5 @@ def publish_gce(pimage, builder):
         pimage.credAccount.category = builder["storageClass"]
         pimage.credAccount.displayName = builder["diskNamePrefix"]
         pimage.credAccount.zoneName = builder["computeZone"]
-        pimage.credAccount.publishLocation = builder["bucketLocation"]
+        pimage.publishLocation = builder["bucketLocation"]
         return pimage

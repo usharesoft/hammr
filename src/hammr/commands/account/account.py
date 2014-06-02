@@ -82,6 +82,7 @@ class Account(Cmd, HammrGlobal):
                                 return 2
                         try:
                                 for iterable in iterables:
+                                            myCredAccount=None
                                             if "type" in iterable:
                                                     account_type=iterable["type"]
                                             elif "account" in iterable:
@@ -102,7 +103,6 @@ class Account(Cmd, HammrGlobal):
                                                             printer.out("Create account for '"+account_type+"'...")
                                                             self.api.Users(self.login).Accounts.Create(myCredAccount)
                                                             printer.out("Account create successfully for ["+account_type+"]", printer.OK)
-                                                            myCredAccount=None
                                                     
                                 return 0       
                             

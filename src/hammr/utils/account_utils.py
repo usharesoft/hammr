@@ -446,9 +446,8 @@ def gce(myCredAccount, account):
                 with open (account["cert"], "r") as myfile:
                         myCertificate.certStr=myfile.read()
                 myCertificate.type_ = "googleCertificate"
+                myCertificate.name = ntpath.basename(account["cert"])
                 myCertificates.add_certificate(myCertificate)
-                myCertificate = certificate()
-                
                 
         except IOError as e:
                 printer.out("File error: "+str(e), printer.ERROR)
