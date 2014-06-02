@@ -7,6 +7,7 @@ import os.path
 import ntpath
 import shutil
 import json
+from junit_xml import TestSuite, TestCase
 
 from texttable import Texttable
 from hammr.lib.argumentParser import ArgumentParser, ArgumentParserError
@@ -299,6 +300,7 @@ class Template(Cmd, HammrGlobal):
                 mandatory.add_argument('--file', dest='file', required=True, help="json file providing the builder parameters")
                 optional = doParser.add_argument_group("optional arguments")
                 optional.add_argument('--id',dest='id',required=False, help="id of the template to build")
+                optional.add_argument('--junit',dest='junit',required=False, help="name of junit XML output file")
                 return doParser
         
         def do_build(self, args):
@@ -328,8 +330,14 @@ class Template(Cmd, HammrGlobal):
                                 return 0
                         try:
                                 i=1
+                                if doArgs.junit is not None:
+                                        test_results=[]
                                 for builder in template["builders"]:
                                         printer.out("Generating '"+builder["type"]+"' image ("+str(i)+"/"+str(len(template["builders"]))+")")
+                                        if doArgs.junit is not None:
+                                            test = TestCase('Generation '+builder["type"])
+                                            test_results.append(test)
+
                                         format_type = builder["type"]
                                         myimage = image()
                                         
@@ -392,14 +400,26 @@ class Template(Cmd, HammrGlobal):
                                                 printer.out("Generation '"+builder["type"]+"' error: "+status.message+"\n"+status.errorMessage, printer.ERROR)
                                                 if status.detailedError:
                                                         printer.out(status.detailedErrorMsg)
+                                                if doArgs.junit is not None:
+                                                        test.elapsed_sec=0
+                                                        test.add_error_info("Error", status.message+"\n"+status.errorMessage)
                                         elif status.cancelled:
                                                 printer.out("Generation '"+builder["type"]+"' canceled: "+status.message, printer.WARNING)
+                                                if doArgs.junit is not None:
+                                                        test.elapsed_sec=0
+                                                        test.add_failure_info("Canceled", status.message)
                                         else:        
                                                 printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
                                                 printer.out("Image URI: "+rImage.uri)
                                                 printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
+                                                if doArgs.junit is not None:
+                                                        test.elapsed_sec=0
+                                                        test.stdout=status.message
                                         i+=1
-                                
+                                if doArgs.junit is not None:
+                                        ts = TestSuite("Generation", test_results)
+                                        with open(doArgs.junit, 'w') as f:
+                                                TestSuite.to_file(f, [ts], prettyprint=False)
                                 return 0  
                         except KeyError as e:
                                 printer.out("unknown error in template json file", printer.ERROR)
@@ -414,8 +434,17 @@ class Template(Cmd, HammrGlobal):
                                                 self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Cancel()
                                 else:
                                         printer.out("Exiting command")
-                except Exception as e:        
+                except Exception as e:
                         print generics_utils.print_uforge_exception(e)
+                        if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
+                                test=test_results[len(test_results)-1]
+                                test.elapsed_sec=0
+                                test.add_error_info("Error", generics_utils.print_uforge_exception(e))
+                finally:
+                        if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
+                                ts = TestSuite("Generation", test_results)
+                                with open(doArgs.junit, 'w') as f:
+                                        TestSuite.to_file(f, [ts], prettyprint=False)
             
             
         def help_build(self):

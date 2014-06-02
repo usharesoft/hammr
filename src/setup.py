@@ -14,7 +14,8 @@ requires=['uforge_python_sdk',
                     'paramiko==1.12',
                     'pyparsing==2.0.2',
                     'hurry.filesize==0.9',
-                    'termcolor==1.1.0']
+                    'termcolor==1.1.0',
+                    'junit-xml==1.3']
                     
 if os.name != "nt":
 	if not "linux" in sys.platform:
