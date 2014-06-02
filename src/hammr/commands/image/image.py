@@ -377,6 +377,10 @@ class Image(Cmd, HammrGlobal):
                         mypImage.imageUri = comliantImage.uri
                         mypImage.applianceUri = appliance.uri
 
+                        if not "account" in builder:
+                                printer.out("Missing account section on builder: ["+builder["type"]+"]", printer.ERROR)
+                                return 2
+                        #Get all cloud account on the plateform (for the user)
                         accounts = self.api.Users(self.login).Accounts.Getall()
                         if accounts is None or not accounts.get_credAccount():
                                 printer.out("No accounts available on the plateform", printer.ERROR)
