@@ -333,89 +333,99 @@ class Template(Cmd, HammrGlobal):
                                 if doArgs.junit is not None:
                                         test_results=[]
                                 for builder in template["builders"]:
-                                        printer.out("Generating '"+builder["type"]+"' image ("+str(i)+"/"+str(len(template["builders"]))+")")
-                                        if doArgs.junit is not None:
-                                            test = TestCase('Generation '+builder["type"])
-                                            test_results.append(test)
+                                        try:
+                                                printer.out("Generating '"+builder["type"]+"' image ("+str(i)+"/"+str(len(template["builders"]))+")")
+                                                if doArgs.junit is not None:
+                                                    test = TestCase('Generation '+builder["type"])
+                                                    test_results.append(test)
 
-                                        format_type = builder["type"]
-                                        myimage = image()
-                                        
-                                        myinstallProfile = installProfile()   
-                                        if rInstallProfile.partitionAuto:
-                                                if "installation" in builder:                                                
-                                                        if "swapSize" in builder["installation"]:
-                                                                myinstallProfile.swapSize = builder["installation"]["swapSize"]
-                                                        if "diskSize" in builder["installation"]:
-                                                                myinstallProfile.diskSize = builder["installation"]["diskSize"]
+                                                format_type = builder["type"]
+                                                myimage = image()
+
+                                                myinstallProfile = installProfile()
+                                                if rInstallProfile.partitionAuto:
+                                                        if "installation" in builder:
+                                                                if "swapSize" in builder["installation"]:
+                                                                        myinstallProfile.swapSize = builder["installation"]["swapSize"]
+                                                                if "diskSize" in builder["installation"]:
+                                                                        myinstallProfile.diskSize = builder["installation"]["diskSize"]
+                                                        else:
+                                                               myinstallProfile.swapSize = rInstallProfile.swapSize
+                                                               myinstallProfile.diskSize = rInstallProfile.partitionTable.disks.disk[0].size
+
+                                                if format_type in generate_utils.CLOUD_FORMATS:
+                                                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
+                                                        if func:
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile, self.api, self.login)
+                                                        else:
+                                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)
+                                                                return 2
+                                                elif format_type in generate_utils.VIRTUAL_FORMATS:
+                                                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
+                                                        if func:
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
+                                                        else:
+                                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)
+                                                                return 2
+                                                elif format_type in generate_utils.PHYSICAL_FORMATS:
+                                                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
+                                                        if func:
+                                                                myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
+                                                        else:
+                                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)
+                                                                return 2
                                                 else:
-                                                       myinstallProfile.swapSize = rInstallProfile.swapSize
-                                                       myinstallProfile.diskSize = rInstallProfile.partitionTable.disks.disk[0].size
-                                        
-                                        if format_type in generate_utils.CLOUD_FORMATS:
-                                                func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
-                                                if func:
-                                                        myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile, self.api, self.login)
-                                                else:
-                                                        printer.out("Builder type unknown: "+format_type, printer.ERROR)                                                     
+                                                        printer.out("Builder type unknown: "+format_type, printer.ERROR)
                                                         return 2
-                                        elif format_type in generate_utils.VIRTUAL_FORMATS:
-                                                func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
-                                                if func:
-                                                        myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
-                                                else:
-                                                        printer.out("Builder type unknown: "+format_type, printer.ERROR)    
+
+                                                if myimage is None:
                                                         return 2
-                                        elif format_type in generate_utils.PHYSICAL_FORMATS:
-                                                func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
-                                                if func:
-                                                        myimage,myimageFormat,myinstallProfile = func(myimage, builder, myinstallProfile)
-                                                else:
-                                                        printer.out("Builder type unknown: "+format_type, printer.ERROR)    
-                                                        return 2
-                                        else:                                                
-                                                printer.out("Builder type unknown: "+format_type, printer.ERROR)
-                                                return 2
-                                        
-                                        if myimage is None:
-                                                return 2
-                                        
-                                        myimage.format = myimageFormat
-                                        myimage.installProfile = myinstallProfile
-                                        rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
-                                        
-                                        status = rImage.status
-                                        statusWidget = progressbar_widget.Status()
-                                        statusWidget.status = status
-                                        widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
-                                        progress = ProgressBar(widgets=widgets, maxval=100).start()
-                                        while not (status.complete or status.error or status.cancelled):
+
+                                                myimage.format = myimageFormat
+                                                myimage.installProfile = myinstallProfile
+                                                rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
+
+                                                status = rImage.status
+                                                statusWidget = progressbar_widget.Status()
                                                 statusWidget.status = status
-                                                progress.update(status.percentage)
-                                                status = self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Get()
-                                                time.sleep(2)
-                                        statusWidget.status = status
-                                        progress.finish()
-                                        if status.error:
-                                                printer.out("Generation '"+builder["type"]+"' error: "+status.message+"\n"+status.errorMessage, printer.ERROR)
-                                                if status.detailedError:
-                                                        printer.out(status.detailedErrorMsg)
-                                                if doArgs.junit is not None:
-                                                        test.elapsed_sec=0
-                                                        test.add_error_info("Error", status.message+"\n"+status.errorMessage)
-                                        elif status.cancelled:
-                                                printer.out("Generation '"+builder["type"]+"' canceled: "+status.message, printer.WARNING)
-                                                if doArgs.junit is not None:
-                                                        test.elapsed_sec=0
-                                                        test.add_failure_info("Canceled", status.message)
-                                        else:        
-                                                printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
-                                                printer.out("Image URI: "+rImage.uri)
-                                                printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
-                                                if doArgs.junit is not None:
-                                                        test.elapsed_sec=0
-                                                        test.stdout=status.message
-                                        i+=1
+                                                widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
+                                                progress = ProgressBar(widgets=widgets, maxval=100).start()
+                                                while not (status.complete or status.error or status.cancelled):
+                                                        statusWidget.status = status
+                                                        progress.update(status.percentage)
+                                                        status = self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Get()
+                                                        time.sleep(2)
+                                                statusWidget.status = status
+                                                progress.finish()
+                                                if status.error:
+                                                        printer.out("Generation '"+builder["type"]+"' error: "+status.message+"\n"+status.errorMessage, printer.ERROR)
+                                                        if status.detailedError:
+                                                                printer.out(status.detailedErrorMsg)
+                                                        if doArgs.junit is not None:
+                                                                test.elapsed_sec=0
+                                                                test.add_error_info("Error", status.message+"\n"+status.errorMessage)
+                                                elif status.cancelled:
+                                                        printer.out("Generation '"+builder["type"]+"' canceled: "+status.message, printer.WARNING)
+                                                        if doArgs.junit is not None:
+                                                                test.elapsed_sec=0
+                                                                test.add_failure_info("Canceled", status.message)
+                                                else:
+                                                        printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
+                                                        printer.out("Image URI: "+rImage.uri)
+                                                        printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
+                                                        if doArgs.junit is not None:
+                                                                test.elapsed_sec=0
+                                                                test.stdout=status.message
+                                                i+=1
+                                        except Exception as e:
+                                                if  generics_utils.is_uforge_exception(e):
+                                                        print generics_utils.print_uforge_exception(e)
+                                                        if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
+                                                                test=test_results[len(test_results)-1]
+                                                                test.elapsed_sec=0
+                                                                test.add_error_info("Error", generics_utils.print_uforge_exception(e))
+                                                else:
+                                                        raise e
                                 if doArgs.junit is not None:
                                         ts = TestSuite("Generation", test_results)
                                         with open(doArgs.junit, 'w') as f:
@@ -432,6 +442,8 @@ class Template(Cmd, HammrGlobal):
                                 if generics_utils.query_yes_no("Do you want to cancel the job ?"):
                                         if 'myAppliance' in locals() and 'rImage' in locals() and hasattr(myAppliance, 'dbId') and hasattr(rImage, 'dbId'):
                                                 self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Cancel()
+                                        else:
+                                                printer.out("Impossible to cancel", printer.WARNING)
                                 else:
                                         printer.out("Exiting command")
                 except Exception as e:
@@ -441,7 +453,7 @@ class Template(Cmd, HammrGlobal):
                                 test.elapsed_sec=0
                                 test.add_error_info("Error", generics_utils.print_uforge_exception(e))
                 finally:
-                        if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
+                        if "doArgs" in locals() and doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                 ts = TestSuite("Generation", test_results)
                                 with open(doArgs.junit, 'w') as f:
                                         TestSuite.to_file(f, [ts], prettyprint=False)
