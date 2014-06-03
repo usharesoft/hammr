@@ -1,4 +1,3 @@
-
 __author__="UShareSoft"
 
 import time
@@ -427,7 +426,8 @@ class Template(Cmd, HammrGlobal):
                                                 else:
                                                         raise e
                                 if doArgs.junit is not None:
-                                        ts = TestSuite("Generation", test_results)
+                                        testName = myAppliance.distributionName+" "+myAppliance.archName
+                                        ts = TestSuite("Generation "+testName, test_results)
                                         with open(doArgs.junit, 'w') as f:
                                                 TestSuite.to_file(f, [ts], prettyprint=False)
                                 return 0  
@@ -454,14 +454,18 @@ class Template(Cmd, HammrGlobal):
                                 test.add_error_info("Error", generics_utils.print_uforge_exception(e))
                 finally:
                         if "doArgs" in locals() and doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
-                                ts = TestSuite("Generation", test_results)
+                                if "myAppliance" in locals():
+                                        testName = myAppliance.distributionName+" "+myAppliance.archName
+                                else:
+                                        testName = ""
+                                ts = TestSuite("Generation "+testName, test_results)
                                 with open(doArgs.junit, 'w') as f:
                                         TestSuite.to_file(f, [ts], prettyprint=False)
             
             
         def help_build(self):
                 doParser = self.arg_build()
-                doParser.print_help()       
+                doParser.print_help()
                 
                 
                 
