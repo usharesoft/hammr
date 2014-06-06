@@ -203,6 +203,10 @@ elif os.path.isfile(generics_utils.get_hammr_dir()+os.sep+"credentials.json"):
                 else:
                         printer.out("url not found in the credential hammr file", printer.ERROR)
                         exit(1)
+                if "acceptAutoSigned" in data:
+                        sslAutosigned=data["acceptAutoSigned"]
+                else:
+                        sslAutosigned=False
         except ValueError as e:
                 printer.out("JSON parsing error in the credential hammr file: "+str(e), printer.ERROR)
                 exit(1)
@@ -217,7 +221,7 @@ else:
 
 
 #UForge API instanciation
-client = httplib2.Http()
+client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned)
 #activate http caching
 #client = httplib2.Http(generics_utils.get_hammr_dir()+os.sep+"cache")
 headers = {}
