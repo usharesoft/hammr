@@ -335,8 +335,9 @@ class Template(Cmd, HammrGlobal):
                                         try:
                                                 printer.out("Generating '"+builder["type"]+"' image ("+str(i)+"/"+str(len(template["builders"]))+")")
                                                 if doArgs.junit is not None:
-                                                    test = TestCase('Generation '+builder["type"])
-                                                    test_results.append(test)
+                                                        test = TestCase('Generation '+builder["type"])
+                                                        test_results.append(test)
+                                                        start_time = time.time()
 
                                                 format_type = builder["type"]
                                                 myimage = image()
@@ -401,12 +402,12 @@ class Template(Cmd, HammrGlobal):
                                                         if status.detailedError:
                                                                 printer.out(status.detailedErrorMsg)
                                                         if doArgs.junit is not None:
-                                                                test.elapsed_sec=0
+                                                                test.elapsed_sec=time.time() - start_time
                                                                 test.add_error_info("Error", status.message+"\n"+status.errorMessage)
                                                 elif status.cancelled:
                                                         printer.out("Generation '"+builder["type"]+"' canceled: "+status.message, printer.WARNING)
                                                         if doArgs.junit is not None:
-                                                                test.elapsed_sec=0
+                                                                test.elapsed_sec=time.time() - start_time
                                                                 test.add_failure_info("Canceled", status.message)
                                                 else:
                                                         printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
@@ -414,14 +415,15 @@ class Template(Cmd, HammrGlobal):
                                                         printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
                                                         if doArgs.junit is not None:
                                                                 test.elapsed_sec=0
-                                                                test.stdout=status.message
+                                                                #the downloadUri already contains downloadKey at the end
+                                                                test.stdout=self.api._url+"/"+rImage.downloadUri
                                                 i+=1
                                         except Exception as e:
                                                 if  generics_utils.is_uforge_exception(e):
                                                         print generics_utils.print_uforge_exception(e)
                                                         if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                                                 test=test_results[len(test_results)-1]
-                                                                test.elapsed_sec=0
+                                                                test.elapsed_sec=time.time() - start_time
                                                                 test.add_error_info("Error", generics_utils.print_uforge_exception(e))
                                                 else:
                                                         raise e
@@ -450,7 +452,11 @@ class Template(Cmd, HammrGlobal):
                         print generics_utils.print_uforge_exception(e)
                         if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                 test=test_results[len(test_results)-1]
-                                test.elapsed_sec=0
+                                if "start_time" in locals():
+                                        elapse=time.time() - start_time
+                                else:
+                                        elapse=0
+                                test.elapsed_sec=elapse
                                 test.add_error_info("Error", generics_utils.print_uforge_exception(e))
                 finally:
                         if "doArgs" in locals() and doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
