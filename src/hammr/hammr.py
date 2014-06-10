@@ -176,6 +176,7 @@ if mainArgs.user is not None and mainArgs.url is not None:
         username=mainArgs.user
         password=mainArgs.password
         url=mainArgs.url
+        sslAutosigned=False
 
 elif os.path.isfile(generics_utils.get_hammr_dir()+os.sep+"credentials.json"):
         try:                                     
