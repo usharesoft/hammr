@@ -33,7 +33,7 @@ class User(Cmd, HammrGlobal):
                             table = Texttable(200)
                             table.set_cols_align(["c", "l", "c", "c", "c", "c", "c", "c"])
                             table.header(["Login", "Email", "Lastname",  "Firstname",  "Created", "Active", "Promo Code", "Creation Code"])
-                            if(user.get_account() & 2 !=0):
+                            if hasattr(user, 'get_account') and user.get_account() is not None:
                                     table.add_row([user.loginName, user.email, user.surname , user.firstName, user.created.strftime("%Y-%m-%d %H:%M:%S"), "X", user.promoCode, user.creationCode])
                             print table.draw() + "\n"
                         return 0
