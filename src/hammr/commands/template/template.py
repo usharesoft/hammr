@@ -426,7 +426,7 @@ class Template(Cmd, HammrGlobal):
                                                                 test.elapsed_sec=time.time() - start_time
                                                                 test.add_error_info("Error", generics_utils.print_uforge_exception(e))
                                                 else:
-                                                        raise e
+                                                        raise
                                 if doArgs.junit is not None:
                                         testName = myAppliance.distributionName+" "+myAppliance.archName
                                         ts = TestSuite("Generation "+testName, test_results)
