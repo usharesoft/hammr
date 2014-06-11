@@ -414,9 +414,10 @@ class Template(Cmd, HammrGlobal):
                                                         printer.out("Image URI: "+rImage.uri)
                                                         printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
                                                         if doArgs.junit is not None:
-                                                                test.elapsed_sec=0
+                                                                test.elapsed_sec=time.time() - start_time
                                                                 #the downloadUri already contains downloadKey at the end
-                                                                test.stdout=self.api._url+"/"+rImage.downloadUri
+                                                                if rImage.downloadUri is not None:
+                                                                        test.stdout=self.api._url+"/"+rImage.downloadUri
                                                 i+=1
                                         except Exception as e:
                                                 if  generics_utils.is_uforge_exception(e):
