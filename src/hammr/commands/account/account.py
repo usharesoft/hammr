@@ -82,27 +82,33 @@ class Account(Cmd, HammrGlobal):
                                 return 2
                         try:
                                 for iterable in iterables:
-                                            myCredAccount=None
-                                            if "type" in iterable:
-                                                    account_type=iterable["type"]
-                                            elif "account" in iterable:
-                                                    account_type=iterable["account"]["type"]
-                                            func = getattr(account_utils, generics_utils.remove_special_chars(account_type), None)
-                                            if func:
-                                                    if accounts_file_type == "builders" and "account" in iterable:
-                                                            myCredAccount = func(credAccount(), iterable["account"])
-                                                    elif accounts_file_type == "accounts":
-                                                            myCredAccount = func(credAccount(), iterable)
-                                                    else:
-                                                            pass
-                                                            #DO NOTHING - no account in builder to create
+                                            try:
+                                                    myCredAccount=None
+                                                    if "type" in iterable:
+                                                            account_type=iterable["type"]
+                                                    elif "account" in iterable:
+                                                            account_type=iterable["account"]["type"]
+                                                    func = getattr(account_utils, generics_utils.remove_special_chars(account_type), None)
+                                                    if func:
+                                                            if accounts_file_type == "builders" and "account" in iterable:
+                                                                    myCredAccount = func(credAccount(), iterable["account"])
+                                                            elif accounts_file_type == "accounts":
+                                                                    myCredAccount = func(credAccount(), iterable)
+                                                            else:
+                                                                    pass
+                                                                    #DO NOTHING - no account in builder to create
 
-                                            #TODO
-                                            #the account type must be in the account part, if no builder part (independant file)
-                                                    if myCredAccount is not None:
-                                                            printer.out("Create account for '"+account_type+"'...")
-                                                            self.api.Users(self.login).Accounts.Create(myCredAccount)
-                                                            printer.out("Account create successfully for ["+account_type+"]", printer.OK)
+                                                    #TODO
+                                                    #the account type must be in the account part, if no builder part (independant file)
+                                                            if myCredAccount is not None:
+                                                                    printer.out("Create account for '"+account_type+"'...")
+                                                                    self.api.Users(self.login).Accounts.Create(myCredAccount)
+                                                                    printer.out("Account create successfully for ["+account_type+"]", printer.OK)
+                                            except Exception as e:
+                                                    if generics_utils.is_uforge_exception(e):
+                                                            print generics_utils.print_uforge_exception(e)
+                                                    else:
+                                                            raise
                                                     
                                 return 0       
                             
