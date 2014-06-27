@@ -73,7 +73,7 @@ This will automatically create the hammr executable and install it properly on y
 To check that this was successful, run:
 
 ```
-$ hammr —-version 
+$ hammr —v 
 ```
 
 Upgrading
