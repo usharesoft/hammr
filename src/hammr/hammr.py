@@ -176,7 +176,7 @@ if mainArgs.user is not None and mainArgs.url is not None:
         username=mainArgs.user
         password=mainArgs.password
         url=mainArgs.url
-        sslAutosigned=False
+        sslAutosigned=True
 
 elif os.path.isfile(generics_utils.get_hammr_dir()+os.sep+"credentials.json"):
         try:                                     
@@ -207,7 +207,7 @@ elif os.path.isfile(generics_utils.get_hammr_dir()+os.sep+"credentials.json"):
                 if "acceptAutoSigned" in data:
                         sslAutosigned=data["acceptAutoSigned"]
                 else:
-                        sslAutosigned=False
+                        sslAutosigned=True
         except ValueError as e:
                 printer.out("JSON parsing error in the credential hammr file: "+str(e), printer.ERROR)
                 exit(1)
