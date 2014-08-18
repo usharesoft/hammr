@@ -119,7 +119,24 @@ class TestTemplate(unittest.TestCase):
                 r = template.do_import("--file archive.tar.gz")
                 os.remove("archive.tar.gz")
                 self.assertEqual(r, 0)
-                
+
+        def test_08_0_templateFull(self):
+                #template centOS 6 - name="templateFull"
+                template = hammr.commands.template.Template()
+                template.set_globals(api, login, password)
+                r = template.do_create("--file data/templateFull.json --force")
+                self.assertNotEqual(r, None)
+
+        def test_08_1_exportCentOS6(self):
+                template = hammr.commands.template.Template()
+                template.set_globals(api, login, password)
+                id = get_template_id(template, "templateFull")
+                r = template.do_export("--id "+id)
+                self.assertEqual(r, 0)
+
+
+
+
                 
                 
 class TestOs(unittest.TestCase):

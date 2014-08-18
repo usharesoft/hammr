@@ -1,0 +1,102 @@
+{
+  "stack" : {
+    "source_logo" : "https://www.usharesoft.com/assets/images/usharesoft_logo.png",
+    "name" : "templateFull",
+    "version" : "1.0",
+    "installation" : {
+      "timezone" : "Europe/London",
+      "internetSettings" : "dhcp",
+      "kernelParams" : [ "rhgb", "quiet" ],
+      "displayLicenses" : true,
+      "partitioning": {
+        "disks": [
+          {
+            "name": "sda",
+            "type": "msdos",
+            "size": 12288,
+            "partitions": [
+              {
+                "number": 1,
+                "fstype": "ext3",
+                "size": 2048,
+                "mountPoint": "/"
+              },
+              {
+                "number": 2,
+                "fstype": "linux-swap",
+                "size": 1024
+              },
+              {
+                "number": 3,
+                "fstype": "ext3",
+                "size": 64,
+                "grow": true,
+                "label": "space",
+                "mountPoint": "/space"
+              }
+            ]
+          }
+        ]
+      },
+      "users": [
+    {
+      "name": "joris",
+      "fullName": "joris",
+      "homeDir": "/home/joris",
+      "shell": "/bin/bash"
+    },
+    {
+      "name": "monitoring",
+      "fullName": "monitoring",
+      "homeDir": "/home/monitoring",
+      "shell": "/bin/bash"
+    }
+  ]
+    },
+    "bundles": [
+    {
+      "name": "wordpress26",
+      "version": "3.5",
+      "destination": "/tmp/wordpress",
+      "files": [
+        {
+        "name": "wordpress.zip",
+        "source": "http://wordpress.org/wordpress-3.5.zip",
+        "destination": "/usr/local/wordpress"
+        }
+      ]
+    }
+   ],
+    "config": [
+    {
+      "name": "configure-mysql.sh",
+      "source": "data/bootsrcripts/cleanup_tmp.sh",
+      "type": "bootscript",
+      "frequency": "firstboot"
+    }
+    ],
+    "os" : {
+      "name" : "CentOS",
+      "version" : "6",
+      "arch" : "x86_64",
+      "updateTo" : "07-30-2014",
+      "profile" : "Minimal",
+      "pkgs" : [ {
+        "name" : "iotop"
+      },
+      {
+        "name" : "xrestop"
+      }
+      ]
+    }
+  },
+  "builders" : [
+   {
+        "type" : "kvm",
+	"hardwareSettings": {
+                "memory": 1024
+            }
+
+   }
+ ]
+}
