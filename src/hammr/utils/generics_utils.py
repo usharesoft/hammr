@@ -238,3 +238,13 @@ def create_user_ssh_key(api, login, sshKey):
                 printer.out("Impossible to create sshKey ["+mySshKey.name+"]", printer.ERROR)
                 return 2
         return key
+
+def is_superviser_mode(userName):
+        if "\\" in userName:
+                return True
+        else:
+                return False
+
+def get_target_username(userName):
+    if "\\" in userName:
+        return userName.split('\\')[1]

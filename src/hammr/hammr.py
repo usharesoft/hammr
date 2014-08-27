@@ -227,6 +227,8 @@ client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned)
 #client = httplib2.Http(generics_utils.get_hammr_dir()+os.sep+"cache")
 headers = {}
 headers['Authorization'] = 'Basic ' + base64.encodestring( username + ':' + password )
+if generics_utils.is_superviser_mode(username):
+        username = generics_utils.get_target_username(username)
 api = Api(url, client = client, headers = headers)
 set_globals_cmds(app.subCmds)
 
