@@ -5,7 +5,7 @@ import sys
 
 
 # Declare your packages' dependencies here, for eg:
-requires=['uforge_python_sdk',
+requires=['uforge_python_sdk>=3.5.0.1',
                     'httplib2==0.9',
                     'cmd2==0.6.7',                    
                     'texttable==0.8.1',
