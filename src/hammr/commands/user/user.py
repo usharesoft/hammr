@@ -39,8 +39,8 @@ class User(Cmd, HammrGlobal):
                 except ArgumentParserError as e:
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_info()
-                except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                except Exception as e:
+                        generics_utils.print_uforge_exception(e)
         
         def help_info(self):
                 doParser = self.arg_info()

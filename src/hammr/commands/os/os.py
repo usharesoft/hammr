@@ -57,7 +57,7 @@ class Os(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        generics_utils.print_uforge_exception(e)
                     
         def help_list(self):
                 doParser = self.arg_list()
@@ -105,7 +105,7 @@ class Os(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_search()
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        generics_utils.print_uforge_exception(e)
                     
         def help_search(self):
                 doParser = self.arg_search()

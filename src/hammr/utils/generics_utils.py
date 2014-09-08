@@ -173,9 +173,14 @@ def is_uforge_exception(e):
         if len(e.args)>=1 and type(e.args[0]) is uForgeError:
                 return True
 
+def get_uforge_exception(e):
+    if len(e.args)>=1 and type(e.args[0]) is uForgeError:
+        return "UForge Error '"+str(e.args[0].statusCode)+"' with method: "+e.args[0].requestMethod+" "+e.args[0].requestUri+"\n"+"Message:\n\t"+e.args[0].errorMsg
+
+
 def print_uforge_exception(e):
         if len(e.args)>=1 and type(e.args[0]) is uForgeError:
-                return "UForge Error '"+str(e.args[0].statusCode)+"' with method: "+e.args[0].requestMethod+" "+e.args[0].requestUri+"\n"+"Message:\n\t"+e.args[0].errorMsg
+                printer.out(get_uforge_exception(e), printer.ERROR)
         else:
                 traceback.print_exc()
                 

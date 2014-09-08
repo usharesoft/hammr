@@ -39,7 +39,7 @@ class Bundle(Cmd, HammrGlobal):
                                         
                                 return 0
                         except Exception as e:        
-                                print generics_utils.print_uforge_exception(e)
+                                generics_utils.print_uforge_exception(e)
                                 
 
                     
@@ -82,7 +82,7 @@ class Bundle(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        generics_utils.print_uforge_exception(e)
                                 
 
                     
