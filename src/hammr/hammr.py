@@ -222,7 +222,7 @@ else:
 
 
 #UForge API instanciation
-client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned)
+client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned, timeout=constants.HTTP_TIMEOUT)
 #activate http caching
 #client = httplib2.Http(generics_utils.get_hammr_dir()+os.sep+"cache")
 headers = {}
