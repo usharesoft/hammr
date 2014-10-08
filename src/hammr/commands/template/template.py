@@ -273,7 +273,9 @@ class Template(Cmd, HammrGlobal):
                         tar.close()
                         
                         #arhive is created, doing import
-                        self.import_stack(tar_path, False, doArgs.force)
+                        r = self.import_stack(tar_path, False, doArgs.force)
+                        if r != 0:
+                                return r
                         
                         #delete tmp dir
                         shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -300,6 +302,7 @@ class Template(Cmd, HammrGlobal):
                 optional = doParser.add_argument_group("optional arguments")
                 optional.add_argument('--id',dest='id',required=False, help="id of the template to build")
                 optional.add_argument('--junit',dest='junit',required=False, help="name of junit XML output file")
+                optional.add_argument('--simulate', dest='simulated', action='store_true', help='Simulate the generation (only the Checking Dependencies process will be executed)', required = False)
                 return doParser
         
         def do_build(self, args):
@@ -383,6 +386,9 @@ class Template(Cmd, HammrGlobal):
 
                                                 myimage.format = myimageFormat
                                                 myimage.installProfile = myinstallProfile
+                                                if doArgs.simulated is not None:
+                                                        myimage.simulated=True
+
                                                 rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
 
                                                 status = rImage.status
@@ -522,8 +528,10 @@ class Template(Cmd, HammrGlobal):
                                 return 0
                 except IOError as e:
                         printer.out("File error: "+e.strerror, printer.ERROR)
+                        return 2
                 except Exception as e:        
                         generics_utils.print_uforge_exception(e)
+                        return 2
                      
                         
         def arg_delete(self):
