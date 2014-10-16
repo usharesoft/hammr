@@ -220,7 +220,8 @@ class Template(Cmd, HammrGlobal):
                                                 #changing source path to archive related source path
                                                 config["source"]=file_tar_path
                                         else:
-                                                printer.out("No source file found in config", printer.WARNING)
+                                                printer.out("No source file found in config", printer.ERROR)
+                                                return 2
                         try:
                                 if "bundles" in template["stack"]:
                                         for bundle in template["stack"]["bundles"]:
@@ -232,7 +233,8 @@ class Template(Cmd, HammrGlobal):
                                                                 #changing source path to archive related source path
                                                                 files["source"]=file_tar_path
                                                 else:
-                                                        printer.out("No files found for bundle", printer.WARNING)
+                                                        printer.out("No files section found for bundle", printer.ERROR)
+                                                        return 2
                                                 if "license" in bundle and "source" in bundle["license"]:
                                                         #add to list of file to tar
                                                         file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(bundle["license"]["source"])) 
