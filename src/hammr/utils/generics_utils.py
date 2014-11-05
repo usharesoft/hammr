@@ -206,11 +206,16 @@ def get_hammr_dir():
         return dir
     
 def get_remote_regex():
-        return 'http|ftp|svn'
+        return (r'^(?:http|ftp)s?://' # http:// or https://
+                r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+                r'localhost|' #localhost...
+                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+                r'(?::\d+)?' # optional port
+                r'(?:/?|[/?]\S+)$')
     
 def get_file(uri):
         try:
-                regexp = re.compile(get_remote_regex())
+                regexp = re.compile(get_remote_regex(), re.IGNORECASE)
                 if regexp.search(uri) is not None:
                         print "Downloadling file "+os.path.basename(uri)+": "
                         dlUtils = download_utils.Download()
