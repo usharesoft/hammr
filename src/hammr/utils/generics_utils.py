@@ -105,7 +105,7 @@ def check_json_syntax(file):
                 printer.out("JSON parsing error: "+str(e))
                 return
         except IOError as e:
-                printer.out("File error: "+e.strerror, printer.ERROR)
+                printer.out("File error: "+str(e), printer.ERROR)
                 return
     
 def validate_json_file(file):

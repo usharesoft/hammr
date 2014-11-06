@@ -116,7 +116,7 @@ class Account(Cmd, HammrGlobal):
                                 printer.out("unknown error template json file", printer.ERROR)
                               
                 except IOError as e:
-                        printer.out("File error: "+e.strerror, printer.ERROR)
+                        printer.out("File error: "+str(e), printer.ERROR)
                 except ArgumentParserError as e:
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_create()

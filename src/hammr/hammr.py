@@ -101,7 +101,7 @@ class Hammr(Cmd):
                                         print "\n"
                                         
                 except IOError as e:
-                        printer.out("File error: "+e.strerror, printer.ERROR)
+                        printer.out("File error: "+str(e), printer.ERROR)
                         return
                 except ArgumentParserError as e:
                         printer.out("In Arguments: "+str(e), printer.ERROR)

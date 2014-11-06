@@ -112,7 +112,7 @@ class Template(Cmd, HammrGlobal):
                                         printer.out("Download complete of file ["+file.name+"]", printer.OK)
                         return 0
                 except IOError as e:
-                        printer.out("File error: "+e.strerror, printer.ERROR)
+                        printer.out("File error: "+str(e), printer.ERROR)
                 except ArgumentParserError as e:
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_export()
@@ -529,7 +529,7 @@ class Template(Cmd, HammrGlobal):
                                                 
                                 return 0
                 except IOError as e:
-                        printer.out("File error: "+e.strerror, printer.ERROR)
+                        printer.out("File error: "+str(e), printer.ERROR)
                         return 2
                 except Exception as e:        
                         generics_utils.print_uforge_exception(e)
