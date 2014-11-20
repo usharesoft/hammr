@@ -219,9 +219,14 @@ class Scan(Cmd, HammrGlobal):
                                                 myimage = image()
 
                                                 myinstallProfile = installProfile()
-                                                if "swapSize" in builder["installation"]:
-                                                        myinstallProfile.swapSize = builder["installation"]["swapSize"]
-                                                myinstallProfile.diskSize = builder["installation"]["diskSize"]
+                                                #Hugly patch - to be removed when we have a new dedicated WS resources
+                                                if "partitioning" in builder["installation"]:
+                                                        json_string = generics_utils.convert_object_to_json(builder["installation"]["partitioning"])
+                                                        myimage.tag = json_string
+                                                else:
+                                                        if "swapSize" in builder["installation"]:
+                                                                myinstallProfile.swapSize = builder["installation"]["swapSize"]
+                                                        myinstallProfile.diskSize = builder["installation"]["diskSize"]
 
                                                 if format_type in generate_utils.CLOUD_FORMATS:
                                                         func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(format_type), None)
@@ -250,6 +255,7 @@ class Scan(Cmd, HammrGlobal):
 
                                                 myimage.format = myimageFormat
                                                 myimage.installProfile = myinstallProfile
+
                                                 rImage = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(myScan.dbId).Images().Generate(myimage)
                                                 status = rImage.status
                                                 statusWidget = progressbar_widget.Status()

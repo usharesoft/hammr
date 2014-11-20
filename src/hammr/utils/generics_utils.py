@@ -55,8 +55,9 @@ def check_mandatory_generate_scan(builders):
                         printer.out("no attribute installation in builder", printer.ERROR)
                         return
                 if not "diskSize" in builder["installation"]:
-                        printer.out("no attribute diskSize in the installation part of builder", printer.ERROR)
-                        return
+                        if not "partitioning" in builder["installation"]:
+                                printer.out("no attribute diskSize in the installation part of builder", printer.ERROR)
+                                return
                 if not "hardwareSettings" in builder:
                         printer.out("no attribute hardwareSettings in builder", printer.ERROR)
                         return
@@ -256,5 +257,10 @@ def is_superviser_mode(userName):
                 return False
 
 def get_target_username(userName):
-    if "\\" in userName:
-        return userName.split('\\')[1]
+        if "\\" in userName:
+                return userName.split('\\')[1]
+
+
+def convert_object_to_json(obj):
+        data = json.dumps(obj)
+        return data
