@@ -389,9 +389,9 @@ class Template(Cmd, HammrGlobal):
 
                                                 myimage.format = myimageFormat
                                                 myimage.installProfile = myinstallProfile
-                                                if doArgs.simulated is not None:
+                                                if doArgs.simulated is not None and doArgs.simulated:
                                                         myimage.simulated=True
-                                                if doArgs.forced is not None:
+                                                if doArgs.forced is not None and doArgs.forced:
                                                         myimage.forceCheckingDeps=True
 
                                                 rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
