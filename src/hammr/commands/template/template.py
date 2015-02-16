@@ -305,10 +305,11 @@ class Template(Cmd, HammrGlobal):
                 optional.add_argument('--id',dest='id',required=False, help="id of the template to build")
                 optional.add_argument('--junit',dest='junit',required=False, help="name of junit XML output file")
                 optional.add_argument('--simulate', dest='simulated', action='store_true', help='Simulate the generation (only the Checking Dependencies process will be executed)', required = False)
+                optional.add_argument('--force', dest='forced', action='store_true', help='Force the checking dependencies', required = False)
                 return doParser
         
         def do_build(self, args):
-                try:            
+                try:
                         #add arguments
                         doParser = self.arg_build()
                         try:
@@ -390,6 +391,8 @@ class Template(Cmd, HammrGlobal):
                                                 myimage.installProfile = myinstallProfile
                                                 if doArgs.simulated is not None:
                                                         myimage.simulated=True
+                                                if doArgs.forced is not None:
+                                                        myimage.forceCheckingDeps=True
 
                                                 rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
 
