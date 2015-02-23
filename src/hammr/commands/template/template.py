@@ -88,7 +88,7 @@ class Template(Cmd, HammrGlobal):
                         if myAppliance is None or type(myAppliance) is not appliance:
                                 printer.out("No template")
                         else:
-                                applianceExport = self.api.Users(self.login).Appliances(myAppliance.dbId).Exports().Exports()
+                                applianceExport = self.api.Users(self.login).Appliances(myAppliance.dbId).Exports().Export()
                                 status = applianceExport.status                       
                                 progress = ProgressBar(widgets=[Percentage(), Bar()], maxval=100).start()
                                 while not (status.complete or status.error):
@@ -100,9 +100,9 @@ class Template(Cmd, HammrGlobal):
                                         printer.out("Export error: "+status.message+"\n"+status.errorMessage, printer.ERROR)
                                         if status.detailedError:
                                                 printer.out(status.detailedErrorMsg)
-                                else:        
+                                else:
                                         printer.out("Downloading archive...")
-                                        data = self.api.Users(self.login).Appliances(myAppliance.dbId).Exports(applianceExport.dbId).Downloads.Applianceexportdownloadresource()
+                                        data = self.api.Users(self.login).Appliances(myAppliance.dbId).Exports(applianceExport.dbId).Downloads.Download()
                                         if doArgs.file is None:
                                                 file = open("archive.tar.gz", "w")
                                         else:
