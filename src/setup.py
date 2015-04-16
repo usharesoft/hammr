@@ -5,7 +5,7 @@ import sys
 
 
 # Declare your packages' dependencies here, for eg:
-requires=['uforge_python_sdk>=3.5.1',
+requires=['uforge_python_sdk>=3.5.1, <3.6',
                     'httplib2==0.9',
                     'cmd2==0.6.7',                    
                     'texttable==0.8.1',
@@ -15,7 +15,8 @@ requires=['uforge_python_sdk>=3.5.1',
                     'pyparsing==2.0.2',
                     'hurry.filesize==0.9',
                     'termcolor==1.1.0',
-                    'junit-xml==1.3']
+                    'junit-xml==1.3',
+                    'xmlrunner==1.7.7']
                     
 if os.name != "nt":
 	if not "linux" in sys.platform:
