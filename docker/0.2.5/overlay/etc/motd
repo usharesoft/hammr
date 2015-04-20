@@ -1,0 +1,38 @@
+ ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄       ▄▄  ▄▄       ▄▄  ▄▄▄▄▄▄▄▄▄▄▄ 
+▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░▌     ▐░░▌▐░░▌     ▐░░▌▐░░░░░░░░░░░▌
+▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌   ▐░▐░▌▐░▌░▌   ▐░▐░▌▐░█▀▀▀▀▀▀▀█░▌
+▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌ ▐░▌▐░▌▐░▌▐░▌ ▐░▌▐░▌▐░▌       ▐░▌
+▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▐░▌ ▐░▌▐░▌ ▐░▐░▌ ▐░▌▐░█▄▄▄▄▄▄▄█░▌
+▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌▐░▌  ▐░▌  ▐░▌▐░░░░░░░░░░░▌
+▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌   ▀   ▐░▌▐░▌   ▀   ▐░▌▐░█▀▀▀▀█░█▀▀ 
+▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌     ▐░▌  
+▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌      ▐░▌ 
+▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌
+ ▀         ▀  ▀         ▀  ▀         ▀  ▀         ▀  ▀         ▀
+
+Hammr is a command-line tool for building consistent and repeatable machine images for different platforms.
+
+The documentation is availaible at http://hammr.io
+GitHub project: https://github.com/usharesoft/hammr
+------------------------------------------------------------------
+
+You have two possibilities to use this container:
+1. Interactive mode: where hammr is launched once, providing you a prompt to execute hammr commands
+
+#	sudo docker run -t -i usharesoft/hammr hammr -a https://uforge.usharesoft.com/api -u login
+
+2. Classic command-line: run a hammr command and kill the container
+
+#	sudo docker run usharesoft/hammr hammr -a https://uforge.usharesoft.com/api -u login -p password COMMAND
+
+To improve usability, you can store authentication information in a credential file (credentials.json) that will be used every time hammr is launched. Hammr searches for this file in a sub-directory named .hammr located in the home directory of the user launching hammr.
+
+#	vi /home/user/credentials/credentials.json
+{
+  "user" : "login",
+  "password" : "password",
+  "url" : "https://uforge.usharesoft.com/api",
+  "acceptAutoSigned": false
+}
+
+#	sudo docker run -v /home/user/credentials:/root/.hammr usharesoft/hammr hammr COMMAND
