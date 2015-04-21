@@ -6,7 +6,7 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="0.2.4.1"
+VERSION="0.2.4.2"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
@@ -19,7 +19,7 @@ FOLDER_CONFIGS = "config";
 FOLDER_DEPLOYMENT_SCENARIO = "deploymentScenario";
 FOLDER_LOGO = "logo";
 
-URI_SCAN_BINARY="/uforge-scan.bin"
+URI_SCAN_BINARY="/resources/uforge-scan.bin"
 SCAN_BINARY_NAME="uforge-scan.bin"
 
 QUOTAS_SCAN="scan"

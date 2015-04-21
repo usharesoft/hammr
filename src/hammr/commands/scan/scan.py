@@ -77,10 +77,10 @@ class Scan(Cmd, HammrGlobal):
                 doParser = ArgumentParser(prog=self.cmd_name+" run", add_help = True, description="Executes a deep scan of a running system")
                 mandatory = doParser.add_argument_group("mandatory arguments")
                 mandatory.add_argument('--ip', dest='ip', required=True, help="the IP address or fully qualified hostname of the running system")
-                mandatory.add_argument('--login', dest='login', required=True, help="the root user name (normally root)")
+                mandatory.add_argument('--scan-login', dest='login', required=True, help="the root user name (normally root)")
                 mandatory.add_argument('--name', dest='name', required=True, help="the scan name to use when creating the scan meta-data")
                 optional = doParser.add_argument_group("optional arguments")
-                optional.add_argument('--password', dest='password', required=False, help="the root password to authenticate to the running system")
+                optional.add_argument('--scan-password', dest='password', required=False, help="the root password to authenticate to the running system")
                 optional.add_argument('--dir', dest='dir', required=False, help="the directory where to install the uforge-scan.bin binary used to execute the deep scan")
                 optional.add_argument('--exclude', dest='exclude', nargs='+', required=False, help="a list of directories or files to exclude during the deep scan")
                 return doParser
