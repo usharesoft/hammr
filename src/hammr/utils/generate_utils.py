@@ -9,7 +9,7 @@ import printer
 
 
 VIRTUAL_FORMATS = {'vcenter': 'vcenter','vmware ': 'vmware','ovf': 'ovf', 'kvm': 'kvm', 'vbox': 'vbox', 'raw': 'raw', 'hyper-v': 'hyper-v', 'qcow2': 'qcow2', 'xen': 'xen', 'vhd': 'vhd', 'vagrant': 'vagrant', 'citrix-xen': 'xenserver',};
-CLOUD_FORMATS = {'gce': 'google', 'vcd': 'vcloud', 'nimbula-esx': 'nimbulaesx', 'nimbula-kvm': 'nimbulakvm', 'susecloud': 'susecloud', 'openstack': 'openstack', 'eucalyptus-xen': 'emi-xen', 'eucalyptus-kvm': 'emi-kvm', 'flexiant-raw': 'flexiantraw', 'flexiant-ova': 'flexiantova', 'flexiant-kvm': 'flexiantkvm', 'cloudstack-qcow2': 'cloudcomqcow2', 'cloudstack-vhd': 'cloudcomvhd', 'cloudstack-ova': 'cloudcomova', 'abiquo': 'abiquo', 'azure': 'azure', 'ami': 'ami'};
+CLOUD_FORMATS = {'gce': 'google', 'vcd': 'vcloud', 'nimbula-esx': 'nimbulaesx', 'nimbula-kvm': 'nimbulakvm', 'susecloud': 'susecloud', 'openstack-qcow2': 'openstackqcow2', 'openstack-vhd': 'openstackqvhd', 'openstack-vmdk': 'openstackvmdk', 'openstack-vdi': 'openstackvdi', 'eucalyptus-xen': 'emi-xen', 'eucalyptus-kvm': 'emi-kvm', 'flexiant-raw': 'flexiantraw', 'flexiant-ova': 'flexiantova', 'flexiant-kvm': 'flexiantkvm', 'cloudstack-qcow2': 'cloudcomqcow2', 'cloudstack-vhd': 'cloudcomvhd', 'cloudstack-ova': 'cloudcomova', 'abiquo': 'abiquo', 'azure': 'azure', 'ami': 'ami'};
 PHYSICAL_FORMATS = {'iso': 'ISO'};
 
 
@@ -39,7 +39,22 @@ def generate_nimbula_esx(image, builder, installProfile, api, login):
 def generate_nimbula_kvm(image, builder, installProfile, api, login):
         return generate_nimbula(image, builder, installProfile, api, login)
     
-def generate_openstack(image, builder, installProfile, api, login):
+def generate_openstack_qcow2(image, builder, installProfile, api, login):
+        image.compress=False
+        myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+def generate_openstack_vhd(image, builder, installProfile, api, login):
+        image.compress=False
+        myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+def generate_openstack_vmdk(image, builder, installProfile, api, login):
+        image.compress=False
+        myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+def generate_openstack_vdi(image, builder, installProfile, api, login):
         image.compress=False
         myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
         return image,myimageFormat,installProfile

@@ -108,6 +108,18 @@ def publish_openstack(pimage, builder):
         #if "paraVirtualMode" in builder:
         #        pimage.credAccount. = True if (builder["paraVirtualMode"]=="true") else False
         return pimage
+
+def publish_openstack_qcow2(pimage, builder):
+        return publish_openstack(pimage, builder)
+
+def publish_openstack_vhd(pimage, builder):
+        return publish_openstack(pimage, builder)
+
+def publish_openstack_vmdk(pimage, builder):
+        return publish_openstack(pimage, builder)
+
+def publish_openstack_vdi(pimage, builder):
+        return publish_openstack(pimage, builder)
     
 
 def publish_ami(pimage, builder):
