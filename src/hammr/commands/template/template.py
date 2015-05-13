@@ -128,6 +128,9 @@ class Template(Cmd, HammrGlobal):
                 doParser = ArgumentParser(prog=self.cmd_name+" import", add_help = True, description="Creates a template from an archive")
                 mandatory = doParser.add_argument_group("mandatory arguments")
                 mandatory.add_argument('--file', dest='file', required=True, help="the path of the archive")
+                optional = doParser.add_argument_group("optional arguments")
+                optional.add_argument('-f', '--force', dest='force', action='store_true', help='force template creation (delete template/bundle if already exist)', required = False)
+                optional.set_defaults(force=False)
                 return doParser
                         
         def do_import(self, args):                
@@ -139,7 +142,7 @@ class Template(Cmd, HammrGlobal):
                         except SystemExit as e:
                                 return
                          #call UForge API
-                        return self.import_stack(doArgs.file, True, False)
+                        return self.import_stack(doArgs.file, True, doArgs.force)
                 except ArgumentParserError as e:
                         printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
                         self.help_import()
