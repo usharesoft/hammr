@@ -17,7 +17,7 @@ class Quota(Cmd, HammrGlobal):
                 super(Quota, self).__init__()
                 
         def arg_list(self):
-                doParser = ArgumentParser(prog=self.cmd_name+" list", add_help = True, description="Displays the user’s quota information")
+                doParser = ArgumentParser(prog=self.cmd_name+" list", add_help = True, description="Displays the user's quota information")
                 return doParser           
 
         def do_list(self, args):
