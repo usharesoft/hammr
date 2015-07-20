@@ -183,6 +183,10 @@ def print_uforge_exception(e):
                 printer.out(get_uforge_exception(e), printer.ERROR)
         else:
                 traceback.print_exc()
+
+def handle_uforge_exception(e):
+        print_uforge_exception(e)
+        return 1
                 
 def oder_list_object_by(objects, attribute):
         if type(attribute) is str:

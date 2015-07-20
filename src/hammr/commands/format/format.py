@@ -67,7 +67,7 @@ class Format(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_list(self):
                 doParser = self.arg_list()

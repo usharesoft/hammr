@@ -72,7 +72,7 @@ class Image(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_list(self):
                 doParser = self.arg_list()
@@ -158,7 +158,7 @@ class Image(Cmd, HammrGlobal):
                 except KeyboardInterrupt:
                         pass
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                         
                         
         def help_publish(self):
@@ -208,7 +208,7 @@ class Image(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_delete(self):
                 doParser = self.arg_delete()
@@ -261,7 +261,7 @@ class Image(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_cancel(self):
                 doParser = self.arg_cancel()
@@ -311,7 +311,7 @@ class Image(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_download()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_download(self):
                 doParser = self.arg_download()
