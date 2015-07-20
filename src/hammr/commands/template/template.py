@@ -60,7 +60,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_list(self):
                 doParser = self.arg_list()
@@ -117,7 +117,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_export()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
         
         def help_export(self):
                 doParser = self.arg_export()
@@ -149,7 +149,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
                         self.help_import()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                         
                         
         def help_import(self):
@@ -297,7 +297,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("In Arguments: "+str(e), printer.ERROR)
                         self.help_create()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
             
         def help_create(self):
                 doParser = self.arg_create()
@@ -477,6 +477,8 @@ class Template(Cmd, HammrGlobal):
                                         elapse=0
                                 test.elapsed_sec=elapse
                                 test.add_error_info("Error", generics_utils.get_uforge_exception(e))
+                        else:
+                                return 1
                 finally:
                         if "doArgs" in locals() and doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                 if "myAppliance" in locals():
@@ -542,8 +544,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("File error: "+str(e), printer.ERROR)
                         return 2
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
-                        return 2
+                        return generics_utils.handle_uforge_exception(e)
                      
                         
         def arg_delete(self):
@@ -588,7 +589,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_delete(self):
                 doParser = self.arg_delete()
@@ -626,7 +627,7 @@ class Template(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_clone()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                         
                         
         def help_clone(self):

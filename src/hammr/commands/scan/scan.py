@@ -66,7 +66,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                         
                         
         def help_list(self):
@@ -159,7 +159,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_run()
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_run(self):
                 doParser = self.arg_run()
@@ -293,7 +293,7 @@ class Scan(Cmd, HammrGlobal):
                                 else:
                                         print "Exiting command"
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
            
         def help_build(self):
                 doParser = self.arg_build()
@@ -373,7 +373,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_import()
                 except Exception as e:
-                        print generics_utils.print_uforge_exception(e)        
+                        return generics_utils.handle_uforge_exception(e)
                         
         def help_import(self):
                 doParser = self.arg_import()
@@ -447,7 +447,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        print generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_delete(self):
                 doParser = self.arg_delete()

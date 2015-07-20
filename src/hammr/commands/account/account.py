@@ -39,7 +39,7 @@ class Account(Cmd, HammrGlobal):
                                         printer.out("Found "+str(len(accounts))+" accounts")
                                 return 0
                         except Exception as e:        
-                                generics_utils.print_uforge_exception(e)
+                                return generics_utils.handle_uforge_exception(e)
                                 
 
                     
@@ -106,7 +106,7 @@ class Account(Cmd, HammrGlobal):
                                                                     printer.out("Account create successfully for ["+account_type+"]", printer.OK)
                                             except Exception as e:
                                                     if generics_utils.is_uforge_exception(e):
-                                                            generics_utils.print_uforge_exception(e)
+                                                            return generics_utils.handle_uforge_exception(e)
                                                     else:
                                                             raise
                                                     
@@ -121,7 +121,7 @@ class Account(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_create()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                         
         def help_create(self):
                 doParser = self.arg_create()
@@ -168,7 +168,7 @@ class Account(Cmd, HammrGlobal):
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
                 except Exception as e:        
-                        generics_utils.print_uforge_exception(e)
+                        return generics_utils.handle_uforge_exception(e)
                     
         def help_delete(self):
                 doParser = self.arg_delete()
