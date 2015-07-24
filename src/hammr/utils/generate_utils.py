@@ -8,7 +8,7 @@ import printer
 
 
 
-VIRTUAL_FORMATS = {'vcenter': 'vcenter','vmware ': 'vmware','ovf': 'ovf', 'kvm': 'kvm', 'vbox': 'vbox', 'raw': 'raw', 'hyper-v': 'hyper-v', 'qcow2': 'qcow2', 'xen': 'xen', 'vhd': 'vhd', 'vagrant': 'vagrant', 'citrix-xen': 'xenserver',};
+VIRTUAL_FORMATS = {'vcenter': 'vcenter','vmware ': 'vmware','ovf': 'ovf', 'kvm': 'kvm', 'vbox': 'vbox', 'raw': 'raw', 'hyper-v': 'hyper-v', 'qcow2': 'qcow2', 'xen': 'xen', 'vhd': 'vhd', 'vagrant': 'vagrant', 'citrix-xen': 'xenserver', 'targz': 'targz', 'lxc': 'lxc'};
 CLOUD_FORMATS = {'gce': 'google', 'vcd': 'vcloud', 'nimbula-esx': 'nimbulaesx', 'nimbula-kvm': 'nimbulakvm', 'susecloud': 'susecloud', 'openstack-qcow2': 'openstackqcow2', 'openstack-vhd': 'openstackvhd', 'openstack-vmdk': 'openstackvmdk', 'openstack-vdi': 'openstackvdi', 'eucalyptus-xen': 'emi-xen', 'eucalyptus-kvm': 'emi-kvm', 'flexiant-raw': 'flexiantraw', 'flexiant-ova': 'flexiantova', 'flexiant-kvm': 'flexiantkvm', 'cloudstack-qcow2': 'cloudcomqcow2', 'cloudstack-vhd': 'cloudcomvhd', 'cloudstack-ova': 'cloudcomova', 'abiquo': 'abiquo', 'azure': 'azure', 'ami': 'ami'};
 PHYSICAL_FORMATS = {'iso': 'ISO'};
 
@@ -339,9 +339,19 @@ def generate_vcenter(image, builder, installProfile):
         image.compress=False
         myimageFormat = imageFormat(name=VIRTUAL_FORMATS[builder["type"]])
         return image,myimageFormat,installProfile 
-    
-    
-    
+
+def generate_targz(image, builder, installProfile):
+        image.compress=True
+        myimageFormat = imageFormat(name=VIRTUAL_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+def generate_lxc(image, builder, installProfile):
+        image.compress=True
+        myimageFormat = imageFormat(name=VIRTUAL_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+
+
 ##--------------------- Utils
 def get_memory_amount(builder, installProfile, is_mandatory):
         if "hardwareSettings" in builder and "memory" in builder["hardwareSettings"]:
