@@ -303,6 +303,12 @@ class Image(Cmd, HammrGlobal):
                                                 return                                        
                                         dlUtils.progress_finish()
                                         printer.out("Image downloaded", printer.OK)
+                                elif dlImage is None:
+                                        printer.out("Unable to find the image to download in your library", printer.ERROR)
+                                elif not dlImage.status.complete:
+                                        printer.out("The image is being generated. Unable to download. Please retry later", printer.ERROR)
+                                elif not dlImage.compress:
+                                        printer.out("The image has been prepared to be published (not compressed). Cannot download.", printer.ERROR)
                                 else:
                                         printer.out("Cannot download this image", printer.ERROR)
                         
