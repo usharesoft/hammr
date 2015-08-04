@@ -186,7 +186,7 @@ def print_uforge_exception(e):
 
 def handle_uforge_exception(e):
         print_uforge_exception(e)
-        return 1
+        return 2
                 
 def oder_list_object_by(objects, attribute):
         if type(attribute) is str:
