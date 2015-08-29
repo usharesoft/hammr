@@ -19,10 +19,18 @@ import httplib2
 import os
 import json
 import sys
+import pkg_resources
+
+try:
+	pkg_resources.require("uforge_python_sdk>=3.5.1.2")
+except Exception as e:
+	print e
+	exit(10)
 
 from lib.cmdHamr import Cmd, CmdUtils
 from lib.argumentParser import HammrArgumentParser, ArgumentParser, ArgumentParserError
 import commands as cmds
+
 from uforge.application import Api
 from utils import printer
 from utils import generics_utils
