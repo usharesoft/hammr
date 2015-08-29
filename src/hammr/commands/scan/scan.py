@@ -9,7 +9,6 @@ import getpass
 import sys
 import time
 
-from texttable import Texttable
 from hammr.lib.argumentParser import ArgumentParser, ArgumentParserError
 from hammr.lib.cmdHamr import Cmd, HammrGlobal
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
@@ -19,60 +18,39 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
 from hammr.utils import *
 from uforge.objects.xsd0 import *
 
-
-
 class Scan(Cmd, HammrGlobal):
         """List or delete existing scan images, build an image from a scan, launch the scan of a live system, or import a scan as an image"""
-    
+
         cmd_name="scan"
-    
+
         def __init__(self):
                 super(Scan, self).__init__()
-                
-        
+
         def arg_list(self):
                 doParser = ArgumentParser(prog=self.cmd_name+" list", add_help = True, description="Displays all the scans for the user")
                 return doParser        
-                
-                
+
         def do_list(self, args):
                 try:                        
                         #call UForge API
                         printer.out("Getting scans for ["+self.login+"] ...")
-                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(None, Includescans="true")
                         if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
                                 printer.out("No scans available")
                                 return
-                        else:
-                                table = Texttable(800)
-                                table.set_cols_dtype(["t","t","t","t"])
-                                table.header(["Id", "Name", "Status", "Distribution"])
-                                myScannedInstances = generics_utils.oder_list_object_by(myScannedInstances.get_scannedInstance(), "name")
-                                for myScannedInstance in myScannedInstances:
-                                            table.add_row([myScannedInstance.dbId, myScannedInstance.name, "", myScannedInstance.distribution.name + " "+ myScannedInstance.distribution.version + " " + myScannedInstance.distribution.arch])
-                                            scans = generics_utils.oder_list_object_by(myScannedInstance.get_scans().get_scan(), "name")
-                                            for scan in scans:
-                                                        if (scan.status.complete and not scan.status.error and not scan.status.cancelled):
-                                                                status = "Done"
-                                                        elif(not scan.status.complete and not scan.status.error and not scan.status.cancelled):
-                                                                status = str(scan.status.percentage)+"%"
-                                                        else:
-                                                                status = "Error"
-                                                        table.add_row([scan.dbId, "\t"+scan.name, status, "" ])
-                                                        
-                                print table.draw() + "\n"
-                                printer.out("Found "+str(len(myScannedInstances))+" scans")
+                        myScannedInstances = generics_utils.oder_list_object_by(myScannedInstances.get_scannedInstance(), "name")
+                        print scan_utils.scan_table(myScannedInstances).draw() + "\n"
+                        printer.out("Found "+str(len(myScannedInstances))+" scans")
                 except ArgumentParserError as e:
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_list()
                 except Exception as e:        
                         return generics_utils.handle_uforge_exception(e)
-                        
-                        
+
         def help_list(self):
                 doParser = self.arg_list()
                 doParser.print_help()
-                
+
         def arg_run(self):
                 doParser = ArgumentParser(prog=self.cmd_name+" run", add_help = True, description="Executes a deep scan of a running system")
                 mandatory = doParser.add_argument_group("mandatory arguments")
@@ -378,14 +356,16 @@ class Scan(Cmd, HammrGlobal):
         def help_import(self):
                 doParser = self.arg_import()
                 doParser.print_help()
-                
-                
+
         def arg_delete(self):
                 doParser = ArgumentParser(prog=self.cmd_name+" delete", add_help = True, description="Deletes an existing scan")
                 mandatory = doParser.add_argument_group("mandatory arguments")
                 mandatory.add_argument('--id', dest='id', required=True, help="the ID of the scan to delete")
-                return doParser        
-                
+                optional = doParser.add_argument_group("optional arguments")
+                optional.add_argument('--scantype', dest='scantype', required=False, help="the scan type, values in [instance|scan|all] (default is scan)")
+                optional.add_argument('--scansonly', dest='scansonly', required=False, action='store_true', help="if scan type is instance, remove only all scans not the instance itself")
+                return doParser
+
         def do_delete(self, args):
                 try:
                         doParser = self.arg_delete()
@@ -394,55 +374,60 @@ class Scan(Cmd, HammrGlobal):
                         except SystemExit as e:
                                 return
                         #call UForge API
-                        printer.out("Searching scan with id ["+doArgs.id+"] ...")
-                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
-                        if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
-                                printer.out("No scan found")
+                        searchedScanType = 'scan'
+                        extraInfo = "Retrieving scan with id ["+doArgs.id+"] ..."
+                        if doArgs.scantype:
+                                if doArgs.scantype != 'scan' and doArgs.scantype != 'instance' and doArgs.scantype != 'all':
+                                        printer.out("ERROR: scantype can only be 'scan', 'instance' or 'all' not: '"+doArgs.scantype+"'", printer.ERROR)
+                                        return
+                                searchedScanType = doArgs.scantype
+                        if searchedScanType != 'instance' and doArgs.scansonly:
+                                printer.out("ERROR: 'scansonly' can only be used with 'instance' scantype but not with '"+searchedScanType+"'", printer.ERROR)
                                 return
-                        else:    
-                                object_=None
-                                for myScannedInstance in myScannedInstances.get_scannedInstance():                                        
-                                        if str(myScannedInstance.dbId)==doArgs.id:
-                                                object_=myScannedInstance
-                                                break
-                                        if object_ is not None:
-                                                break
-                                        else:
-                                                for scan in myScannedInstance.scans.scan:
-                                                        if str(scan.dbId) == doArgs.id:
-                                                                object_=scan
-                                                                id_=myScannedInstance.dbId
-                                                                break
-                        
-                        
-                        if object_ is None:
-                                printer.out("Scan not found", printer.ERROR)
+                        if searchedScanType == 'instance':
+                                extraInfo = "Retrieving scan instance with id ["+doArgs.id+"] ..."
                         else:
-                                table = Texttable(800)
-                                table.set_cols_dtype(["t","t","t","t"])
-                                table.header(["Id", "Name", "Status", "Distribution"])
-                                
-                                if type(object_)is scannedInstance:
-                                        table.add_row([object_.dbId, object_.name, "", object_.distribution.name + " "+ object_.distribution.version + " " + object_.distribution.arch])
-                                        print table.draw() + "\n"
-                                        if generics_utils.query_yes_no("Do you really want to delete scan with id "+str(doArgs.id)):
-                                                printer.out("Please wait...")
-                                                self.api.Users(self.login).Scannedinstances(doArgs.id).Delete()
-                                                printer.out("Scan deleted", printer.OK)
-                                else:
-                                        if (object_.status.complete and not object_.status.error and not object_.status.cancelled):
-                                                status = "Done"
-                                        elif(not object_.status.complete and not object_.status.error and not object_.status.cancelled):
-                                                status = str(object_.status.percentage)+"%"
+                                if searchedScanType == 'all':
+                                        extraInfo = 'Retrieving all scan instances and associated scans'
+                        printer.out(extraInfo)
+                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(None, Includescans="true")
+                        if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
+                                printer.out("Nothing found")
+                                return
+                        if searchedScanType == 'all':
+                                print scan_utils.scan_table(myScannedInstances.get_scannedInstance()).draw() + "\n"
+                                if generics_utils.query_yes_no("Do you really want to delete all scan instances"):
+                                        printer.out("Please wait...")
+                                        self.api.Users(self.login).Scannedinstances().Deleteall()
+                                        printer.out("All instances and scans deleted", printer.OK)
+                                return
+                        for myScannedInstance in myScannedInstances.get_scannedInstance():
+                                if searchedScanType == 'instance' and str(myScannedInstance.dbId)==doArgs.id:
+                                        print scan_utils.scan_table([myScannedInstance]).draw() + "\n"
+                                        if doArgs.scansonly:
+                                                extraInfo = "Do you really want to delete all scans in instance with id "+str(doArgs.id)
                                         else:
-                                                status = "Error"
-                                        table.add_row([object_.dbId, "\t"+object_.name, status, "" ])
-                                        print table.draw() + "\n"
-                                        if generics_utils.query_yes_no("Do you really want to delete scan with id "+str(doArgs.id)):
+                                                extraInfo = "Do you really want to delete scan instance with id "+str(doArgs.id)+" and all associated scans"
+                                        if generics_utils.query_yes_no(extraInfo):
                                                 printer.out("Please wait...")
-                                                self.api.Users(self.login).Scannedinstances(id_).Scans(doArgs.id).Delete()
-                                                printer.out("Scan deleted", printer.OK)
-                         
+                                                if doArgs.scansonly:
+                                                        self.api.Users(self.login).Scannedinstances(doArgs.id).Scans().Deleteall()
+                                                        printer.out("Instance scans deleted", printer.OK)
+                                                else:
+                                                        self.api.Users(self.login).Scannedinstances(doArgs.id).Delete()
+                                                        printer.out("Instance deleted", printer.OK)
+                                                return
+                                        return
+                                if searchedScanType == 'scan':
+                                        for scan in myScannedInstance.scans.scan:
+                                                if str(scan.dbId) == doArgs.id:
+                                                        print scan_utils.scan_table([myScannedInstance], scan).draw() + "\n"
+                                                        if generics_utils.query_yes_no("Do you really want to delete scan with id "+str(doArgs.id)):
+                                                                printer.out("Please wait...")
+                                                                self.api.Users(self.login).Scannedinstances(myScannedInstance.dbId).Scans(doArgs.id).Delete()
+                                                                printer.out("Scan deleted", printer.OK)
+                                                        return
+                        printer.out("Scan not found", printer.ERROR)
                 except ArgumentParserError as e:
                         printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
                         self.help_delete()
@@ -452,8 +437,7 @@ class Scan(Cmd, HammrGlobal):
         def help_delete(self):
                 doParser = self.arg_delete()
                 doParser.print_help()
-        
-                
+
         def deploy_and_launch_agent(self, uforge_login, uforge_password, args, file_src_path, uforge_url):
                 hostname= args.ip
                 username= args.login
