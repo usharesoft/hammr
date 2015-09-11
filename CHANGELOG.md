@@ -1,9 +1,9 @@
-0.2.5.5 (2015-08-04)
+0.2.5.6 (2015-08-29)
 ============================================
 
 Evolutions:
 * Add support for lxc and targz for Hammr
 
 Bugfixes:
-* Fix issue #34 - Exit status of Hammr command
-* Enhance the error message if an issue occurs when trying to download a machine image
+* Fix issue #38 - Could be nice to have a way to specify credentials file from command line
+* Fix issue #31 - "hammr scan delete" deletes every scan if scan id and scan instance id is the same.

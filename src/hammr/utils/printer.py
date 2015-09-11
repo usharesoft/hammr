@@ -4,19 +4,23 @@
 
 __author__="UShareSoft"
 
-from termcolor import colored,cprint
-
+from termcolor import cprint
 
 WARNING="WARNING"
 ERROR="ERROR"
+INFO="INFO"
 OK="OK"
 
-def out(text, state=""):
-        if state==WARNING:
-                cprint(WARNING+": ","yellow", attrs=['bold'], end=text+"\n")
-        elif state==ERROR:
-                cprint(ERROR+": ","red", attrs=['bold'], end=text+"\n")
-        elif state==OK:
-                cprint(OK+": ","green", attrs=['bold'], end=text+"\n")
-        else:
-                print(text)
+def out(text, state="", exitCode=None):
+    if state==WARNING:
+        cprint(WARNING+": ","yellow", attrs=['bold'], end=text+"\n")
+    elif state==ERROR:
+        cprint(ERROR+": ","red", attrs=['bold'], end=text+"\n")
+    elif state==INFO:
+        cprint(INFO+": ","blue", attrs=['bold'], end=text+"\n")
+    elif state==OK:
+        cprint(OK+": ","green", attrs=['bold'], end=text+"\n")
+    else:
+        print(text)
+    if exitCode:
+        exit(exitCode)
