@@ -109,6 +109,10 @@ class Template(Cmd, HammrGlobal):
                                                 file = open(doArgs.file, "w")
                                         file.write(data)
                                         file.close()
+
+                                        #Delete export archive on the server
+                                        self.api.Users(self.login).Appliances(myAppliance.dbId).Exports(applianceExport.dbId).Delete()
+
                                         printer.out("Download complete of file ["+file.name+"]", printer.OK)
                         return 0
                 except IOError as e:
