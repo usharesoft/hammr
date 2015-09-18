@@ -48,19 +48,19 @@ def get_image_id(image, name):
         return id
 
 class TestCLI(unittest.TestCase):
-    
+
         client = httplib2.Http()
         headers = {}
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-    
+
         def test_01_help_list(self):
                 image = hammr.commands.image.Image()
 		image.set_globals(api, login, password)
                 r = image.help_list()
                 self.assertEqual(r, None)
-         
+
 
 class TestTemplate(unittest.TestCase):
 
@@ -81,13 +81,13 @@ class TestTemplate(unittest.TestCase):
                 template.set_globals(api, login, password)
                 r = template.do_validate("--file data/template.json")
                 self.assertEqual(r, 0)
-                
+
         def test_03_delete(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
                 id = get_template_id(template, "unittest")
                 if id is not None and id !="":
-                        r = template.do_delete("--id "+id+" --no-confirm")                
+                        r = template.do_delete("--id "+id+" --no-confirm")
                         self.assertEqual(r, 0)
                 else:
                         raise unittest.SkipTest("No template to delete")
@@ -97,9 +97,9 @@ class TestTemplate(unittest.TestCase):
                 template.set_globals(api, login, password)
                 r = template.do_create("--file data/template.json")
                 self.assertNotEqual(r, None)
-                
+
         def test_05_build(self):
-                template = hammr.commands.template.Template()                
+                template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
                 r = template.do_build("--file data/template.json")
                 self.assertEqual(r, 0)
@@ -110,7 +110,7 @@ class TestTemplate(unittest.TestCase):
                 id = get_template_id(template, "unittest")
                 r = template.do_export("--id "+id)
                 self.assertEqual(r, 0)
-                
+
         def test_07_import(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
@@ -137,8 +137,8 @@ class TestTemplate(unittest.TestCase):
 
 
 
-                
-                
+
+
 class TestOs(unittest.TestCase):
 
         client = httplib2.Http()
@@ -146,12 +146,12 @@ class TestOs(unittest.TestCase):
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-                
+
         def test_01_list(self):
                 os_ = hammr.commands.os.Os()
                 os_.set_globals(api, login, password)
                 r = os_.do_list(None)
-                self.assertEqual(r, 0)        
+                self.assertEqual(r, 0)
 
 
 class TestQuota(unittest.TestCase):
@@ -161,29 +161,29 @@ class TestQuota(unittest.TestCase):
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-                
+
         def test_01_list(self):
                 quota = hammr.commands.quota.Quota()
                 quota.set_globals(api, login, password)
                 r = quota.do_list(None)
                 self.assertEqual(r, 0)
-                
-                
-                
+
+
+
 class TestUser(unittest.TestCase):
-    
+
         client = httplib2.Http()
         headers = {}
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-                
+
         def test_01_info(self):
                 user = hammr.commands.user.User()
                 user.set_globals(api, login, password)
                 r = user.do_info(None)
-                self.assertEqual(r, 0) 
-                
+                self.assertEqual(r, 0)
+
                 
                 
 class TestAccount(unittest.TestCase):
@@ -209,8 +209,7 @@ class TestAccount(unittest.TestCase):
                         self.assertEqual(r, 0)
                 else:
                         raise unittest.SkipTest("No account to delete")
-                
-                
+
         def test_02_delete_account_2(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
@@ -220,14 +219,22 @@ class TestAccount(unittest.TestCase):
                         self.assertEqual(r, 0)
                 else:
                         raise unittest.SkipTest("No account to delete")
-                
-                
+
         def test_03_create(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
                 r = account.do_create("--file data/create-account.json")
                 self.assertEqual(r, 0)
-                
+
+        # This test is disable for the moment
+        # def test_04_japanese_char(self):
+        #         # ref issue #35
+        #         account = hammr.commands.account.Account()
+        #         account.set_globals(api, login, password)
+        #         r = account.do_create("--file data/create-account-japan-char.json")
+        #         self.assertEqual(r, 0)
+
+
 class TestFormat(unittest.TestCase):
 
         client = httplib2.Http()
@@ -235,13 +242,13 @@ class TestFormat(unittest.TestCase):
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-                
+
         def test_01_list(self):
                 format = hammr.commands.format.Format()
                 format.set_globals(api, login, password)
                 r = format.do_list(None)
                 self.assertEqual(r, 0)
-                
+
 class TestBundle(unittest.TestCase):
 
         client = httplib2.Http()
@@ -249,14 +256,14 @@ class TestBundle(unittest.TestCase):
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-                
+
         def test_01_list(self):
                 bundle = hammr.commands.bundle.Bundle()
                 bundle.set_globals(api, login, password)
                 r = bundle.do_list(None)
                 self.assertEqual(r, 0)
-                
-                
+
+
 class TestImage(unittest.TestCase):
 
         client = httplib2.Http()
@@ -264,7 +271,7 @@ class TestImage(unittest.TestCase):
         headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
         api = Api(url, client = client, headers = headers)
-     
+
         def test_01_list(self):
                 image = hammr.commands.image.Image()
                 image.set_globals(api, login, password)
