@@ -134,6 +134,7 @@ class Template(Cmd, HammrGlobal):
                 mandatory.add_argument('--file', dest='file', required=True, help="the path of the archive")
                 optional = doParser.add_argument_group("optional arguments")
                 optional.add_argument('-f', '--force', dest='force', action='store_true', help='force template creation (delete template/bundle if already exist)', required = False)
+                optional.add_argument('-r', '--rbundles', dest='rbundles', action='store_true', help='if a bundle already exists, use it in the new template. Warning: this option ignore the content of the bundle described in the template file', required = False)
                 optional.add_argument('--usemajor', dest='use_major', action='store_true', help='use distribution major version if exit', required = False)
                 optional.set_defaults(force=False)
                 optional.set_defaults(use_major=False)
@@ -148,7 +149,7 @@ class Template(Cmd, HammrGlobal):
                         except SystemExit as e:
                                 return
                          #call UForge API
-                        return self.import_stack(doArgs.file, True, doArgs.force, doArgs.use_major)
+                        return self.import_stack(doArgs.file, True, doArgs.force, doArgs.rbundles, doArgs.use_major)
                 except ArgumentParserError as e:
                         printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
                         self.help_import()
@@ -198,6 +199,7 @@ class Template(Cmd, HammrGlobal):
                 optional = doParser.add_argument_group("optional arguments")
                 optional.add_argument('--archive-path', dest='archive_path', required=False, help="path of where to store the archive of the created template. If provided hammr, creates an archive of the created template, equivalent to running template export")
                 optional.add_argument('-f', '--force', dest='force', action='store_true', help='force template creation (delete template/bundle if already exist)', required = False)
+                optional.add_argument('-r', '--rbundles', dest='rbundles', action='store_true', help='if a bundle already exists, use it in the new template. Warning: this option ignore the content of the bundle described in the template file', required = False)
                 optional.add_argument('--usemajor', dest='use_major', action='store_true', help='use distribution major version if exit', required = False)
                 optional.set_defaults(force=False)
                 optional.set_defaults(use_major=False)
@@ -286,7 +288,7 @@ class Template(Cmd, HammrGlobal):
                         tar.close()
                         
                         #arhive is created, doing import
-                        r = self.import_stack(tar_path, False, doArgs.force, doArgs.use_major)
+                        r = self.import_stack(tar_path, False, doArgs.force, doArgs.rbundles, doArgs.use_major)
                         if r != 0:
                                 return r
                         
@@ -500,7 +502,7 @@ class Template(Cmd, HammrGlobal):
                 
                 
                 
-        def import_stack(self, file, isImport, isForce, isUseMajor):
+        def import_stack(self, file, isImport, isForce, rbundles, isUseMajor):
                 try:
                         if isImport:
                                 printer.out("Importing template from ["+file+"] archive ...")
@@ -510,7 +512,7 @@ class Template(Cmd, HammrGlobal):
                                 else:
                                         printer.out("Creating template from ["+file+"] archive ...")
                         file = open(file, "r")
-                        applianceImport = self.api.Users(self.login).Imports.Import(None, None, "true" if isImport else "false", "true" if isForce else "false", Usemajor="true" if isUseMajor else "false")
+                        applianceImport = self.api.Users(self.login).Imports.Import(None, None, "true" if isImport else "false", "true" if isForce else "false", Reusebundles="true" if rbundles else "false", Usemajor="true" if isUseMajor else "false")
                         if applianceImport is None:
                                 if isImport:
                                         printer.out("error importing appliance", printer.ERROR)
