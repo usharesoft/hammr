@@ -4,8 +4,8 @@
 
 import ntpath
 
-from uforge.objects.xsd0 import *
-import printer
+from uforge.objects.uforge import *
+import ussclicore.utils.printer
 
 __author__="UShareSoft"
 
@@ -26,7 +26,7 @@ def openstack(myCredAccount, account):
         if not "name" in account:
                 printer.out("name for openstack account not found", printer.ERROR)
                 return
-        
+
         myCredAccount.type_ = "openstack"
         myCredAccount.login = account["username"]
         myCredAccount.password = account["password"]

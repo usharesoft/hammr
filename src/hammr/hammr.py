@@ -19,22 +19,16 @@ import httplib2
 import os
 import json
 import sys
-import pkg_resources
 
-try:
-	pkg_resources.require("uforge_python_sdk>=3.5.1.2")
-except Exception as e:
-	print e
-	exit(10)
 
-from lib.cmdHamr import Cmd, CmdUtils
-from lib.argumentParser import HammrArgumentParser, ArgumentParser, ArgumentParserError
-import commands as cmds
-
+from ussclicore.cmd import Cmd, CmdUtils
+from ussclicore.argumentParser import CoreArgumentParser, ArgumentParser, ArgumentParserError
+from ussclicore.utils import generics_utils
+from ussclicore.utils import printer
+import commands
 from uforge.application import Api
-from utils import printer
-from utils import generics_utils
-from utils import constants
+from utils import *
+
 
 __author__ = "UShareSoft"
 __license__ = "Apache License 2.0"
@@ -44,47 +38,47 @@ class CmdBuilder(object):
     def generateCommands(class_):
         # Create subCmds if not exist
         if not hasattr(class_, 'subCmds'):
-            class_.subCmds = {} 
-        # Add commands                
-        user = cmds.user.User()
+            class_.subCmds = {}
+            # Add commands
+        user = commands.user.User()
         class_.subCmds[user.cmd_name] = user
-        template = cmds.template.Template()
+        template = commands.template.Template()
         class_.subCmds[template.cmd_name] = template
-        _os = cmds.os.Os()
+        _os = commands.os.Os()
         class_.subCmds[_os.cmd_name] = _os
-        format = cmds.format.Format()
+        format = commands.format.Format()
         class_.subCmds[format.cmd_name] = format
-        image = cmds.image.Image()
+        image = commands.image.Image()
         class_.subCmds[image.cmd_name] = image
-        account = cmds.account.Account()
-        class_.subCmds[account.cmd_name] = account                
-        bundle = cmds.bundle.Bundle()
+        account = commands.account.Account()
+        class_.subCmds[account.cmd_name] = account
+        bundle = commands.bundle.Bundle()
         class_.subCmds[bundle.cmd_name] = bundle
-        scan = cmds.scan.Scan()
+        scan = commands.scan.Scan()
         class_.subCmds[scan.cmd_name] = scan
-        quota = cmds.quota.Quota()
+        quota = commands.quota.Quota()
         class_.subCmds[quota.cmd_name] = quota
 
 ## Main cmd
 class Hammr(Cmd):
-#    subCmds = {
-#        'tools': CmdUtils
-#    }
+    #    subCmds = {
+    #        'tools': CmdUtils
+    #    }
     def __init__(self):
         super(Hammr, self).__init__()
         self.prompt = 'hammr> '
 
     def do_exit(self, args):
-            return True
+        return True
 
     def do_quit(self, args):
-            return True
+        return True
 
     def arg_batch(self):
-            doParser = ArgumentParser("batch", add_help = True, description="Execute hammr batch command from a file (for scripting)")
-            mandatory = doParser.add_argument_group("mandatory arguments")
-            mandatory.add_argument('--file', dest='file', required=True, help="hammr batch file commands")
-            return doParser      
+        doParser = ArgumentParser("batch", add_help = True, description="Execute hammr batch command from a file (for scripting)")
+        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--file', dest='file', required=True, help="hammr batch file commands")
+        return doParser
 
     def do_batch(self, args):
         try:
@@ -93,7 +87,7 @@ class Hammr(Cmd):
                 doArgs = doParser.parse_args(args.split())
             except SystemExit as e:
                 return
-            with open(doArgs.file) as f:             
+            with open(doArgs.file) as f:
                 for line in f:
                     try:
                         self.run_commands_at_invocation([line])
@@ -116,25 +110,25 @@ class Hammr(Cmd):
             code = self.run_commands_at_invocation([str.join(' ', args)])
             sys.exit(code)
         else:
-            self._cmdloop() 
+            self._cmdloop()
 
 def generate_base_doc(app, hamm_help):
     myactions=[]
     cmds= sorted(app.subCmds)
     for cmd in cmds:
         myactions.append(argparse._StoreAction(
-         option_strings=[],
-         dest=str(cmd),
-         nargs=None,
-         const=None,
-         default=None,
-         type=str,
-         choices=None,
-         required=False,
-         help=str(app.subCmds[cmd].__doc__),
-         metavar=None))
+            option_strings=[],
+            dest=str(cmd),
+            nargs=None,
+            const=None,
+            default=None,
+            type=str,
+            choices=None,
+            required=False,
+            help=str(app.subCmds[cmd].__doc__),
+            metavar=None))
     return myactions
-    
+
 def set_globals_cmds(subCmds):
     for cmd in subCmds:
         if hasattr(subCmds[cmd], 'set_globals'):
@@ -147,10 +141,10 @@ def check_credfile(credfile):
         return credfile
     if not credfile.endswith(".json") and os.path.isfile(credfile + ".json"):
         return credfile + ".json"
-    if os.path.isfile(generics_utils.get_hammr_dir()+os.sep+credfile):
-        return generics_utils.get_hammr_dir()+os.sep+credfile
-    if not credfile.endswith(".json") and os.path.isfile(generics_utils.get_hammr_dir()+os.sep+credfile+".json"):
-        return generics_utils.get_hammr_dir()+os.sep+credfile+".json"
+    if os.path.isfile(hammr_utils.get_hammr_dir()+os.sep+credfile):
+        return hammr_utils.get_hammr_dir()+os.sep+credfile
+    if not credfile.endswith(".json") and os.path.isfile(hammr_utils.get_hammr_dir()+os.sep+credfile+".json"):
+        return hammr_utils.get_hammr_dir()+os.sep+credfile+".json"
     return None
 
 #Generate hammr base command + help base command
@@ -159,8 +153,8 @@ app = Hammr()
 myactions=generate_base_doc(app, hamm_help="")
 
 # Args parsing
-mainParser = HammrArgumentParser(add_help=False)
-HammrArgumentParser.hammr_actions=myactions
+mainParser = CoreArgumentParser(add_help=False)
+CoreArgumentParser.actions=myactions
 mainParser.add_argument('-a', '--url', dest='url', type=str, help='the UForge server URL endpoint to use', required = False)
 mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user name used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
@@ -229,7 +223,7 @@ else:
 #UForge API instanciation
 client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned, timeout=constants.HTTP_TIMEOUT)
 #activate http caching
-#client = httplib2.Http(generics_utils.get_hammr_dir()+os.sep+"cache")
+#client = httplib2.Http(hammr_utils.get_hammr_dir()+os.sep+"cache")
 headers = {}
 headers['Authorization'] = 'Basic ' + base64.encodestring( username + ':' + password )
 if generics_utils.is_superviser_mode(username):
