@@ -9,3 +9,4 @@ from user import *
 from bundle import *
 from scan import *
 from quota import *
+from platform import *

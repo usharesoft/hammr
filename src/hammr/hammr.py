@@ -58,6 +58,8 @@ class CmdBuilder(object):
         class_.subCmds[scan.cmd_name] = scan
         quota = commands.quota.Quota()
         class_.subCmds[quota.cmd_name] = quota
+        platform = commands.platform.Platform()
+        class_.subCmds[platform.cmd_name] = platform
 
 ## Main cmd
 class Hammr(Cmd):
