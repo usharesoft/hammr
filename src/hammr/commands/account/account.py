@@ -89,12 +89,18 @@ class Account(Cmd, CoreGlobal):
                         account_type = iterable["type"]
                     elif "account" in iterable:
                         account_type = iterable["account"]["type"]
-                    func = getattr(account_utils, generics_utils.remove_special_chars(account_type), None)
+
+                    targetPlatform = account_utils.get_target_platform_object(self.api, self.login, account_type)
+                    if targetPlatform is None:
+                        printer.out("Platform type unknown: "+account_type, printer.ERROR)
+                        return 2
+
+                    func = getattr(account_utils, generics_utils.remove_special_chars(targetPlatform.type), None)
                     if func:
                         if accounts_file_type == "builders" and "account" in iterable:
-                            myCredAccount = func(credAccount(), iterable["account"])
+                            myCredAccount = func(iterable["account"])
                         elif accounts_file_type == "accounts":
-                            myCredAccount = func(credAccount(), iterable)
+                            myCredAccount = func(iterable)
                         else:
                             pass
                             # DO NOTHING - no account in builder to create
@@ -102,8 +108,9 @@ class Account(Cmd, CoreGlobal):
                             # TODO
                             # the account type must be in the account part, if no builder part (independant file)
                         if myCredAccount is not None:
+                            myCredAccount = account_utils.assign_target_platform_account(myCredAccount, targetPlatform.name)
                             printer.out("Create account for '" + account_type + "'...")
-                            self.api.Users(self.login).Accounts.Create(body=myCredAccount)
+                            self.api.Users(self.login).Accounts.Create(body=myCredAccount, element_name="ns1:credAccount")
                             printer.out("Account create successfully for [" + account_type + "]", printer.OK)
                 return 0
 
