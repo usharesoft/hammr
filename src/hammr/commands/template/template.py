@@ -158,7 +158,7 @@ class Template(Cmd, CoreGlobal):
             printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
             self.help_import()
         except Exception as e:
-            return generics_utils.handle_uforge_exception(e)
+            return handle_uforge_exception(e)
 
 
     def help_import(self):
