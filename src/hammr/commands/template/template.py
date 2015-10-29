@@ -506,12 +506,16 @@ class Template(Cmd, CoreGlobal):
                 else:
                     printer.out("Creating template from ["+file+"] archive ...")
             file = open(file, "r")
-            appImport = applianceImport()
-            appImport.imported = isImport
-            appImport.forceRw = isForce
-            appImport.reuseBundles = rbundles
-            appImport.useMajor = isUseMajor
-            appImport = self.api.Users(self.login).Imports.Import(appImport)
+
+            # The following code could not be used for the moment
+            # appImport = applianceImport()
+            # appImport.imported = isImport
+            # appImport.forceRw = isForce
+            # appImport.reuseBundles = rbundles
+            # appImport.useMajor = isUseMajor
+            # appImport = self.api.Users(self.login).Imports.Import(appImport)
+
+            appImport = self.api.Users(self.login).Imports.Import(None, None, Imported=isImport, Force=isForce, Reusebundles=rbundles, Usemajor=isUseMajor)
             if appImport is None:
                 if isImport:
                     printer.out("error importing appliance", printer.ERROR)
