@@ -1,13 +1,10 @@
 from setuptools import setup,find_packages
 from hammr.utils.constants import *
-import os
-import sys
 
 
 # Declare your packages' dependencies here, for eg:
 requires=['uforge_python_sdk>=3.6',
                     'httplib2==0.9',
-                    'cmd2==0.6.7',                    
                     'texttable==0.8.1',
                     'progressbar==2.3',
                     'argparse',
@@ -18,18 +15,9 @@ requires=['uforge_python_sdk>=3.6',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
                     'ussclicore']
-                    
-if os.name != "nt":
-	if not "linux" in sys.platform:
-		#mac os
-	        requires.append('readline')
-else:   #On Windows
-        requires.append('pyreadline==2.0')
-    
-                    
+
 setup (  
 
-  
   install_requires=requires,
   
   # Fill in these to make your Egg ready for upload to
