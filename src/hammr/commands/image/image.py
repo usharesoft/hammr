@@ -14,7 +14,6 @@
 #    under the License.
 
 import time
-import urllib
 from hurry.filesize import size
 
 from texttable import Texttable
@@ -315,13 +314,11 @@ class Image(Cmd, CoreGlobal):
                         dlImage=image
                 if dlImage is not None and dlImage.status.complete and not dlImage.status.error and dlImage.compress:
                     download_url = self.api._url+"/"+dlImage.downloadUri
-                    dlUtils = download_utils.Download()
+                    dlUtils = download_utils.Download(download_url, doArgs.file)
                     try:
-                        urllib.urlretrieve(download_url, filename=doArgs.file, reporthook=dlUtils.progress_update)
+                        dlUtils.start()
                     except Exception, e:
-                        printer.out("downloading "+download_url+": "+ str(e), printer.ERROR)
                         return
-                    dlUtils.progress_finish()
                     printer.out("Image downloaded", printer.OK)
                 elif dlImage is None:
                     printer.out("Unable to find the image to download in your library", printer.ERROR)

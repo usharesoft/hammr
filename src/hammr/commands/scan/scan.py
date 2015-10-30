@@ -27,7 +27,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
     SimpleProgress, Timer
-from ussclicore.utils import generics_utils, printer, progressbar_widget
+from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
@@ -102,10 +102,12 @@ class Scan(Cmd, CoreGlobal):
                 shutil.rmtree(constants.TMP_WORKING_DIR)
             os.mkdir(constants.TMP_WORKING_DIR)
             local_uforge_scan_path = constants.TMP_WORKING_DIR + os.sep + constants.SCAN_BINARY_NAME
+
+            dlUtils = download_utils.Download(download_url, local_uforge_scan_path)
             try:
-                urllib.urlretrieve(download_url, filename=local_uforge_scan_path)
+                dlUtils.start()
             except Exception, e:
-                printer.out("error downloading " + download_url + ": " + e, printer.ERROR)
+                return 2
 
             r_code = self.deploy_and_launch_agent(self.login, self.password, doArgs, local_uforge_scan_path,
                                                   self.api._url)
