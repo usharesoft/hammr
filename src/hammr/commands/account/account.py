@@ -86,7 +86,7 @@ class Account(Cmd, CoreGlobal):
                 return 2
             if "builders" in data:
                 accounts_file_type = "builders"
-                iterables = generics_utils.check_mandatory_create_account(data["builders"], accounts_file_type)
+                iterables = check_mandatory_create_account(data["builders"], accounts_file_type)
             elif "accounts" in data:
                 accounts_file_type = "accounts"
                 iterables = check_mandatory_create_account(data["accounts"], accounts_file_type)
