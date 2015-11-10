@@ -98,10 +98,10 @@ class Account(Cmd, CoreGlobal):
             try:
                 for iterable in iterables:
                     myCredAccount = None
-                    if "type" in iterable:
-                        account_type = iterable["type"]
-                    elif "account" in iterable:
+                    if "account" in iterable:
                         account_type = iterable["account"]["type"]
+                    elif "type" in iterable:
+                        account_type = iterable["type"]
 
                     targetPlatform = account_utils.get_target_platform_object(self.api, self.login, account_type)
                     if targetPlatform is None:

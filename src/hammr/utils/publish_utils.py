@@ -126,19 +126,19 @@ def publish_openstack(pimage, builder):
     return pimage
 
 
-def publish_openstack_qcow2(pimage, builder):
+def publish_openstackqcow2(pimage, builder):
     return publish_openstack(pimage, builder)
 
 
-def publish_openstack_vhd(pimage, builder):
+def publish_openstackvhd(pimage, builder):
     return publish_openstack(pimage, builder)
 
 
-def publish_openstack_vmdk(pimage, builder):
+def publish_openstackvmdk(pimage, builder):
     return publish_openstack(pimage, builder)
 
 
-def publish_openstack_vdi(pimage, builder):
+def publish_openstackvdi(pimage, builder):
     return publish_openstack(pimage, builder)
 
 

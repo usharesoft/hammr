@@ -20,7 +20,7 @@ import ussclicore.utils.printer
 
 
 def openstack(account):
-    myCredAccount = OpenStack()
+    myCredAccount = CredAccountOpenStack()
     # doing field verification
     if not "username" in account:
         printer.out("username in openstack account not found", printer.ERROR)

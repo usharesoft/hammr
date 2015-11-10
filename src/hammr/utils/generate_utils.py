@@ -38,30 +38,30 @@ def generate_nimbula(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_nimbula_esx(image, builder, installProfile, api, login):
+def generate_nimbulaesx(image, builder, installProfile, api, login):
     return generate_nimbula(image, builder, installProfile, api, login)
 
 
-def generate_nimbula_kvm(image, builder, installProfile, api, login):
+def generate_nimbulakvm(image, builder, installProfile, api, login):
     return generate_nimbula(image, builder, installProfile, api, login)
 
 
-def generate_openstack_qcow2(image, builder, installProfile, api, login):
+def generate_openstackqcow2(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
 
-def generate_openstack_vhd(image, builder, installProfile, api, login):
+def generate_openstackvhd(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
 
-def generate_openstack_vmdk(image, builder, installProfile, api, login):
+def generate_openstackvmdk(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
 
-def generate_openstack_vdi(image, builder, installProfile, api, login):
+def generate_openstackvdi(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
@@ -102,11 +102,11 @@ def generate_eucalyptus(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_eucalyptus_xen(image, builder, installProfile, api, login):
+def generate_eucalyptusxen(image, builder, installProfile, api, login):
     return generate_eucalyptus(image, builder, installProfile, api, login)
 
 
-def generate_eucalyptus_kvm(image, builder, installProfile, api, login):
+def generate_eucalyptuskvm(image, builder, installProfile, api, login):
     return generate_eucalyptus(image, builder, installProfile, api, login)
 
 
@@ -117,19 +117,19 @@ def generate_flexiant(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_flexiant_raw(image, builder, installProfile, api, login):
+def generate_flexiantraw(image, builder, installProfile, api, login):
     return generate_flexiant(image, builder, installProfile, api, login)
 
 
-def generate_flexiant_ova(image, builder, installProfile, api, login):
+def generate_flexiantova(image, builder, installProfile, api, login):
     return generate_flexiant(image, builder, installProfile, api, login)
 
 
-def generate_flexiant_kvm(image, builder, installProfile, api, login):
+def generate_flexiantkvm(image, builder, installProfile, api, login):
     return generate_flexiant(image, builder, installProfile, api, login)
 
 
-def generate_cloudstack_qcow2(image, builder, installProfile, api, login):
+def generate_cloudstackqcow2(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
@@ -137,7 +137,7 @@ def generate_cloudstack_qcow2(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_cloudstack_vhd(image, builder, installProfile, api, login):
+def generate_cloudstackvhd(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
@@ -145,7 +145,7 @@ def generate_cloudstack_vhd(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_cloudstack_ova(image, builder, installProfile, api, login):
+def generate_cloudstackova(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
@@ -318,7 +318,7 @@ def generate_vagrant(image, builder, installProfile, api=None, login=None):
     return image, installProfile
 
 
-def generate_citrix_xen(image, builder, installProfile, api=None, login=None):
+def generate_citrixxen(image, builder, installProfile, api=None, login=None):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
