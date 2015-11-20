@@ -20,7 +20,7 @@ from hammr.utils.constants import *
 # Declare your packages' dependencies here, for eg:
 requires=['uforge_python_sdk>=3.6',
                     'httplib2==0.9',
-                    'texttable==0.8.1',
+                    'texttable>=0.8.1',
                     'progressbar==2.3',
                     'argparse',
                     'paramiko==1.12',
