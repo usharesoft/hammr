@@ -10,7 +10,7 @@ VERSION="0.2.5.7"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
-HTTP_TIMEOUT=10
+HTTP_TIMEOUT=30
 
 TEMPLATE_JSON_FILE_NAME="template.json"
 TEMPLATE_JSON_NEW_FILE_NAME="template.json"
