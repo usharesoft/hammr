@@ -8,7 +8,7 @@ import sys
 requires=['uforge_python_sdk>=3.5.1.3, <3.6',
                     'httplib2==0.9',
                     'cmd2==0.6.7',                    
-                    'texttable==0.8.1',
+                    'texttable>=0.8.1',
                     'progressbar==2.3',
                     'argparse',
                     'paramiko==1.12',
