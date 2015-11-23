@@ -72,7 +72,7 @@ class TestCLI(unittest.TestCase):
 
         def test_01_help_list(self):
                 image = hammr.commands.image.Image()
-		image.set_globals(api, login, password)
+                image.set_globals(api, login, password)
                 r = image.help_list()
                 self.assertEqual(r, None)
 
@@ -199,8 +199,7 @@ class TestUser(unittest.TestCase):
                 r = user.do_info(None)
                 self.assertEqual(r, 0)
 
-                
-                
+
 class TestAccount(unittest.TestCase):
 
         client = httplib2.Http()
@@ -235,19 +234,28 @@ class TestAccount(unittest.TestCase):
                 else:
                         raise unittest.SkipTest("No account to delete")
 
-        def test_03_create(self):
+        def test_03_delete_account_3(self):
+                account = hammr.commands.account.Account()
+                account.set_globals(api, login, password)
+                id = get_account_id(account, "unittest3")
+                if id is not None and id !="":
+                        r = account.do_delete("--id "+id+" --no-confirm")
+                        self.assertEqual(r, 0)
+                else:
+                        raise unittest.SkipTest("No account to delete")
+
+        def test_04_create(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
                 r = account.do_create("--file data/create-account.json")
                 self.assertEqual(r, 0)
 
-        # This test is disable for the moment
-        # def test_04_japanese_char(self):
-        #         # ref issue #35
-        #         account = hammr.commands.account.Account()
-        #         account.set_globals(api, login, password)
-        #         r = account.do_create("--file data/create-account-japan-char.json")
-        #         self.assertEqual(r, 0)
+        def test_05_japanese_char(self):
+                # ref issue #35
+                account = hammr.commands.account.Account()
+                account.set_globals(api, login, password)
+                r = account.do_create("--file data/create-account-japan-char.json")
+                self.assertEqual(r, 0)
 
 
 class TestFormat(unittest.TestCase):

@@ -1,7 +1,7 @@
 {
  "accounts" : [
  {
-  "type" : "openstack",
+  "type" : "OpenStack",
   "name": "これはhammrを使って作成したテンプレートです。",
   "endpoint": "http://127.0.0.1:9292/v1",
   "keystoneEndpoint": "http://127.0.0.1:5000/v2.0",

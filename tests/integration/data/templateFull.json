@@ -92,7 +92,7 @@
   },
   "builders" : [
    {
-        "type" : "kvm",
+        "type" : "KVM",
 	"hardwareSettings": {
                 "memory": 1024
             }
