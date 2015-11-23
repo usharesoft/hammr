@@ -298,8 +298,9 @@ class Template(Cmd, CoreGlobal):
                 tar_path = constants.TMP_WORKING_DIR+os.sep+"archive.tar.gz"
             tar = tarfile.open(tar_path, "w|gz")
             for file_tar_path,file_global_path in archive_files:
-                file = generics_utils.get_file(file_global_path)
+                file = generics_utils.get_file(file_global_path, constants.TMP_WORKING_DIR+os.sep+os.path.basename(file_global_path))
                 if file is None:
+                    printer.out("Downloaded bunlde file not found", printer.ERROR)
                     return 2
                 tar.add(file, arcname=file_tar_path)
             tar.close()
