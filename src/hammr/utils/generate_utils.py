@@ -9,7 +9,7 @@ import printer
 
 
 VIRTUAL_FORMATS = {'vcenter': 'vcenter','vmware ': 'vmware','ovf': 'ovf', 'kvm': 'kvm', 'vbox': 'vbox', 'raw': 'raw', 'hyper-v': 'hyper-v', 'qcow2': 'qcow2', 'xen': 'xen', 'vhd': 'vhd', 'vagrant': 'vagrant', 'citrix-xen': 'xenserver', 'targz': 'targz', 'lxc': 'lxc'};
-CLOUD_FORMATS = {'gce': 'google', 'vcd': 'vcloud', 'nimbula-esx': 'nimbulaesx', 'nimbula-kvm': 'nimbulakvm', 'susecloud': 'susecloud', 'openstack-qcow2': 'openstackqcow2', 'openstack-vhd': 'openstackvhd', 'openstack-vmdk': 'openstackvmdk', 'openstack-vdi': 'openstackvdi', 'eucalyptus-xen': 'emi-xen', 'eucalyptus-kvm': 'emi-kvm', 'flexiant-raw': 'flexiantraw', 'flexiant-ova': 'flexiantova', 'flexiant-kvm': 'flexiantkvm', 'cloudstack-qcow2': 'cloudcomqcow2', 'cloudstack-vhd': 'cloudcomvhd', 'cloudstack-ova': 'cloudcomova', 'abiquo': 'abiquo', 'azure': 'azure', 'ami': 'ami'};
+CLOUD_FORMATS = {'gce': 'google', 'vcd': 'vcloud', 'nimbula-esx': 'nimbulaesx', 'nimbula-kvm': 'nimbulakvm', 'susecloud': 'susecloud', 'openstack-qcow2': 'openstackqcow2', 'openstack-vhd': 'openstackvhd', 'openstack-vmdk': 'openstackvmdk', 'openstack-vdi': 'openstackvdi', 'eucalyptus-xen': 'emi-xen', 'eucalyptus-kvm': 'emi-kvm', 'flexiant-raw': 'flexiantraw', 'flexiant-ova': 'flexiantova', 'flexiant-kvm': 'flexiantkvm', 'cloudstack-qcow2': 'cloudcomqcow2', 'cloudstack-vhd': 'cloudcomvhd', 'cloudstack-ova': 'cloudcomova', 'abiquo': 'abiquo', 'azure': 'azure', 'ami': 'ami', 'outscale': 'outscale'};
 PHYSICAL_FORMATS = {'iso': 'ISO'};
 
 
@@ -204,6 +204,11 @@ def generate_ami(image, builder, installProfile, api, login):
 
 def generate_gce(image, builder, installProfile, api, login):
         image.compress=True
+        myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
+        return image,myimageFormat,installProfile
+
+def generate_outscale(image, builder, installProfile, api, login):
+        image.compress=False
         myimageFormat = imageFormat(name=CLOUD_FORMATS[builder["type"]])
         return image,myimageFormat,installProfile
                 

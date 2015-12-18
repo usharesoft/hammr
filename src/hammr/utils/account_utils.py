@@ -454,3 +454,21 @@ def gce(myCredAccount, account):
                 return
         
         return myCredAccount
+
+def outscale(myCredAccount, account):
+        #doing field verification
+        if not "name" in account:
+                printer.out("name for outscale account not found", printer.ERROR)
+                return
+        if not "accessKey" in account:
+                printer.out("accessKey in outscale account not found", printer.ERROR)
+                return
+        if not "secretAccessKey" in account:
+                printer.out("secretAccessKey in outscale account not found", printer.ERROR)
+                return
+
+        myCredAccount.type_ = "outscale"
+        myCredAccount.secretAccessKeyID = account["secretAccessKey"]
+        myCredAccount.accessKeyID = account["accessKey"]
+        myCredAccount.name = account["name"]
+        return myCredAccount
