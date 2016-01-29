@@ -98,7 +98,7 @@ class Scan(Cmd, HammrGlobal):
                         printer.out("Searching scan on uforge ...")
                         running=True
                         while running:
-                                myScannedInstance = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true", Name=doArgs.name)
+                                myScannedInstance = self.api.Users(self.login).Scannedinstances.Getall(None, Includescans="true", Name=doArgs.name)
                                 if myScannedInstance is None or not type(myScannedInstance) is scannedInstance:
                                         time.sleep(5)
                                 else:
@@ -174,7 +174,7 @@ class Scan(Cmd, HammrGlobal):
                         if builders is None:
                                 return
                         try:
-                                myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+                                myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(None, Includescans="true")
                                 if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
                                         printer.out("scan not found", printer.ERROR)
                                         return
@@ -297,7 +297,7 @@ class Scan(Cmd, HammrGlobal):
                                 return
                         
                         printer.out("Import scan id ["+doArgs.id+"] ...")
-                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+                        myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(None, Includescans="true")
                         if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
                                 printer.out("scan not found", printer.ERROR)
                                 return
