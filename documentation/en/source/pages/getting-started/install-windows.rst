@@ -32,7 +32,7 @@ Go to "My Computer > (right click) Properties > Advanced System Settings > Envir
 
 You will get this configuration window:
 
-.. image: /images/todo.jpg
+.. image:: /images/install-windows.png
 
 In ``System Variables``, search for the ``Path`` variable and click ``Edit``. Add the following at the end (replace ``C:\Python27`` with your Python installation path if it differs):
 
