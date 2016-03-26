@@ -13,10 +13,7 @@ The mandatory values when creating a template are:
 	* ``version``: the version of the template.
 	* ``os`` : the operating system details to use the in your images. You must include the OS family name, version and architecture type. For more information regarding OS and package parameters, see Adding OSes and Packages to Your Template
 	
-For more details about the various parameters you can set in your template to define the machine image you want to create, refer to the Templates section.
-
-.. image:: /todo/link
-
+For more details about the various parameters you can set in your template to define the machine image you want to create, refer to the :ref:`templates-spec` section.
 
 The following is an example of the minimum information needed in your configuration file to define a template. It includes the name, version, a few installation parameter and the OS. This example describes a CentOS 6.4 32-bit template.
 
