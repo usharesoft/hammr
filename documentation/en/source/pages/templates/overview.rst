@@ -17,3 +17,5 @@ You should refer to the section for all the possible parameters you can add to d
    template-add-pkgs
    pkgs-search
    pkgs-update
+   pkg-deps/overview
+   partitioning/overview

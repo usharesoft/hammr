@@ -85,7 +85,7 @@ In the example above, you will need to have a JSON file which defines the ``buil
 	}
 
 Updating a Template Before Migrating
-====================================
+------------------------------------
 
 Hammr also allows you to modify or update packages that are part of the system you want to migrate. To do this, you first need to transform the scan report to a template. You can then modify any part of this new template prior to building the final machine image used for migration.
 

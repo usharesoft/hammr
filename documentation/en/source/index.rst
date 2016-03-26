@@ -22,8 +22,6 @@ Contents:
    pages/templates/overview
    pages/machine-images/overview
    pages/importing/overview
-   pages/partitioning/overview
-   pages/pkg-deps/overview
 
    pages/templates-spec/overview
 
