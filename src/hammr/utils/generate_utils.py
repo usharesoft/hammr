@@ -318,7 +318,7 @@ def generate_vagrant(image, builder, installProfile, api=None, login=None):
     return image, installProfile
 
 
-def generate_citrixxen(image, builder, installProfile, api=None, login=None):
+def generate_xenserver(image, builder, installProfile, api=None, login=None):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
