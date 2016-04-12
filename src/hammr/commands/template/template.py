@@ -457,7 +457,7 @@ class Template(Cmd, CoreGlobal):
                             if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                 test=test_results[len(test_results)-1]
                                 test.elapsed_sec=time.time() - start_time
-                                test.add_error_info("Error", generics_utils.get_uforge_exception(e))
+                                test.add_error_info("Error", get_uforge_exception(e))
                         else:
                             raise
                 if doArgs.junit is not None:
@@ -490,7 +490,7 @@ class Template(Cmd, CoreGlobal):
                 else:
                     elapse=0
                 test.elapsed_sec=elapse
-                test.add_error_info("Error", generics_utils.get_uforge_exception(e))
+                test.add_error_info("Error", get_uforge_exception(e))
             else:
                 return 2
         finally:
