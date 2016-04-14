@@ -6,7 +6,9 @@ import json
 import sys
 import re
 import traceback
+from os.path import abspath
 from os.path import expanduser
+from os.path import isfile
 import os
 import urllib
 
@@ -226,7 +228,10 @@ def get_file(uri):
                         file, headers = urllib.urlretrieve(uri, reporthook=dlUtils.progress_update)
                         dlUtils.progress_finish()
                 else:
-                        file, headers = urllib.urlretrieve(uri)
+                        file = abspath(expanduser(uri))
+                        if not isfile(file):
+                                printer.out("No such file "+uri, printer.ERROR)
+                                file = None
                 return file
         except Exception, e:
                 print("error downloading "+uri+": "+ str(e))
