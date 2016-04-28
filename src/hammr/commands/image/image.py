@@ -388,7 +388,7 @@ class Image(Cmd, HammrGlobal):
                                 return 2
                         #Get all cloud account on the plateform (for the user)
                         accounts = self.api.Users(self.login).Accounts.Getall()
-                        if accounts is None or not accounts.get_credAccount():
+                        if accounts is None or not hasattr(accounts, 'get_credAccount'):
                                 printer.out("No accounts available on the plateform", printer.ERROR)
                                 return 2
                         else:
@@ -491,5 +491,4 @@ class Image(Cmd, HammrGlobal):
                                 if image.format.name == format:
                                         return builder
                 return None
-
         
