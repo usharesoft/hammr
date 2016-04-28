@@ -77,9 +77,8 @@
     ],
     "os" : {
       "name" : "CentOS",
-      "version" : "6",
+      "version" : "7",
       "arch" : "x86_64",
-      "updateTo" : "07-30-2014",
       "profile" : "Minimal",
       "pkgs" : [ {
         "name" : "iotop"
