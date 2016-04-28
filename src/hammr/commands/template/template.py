@@ -102,12 +102,11 @@ class Template(Cmd, HammrGlobal):
                                                 printer.out(status.detailedErrorMsg)
                                 else:
                                         printer.out("Downloading archive...")
-                                        data = self.api.Users(self.login).Appliances(myAppliance.dbId).Exports(applianceExport.dbId).Downloads.Download()
                                         if doArgs.file is None:
                                                 file = open("archive.tar.gz", "w")
                                         else:
                                                 file = open(doArgs.file, "w")
-                                        file.write(data)
+                                        self.api.Users(self.login).Appliances(myAppliance.dbId).Exports(applianceExport.dbId).Downloads.Download(streamingResponseFile=file)
                                         file.close()
 
                                         #Delete export archive on the server
