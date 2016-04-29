@@ -1,5 +1,3 @@
-import httplib2
-import base64
 import unittest
 import sys
 import os
@@ -49,12 +47,8 @@ def get_image_id(image, name):
 
 class TestCLI(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
-
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
         def test_01_help_list(self):
                 image = hammr.commands.image.Image()
 		image.set_globals(api, login, password)
@@ -64,11 +58,8 @@ class TestCLI(unittest.TestCase):
 
 class TestTemplate(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 template = hammr.commands.template.Template()
@@ -141,11 +132,8 @@ class TestTemplate(unittest.TestCase):
 
 class TestOs(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 os_ = hammr.commands.os.Os()
@@ -156,11 +144,8 @@ class TestOs(unittest.TestCase):
 
 class TestQuota(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 quota = hammr.commands.quota.Quota()
@@ -172,11 +157,8 @@ class TestQuota(unittest.TestCase):
 
 class TestUser(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_info(self):
                 user = hammr.commands.user.User()
@@ -188,11 +170,8 @@ class TestUser(unittest.TestCase):
                 
 class TestAccount(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
                 
         def test_01_list(self):
                 account = hammr.commands.account.Account()
@@ -237,11 +216,8 @@ class TestAccount(unittest.TestCase):
 
 class TestFormat(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 format = hammr.commands.format.Format()
@@ -251,11 +227,8 @@ class TestFormat(unittest.TestCase):
 
 class TestBundle(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 bundle = hammr.commands.bundle.Bundle()
@@ -266,11 +239,8 @@ class TestBundle(unittest.TestCase):
 
 class TestImage(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 image = hammr.commands.image.Image()
@@ -283,7 +253,7 @@ class TestImage(unittest.TestCase):
 
 if __name__ == '__main__':
         v=sys.version_info
-	if v>=(2,7):
+        if v>=(2,7):
                 import xmlrunner
                 unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
         else:

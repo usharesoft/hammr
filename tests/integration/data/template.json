@@ -9,7 +9,7 @@
     },
     "os" : {
       "name" : "CentOS",
-      "version" : "6.3",
+      "version" : "7",
       "arch" : "x86_64",
       "profile" : "Minimal"
     }
