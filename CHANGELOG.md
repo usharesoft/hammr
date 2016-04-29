@@ -1,3 +1,14 @@
+0.2.5.10 (2016-04-29)
+============================================
+Evolutions:
+* Added hammr documentation to the github project
+* Add support for uforge-python-sdk 3.5.1.4: ability to do streaming download
+
+Bug fixes:
+* 'hammr scan run' fails when searching scan on uforge
+* Using a relative path to the json file seems to invoke an error
+* hammr image publish returns exception if there is no cloud account
+
 0.2.5.9 (2015-12-18)
 ============================================
 Evolutions:
