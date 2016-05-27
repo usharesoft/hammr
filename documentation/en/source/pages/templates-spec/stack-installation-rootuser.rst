@@ -17,10 +17,11 @@ The definition of a rootUser section is:
 
 The valid keys to use within a rootUser are:
 
-* disablePasswordLogin (optional): a boolean to determine whether to disable the ability for the root user to login into a running instance using the root password.
-* password (optional): a string providing the root user password. A blank password "" is valid.
-* setPassword (mandatory): a boolean to determine whether to preset a password during the build or prompt the user to add a password during first boot of the instance.
-* sshKeys (optional): an array of objects providing one or more public ssh keys for the root user. For more information, refer to the :ref:`stack-installation-sshkeys` sub-section.
+* ``disablePasswordLogin`` (optional): a boolean to determine whether to disable the ability for the root user to login into a running instance using the root password.
+* ``password`` (optional): a string providing the root user password. A blank password "" is valid.
+* ``encrypted`` (optional): a boolean to determine whether password is encrypted or not. The default is false.
+* ``setPassword`` (mandatory): a boolean to determine whether to preset a password during the build or prompt the user to add a password during first boot of the instance.
+* ``sshKeys`` (optional): an array of objects providing one or more public ssh keys for the root user. For more information, refer to the :ref:`stack-installation-sshkeys` sub-section.
 
 Sub-sections
 ------------

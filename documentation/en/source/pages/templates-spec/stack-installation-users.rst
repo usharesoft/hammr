@@ -21,6 +21,7 @@ The valid keys to use within a user are:
 * ``homeDir`` (mandatory): a string providing the home directory of the user. Recommended default: ``/home/username`` where username is the same value as ``name``
 * ``name`` (mandatory): a string providing the name of the user. The name cannot contain any spaces.
 * ``password`` (optional): a string providing the user password.
+* ``encrypted`` (optional): a boolean to determine whether password is encrypted or not. The default is false.
 * ``primaryGroup`` (optional): a string providing the user’s primary group. If no primary group is given, then the primary group is the same as name.
 * ``shell`` (mandatory): a string providing the default shell environment for the user. Recommended default is ``/bin/bash``.
 * ``secondaryGroups`` (optional): a string providing one or more group names separated by a comma (,).
