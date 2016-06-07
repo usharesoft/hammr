@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright 2007-2016 UShareSoft SAS, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httplib2
-import base64
 import unittest
 import sys
 import os
@@ -64,11 +62,8 @@ def get_image_id(image, name):
 
 class TestCLI(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_help_list(self):
                 image = hammr.commands.image.Image()
@@ -79,11 +74,8 @@ class TestCLI(unittest.TestCase):
 
 class TestTemplate(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 template = hammr.commands.template.Template()
@@ -156,11 +148,8 @@ class TestTemplate(unittest.TestCase):
 
 class TestOs(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 os_ = hammr.commands.os.Os()
@@ -171,11 +160,8 @@ class TestOs(unittest.TestCase):
 
 class TestQuota(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 quota = hammr.commands.quota.Quota()
@@ -187,11 +173,8 @@ class TestQuota(unittest.TestCase):
 
 class TestUser(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_info(self):
                 user = hammr.commands.user.User()
@@ -202,11 +185,8 @@ class TestUser(unittest.TestCase):
 
 class TestAccount(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
                 
         def test_01_list(self):
                 account = hammr.commands.account.Account()
@@ -260,11 +240,8 @@ class TestAccount(unittest.TestCase):
 
 class TestFormat(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 format = hammr.commands.format.Format()
@@ -274,11 +251,8 @@ class TestFormat(unittest.TestCase):
 
 class TestBundle(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 bundle = hammr.commands.bundle.Bundle()
@@ -289,11 +263,8 @@ class TestBundle(unittest.TestCase):
 
 class TestImage(unittest.TestCase):
 
-        client = httplib2.Http()
-        headers = {}
-        headers['Authorization'] = 'Basic ' + base64.encodestring( login + ':' + password)
         global api
-        api = Api(url, client = client, headers = headers)
+        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
 
         def test_01_list(self):
                 image = hammr.commands.image.Image()

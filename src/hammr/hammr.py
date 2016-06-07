@@ -25,8 +25,6 @@ except ImportError:
 
 import argparse
 import getpass
-import base64
-import httplib2
 import os
 import json
 import sys
@@ -141,7 +139,7 @@ def generate_base_doc(app, hamm_help):
 def set_globals_cmds(subCmds):
     for cmd in subCmds:
         if hasattr(subCmds[cmd], 'set_globals'):
-            subCmds[cmd].set_globals(api, username, password)
+            subCmds[cmd].set_globals(api, login, password)
             if hasattr(subCmds[cmd], 'subCmds'):
                 set_globals_cmds(subCmds[cmd].subCmds)
 
@@ -230,14 +228,13 @@ else:
         printer.out("File error in credentials file: "+str(e), printer.ERROR, 1)
 
 #UForge API instanciation
-client = httplib2.Http(disable_ssl_certificate_validation=sslAutosigned, timeout=constants.HTTP_TIMEOUT)
-#activate http caching
-#client = httplib2.Http(hammr_utils.get_hammr_dir()+os.sep+"cache")
-headers = {}
-headers['Authorization'] = 'Basic ' + base64.encodestring( username + ':' + password )
+api = Api(url, username = username, password = password, headers = None, disable_ssl_certificate_validation = sslAutosigned, timeout = constants.HTTP_TIMEOUT)
+
 if generics_utils.is_superviser_mode(username):
-    username = generics_utils.get_target_username(username)
-api = Api(url, client = client, headers = headers)
+    login = generics_utils.get_target_username(username)
+else:
+    login = username
+
 set_globals_cmds(app.subCmds)
 
 if mainArgs.help and len(mainArgs.cmds)>=1:
