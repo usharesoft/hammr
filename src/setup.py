@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from setuptools import setup,find_packages
+from setuptools import setup,find_packages,Command
 from hammr.utils.constants import *
 
 
@@ -30,6 +30,16 @@ requires=['uforge_python_sdk>=3.6',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
                     'ussclicore']
+
+class CleanCommand(Command):
+    """Custom clean command to tidy up the project root."""
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def run(self):
+        os.system('rm -vrf ./build ./dist ./*.pyc ./*.egg-info | find -iname "*.pyc" -exec rm {} +')
 
 setup (  
 
@@ -61,7 +71,11 @@ setup (
         'Programming Language :: Python :: 2.7',
     ),
        
-  
+  # ... custom build command
+    cmdclass={
+        'clean': CleanCommand,
+    },
+
   #long_description= 'Long description of the package',
   scripts = ['bin/hammr', 'bin/hammr.bat'],
   
