@@ -16,33 +16,39 @@
 import ntpath
 
 from uforge.objects.uforge import *
-import ussclicore.utils.printer
+from ussclicore.utils import generics_utils, printer
+from pyxb.utils import domutils
+
 
 
 def openstack(account):
     myCredAccount = CredAccountOpenStack()
     # doing field verification
-    if not "username" in account:
-        printer.out("username in openstack account not found", printer.ERROR)
-        return
-    if not "password" in account:
-        printer.out("catalogName in openstack account not found", printer.ERROR)
-        return
-    if not "endpoint" in account:
-        printer.out("endpoint for openstack account not found", printer.ERROR)
-        return
-    if not "keystoneEndpoint" in account:
-        printer.out("keystoneEndpoint for openstack account not found", printer.ERROR)
-        return
     if not "name" in account:
         printer.out("name for openstack account not found", printer.ERROR)
         return
+    if not "glanceUrl" in account:
+        printer.out("glanceUrl for openstack account not found", printer.ERROR)
+        return
+    if not "keystoneUrl" in account:
+        printer.out("KeystoneUrl for openstack account not found", printer.ERROR)
+        return
+    if not "keystoneVersion" in account:
+        printer.out("keystoneVersion for openstack account not found", printer.ERROR)
+        return
+    if not "login" in account:
+        printer.out("login in openstack account not found", printer.ERROR)
+        return
+    if not "password" in account:
+        printer.out("password in openstack account not found", printer.ERROR)
+        return
 
-    myCredAccount.login = account["username"]
-    myCredAccount.password = account["password"]
-    myCredAccount.serverUrl = account["endpoint"]
-    myCredAccount.keystoneUrl = account["keystoneEndpoint"]
     myCredAccount.name = account["name"]
+    myCredAccount.glanceUrl = account["glanceUrl"]
+    myCredAccount.keystoneUrl = account["keystoneUrl"]
+    myCredAccount.keystoneVersion = account["keystoneVersion"]
+    myCredAccount.login = account["login"]
+    myCredAccount.password = account["password"]
     return myCredAccount
 
 
@@ -74,81 +80,75 @@ def susecloud(account):
 
 
 def cloudstack(account):
-    myCredAccount = CloudCom()
+    myCredAccount = CredAccountCloudStack()
     # doing field verification
-    if not "publicKey" in account:
-        printer.out("publicKey in cloudstack account not found", printer.ERROR)
-        return
-    if not "secretKey" in account:
-        printer.out("secretKey in cloudstack account not found", printer.ERROR)
-        return
-    if not "endpoint" in account:
-        printer.out("endpoint for cloudstack account not found", printer.ERROR)
-        return
     if not "name" in account:
         printer.out("name for cloudstack account not found", printer.ERROR)
         return
+    if not "publicApiKey" in account:
+        printer.out("publicApiKey in cloudstack account not found", printer.ERROR)
+        return
+    if not "secretApiKey" in account:
+        printer.out("secretApiKey in cloudstack account not found", printer.ERROR)
+        return
+    if not "endpointUrl" in account:
+        printer.out("endpointUrl for cloudstack account not found", printer.ERROR)
+        return
 
-    myCredAccount.publicAPIKey = account["publicKey"]
-    myCredAccount.secretAPIKey = account["secretKey"]
-    myCredAccount.serverUrl = account["endpoint"]
     myCredAccount.name = account["name"]
+    myCredAccount.publicApiKey = account["publicApiKey"]
+    myCredAccount.secretApiKey = account["secretApiKey"]
+    myCredAccount.endpointUrl = account["endpointUrl"]
     return myCredAccount
 
 
-def ami(account):
+def aws(account):
     myCredAccount = CredAccountAws()
     # doing field verification
-    if not "x509Cert" in account:
-        printer.out("x509Cert in ami account not found", printer.ERROR)
-        return
-    if not "x509PrivateKey" in account:
-        printer.out("x509PrivateKey in ami account not found", printer.ERROR)
-        return
-    if not "accessKey" in account:
-        printer.out("accessKey in ami account not found", printer.ERROR)
-        return
-    if not "secretAccessKey" in account:
-        printer.out("secretAccessKey in ami account not found", printer.ERROR)
-        return
     if not "accountNumber" in account:
         printer.out("accountNumber for ami account not found", printer.ERROR)
         return
     if not "name" in account:
         printer.out("name for ami account not found", printer.ERROR)
         return
+    if not "accessKeyId" in account:
+        printer.out("accessKey in ami account not found", printer.ERROR)
+        return
+    if not "secretAccessKeyId" in account:
+        printer.out("secretAccessKey in ami account not found", printer.ERROR)
+        return
+    if not "x509Cert" in account:
+        printer.out("x509Cert in ami account not found", printer.ERROR)
+        return
+    if not "x509PrivateKey" in account:
+        printer.out("x509PrivateKey in ami account not found", printer.ERROR)
+        return
 
     myCredAccount.accountNumber = account["accountNumber"]
-    myCredAccount.secretAccessKeyID = account["secretAccessKey"]
-    myCredAccount.accessKeyID = account["accessKey"]
     myCredAccount.name = account["name"]
+    myCredAccount.accessKeyId = account["accessKeyId"]
+    myCredAccount.secretAccessKeyId = account["secretAccessKeyId"]
 
-    myCertificates = certificates()
-    myCredAccount.certificates = myCertificates
+    myCredAccount.certificates = pyxb.BIND()
+    # A hack to avoid a toDOM, toXML bug
+    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
 
     try:
-        myCertificate = certificate()
+        cert = certificate()
         with open(account["x509Cert"], "r") as myfile:
-            myCertificate.certStr = myfile.read()
-        myCertificate.type_ = "x509"
-        myCertificate.name = ntpath.basename(account["x509Cert"])
-        myCertificates.add_certificate(myCertificate)
-        myCertificate = certificate()
+            cert.content_ = myfile.read()
+        cert.type = "x509"
+        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
+        cert.name = ntpath.basename(account["x509Cert"])
+        myCredAccount.certificates.append(cert)
+
+        cert = certificate()
         with open(account["x509PrivateKey"], "r") as myfile:
-            myCertificate.certStr = myfile.read()
-        myCertificate.type_ = "ec2PrivateKey"
-        myCertificate.name = ntpath.basename(account["x509PrivateKey"])
-        myCertificates.add_certificate(myCertificate)
-
-        if "keyPairPrivateKey" in account:
-            myCertificate = certificate()
-            with open(account["keyPairPrivateKey"], "r") as myfile:
-                myCertificate.certStr = myfile.read()
-            myCertificate.type_ = "ec2KeyPairPrivateKey"
-            myCertificate.name = ntpath.basename(account["keyPairPrivateKey"])
-            myCertificates.add_certificate(myCertificate)
-
-            myCredAccount.keyPairName = os.path.splitext(myCertificate.name)[0]
+            cert.content_ = myfile.read()
+        cert.type = "ec2PrivateKey"
+        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
+        cert.name = ntpath.basename(account["x509PrivateKey"])
+        myCredAccount.certificates.append(cert)
 
     except IOError as e:
         printer.out("File error: " + str(e), printer.ERROR)
@@ -160,45 +160,35 @@ def ami(account):
 def azure(account):
     myCredAccount = CredAccountAzure()
     # doing field verification
-    if not "rsaPrivateKey" in account:
-        printer.out("rsaPrivateKey in azure account not found", printer.ERROR)
-        return
-    if not "certKey" in account:
-        printer.out("certKey in azure account not found", printer.ERROR)
-        return
-    if not "subscriptionId" in account:
-        printer.out("subscriptionId for azure account not found", printer.ERROR)
-        return
     if not "name" in account:
         printer.out("name for azure account not found", printer.ERROR)
         return
+    if not "publishsettings" in account:
+        printer.out("publishsettings in azure account not found", printer.ERROR)
+        return
 
-    myCredAccount.accountNumber = account["subscriptionId"]
     myCredAccount.name = account["name"]
+    myCredAccount.publishsettings = account["publishsettings"]
 
-    myCertificates = certificates()
-    myCredAccount.certificates = myCertificates
+    myCredAccount.certificates = pyxb.BIND()
+    # A hack to avoid a toDOM, toXML bug
+    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
 
     try:
-        myCertificate = certificate()
-        with open(account["rsaPrivateKey"], "r") as myfile:
-            myCertificate.certStr = myfile.read()
-        myCertificate.type_ = "azureRSAKey"
-        myCertificate.name = ntpath.basename(account["rsaPrivateKey"])
-        myCertificates.add_certificate(myCertificate)
-        myCertificate = certificate()
-        with open(account["certKey"], "r") as myfile:
-            myCertificate.certStr = myfile.read()
-        myCertificate.type_ = "azureCertKey"
-        myCertificate.name = ntpath.basename(account["certKey"])
-        myCertificates.add_certificate(myCertificate)
-
+        cert = certificate()
+        with open(account["publishsettings"], "r") as myfile:
+            cert.content_ = myfile.read()
+        cert.type = "azurePublishSettings"
+        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
+        cert.name = ntpath.basename(account["publishsettings"])
+        myCredAccount.certificates.append(cert)
 
     except IOError as e:
         printer.out("File error: " + str(e), printer.ERROR)
         return
 
     return myCredAccount
+
 
 def eucalyptus(account):
     myCredAccount = CredAccountEws()
@@ -314,62 +304,62 @@ def nimbula(account):
 def flexiant(account):
     myCredAccount = CredAccountFlexiant()
     # doing field verification
+    if not "apiUsername" in account:
+        printer.out("apiUsername in flexiant account not found", printer.ERROR)
+        return
     if not "password" in account:
         printer.out("password in flexiant account not found", printer.ERROR)
         return
-    if not "username" in account:
-        printer.out("username in flexiant account not found", printer.ERROR)
-        return
-    if not "wsdlURL" in account:
+    if not "wsdlUrl" in account:
         printer.out("wsdlURL for flexiant account not found", printer.ERROR)
         return
     if not "name" in account:
         printer.out("name for flexiant account not found", printer.ERROR)
         return
 
-    myCredAccount.login = account["username"]
+    myCredAccount.apiUsername = account["apiUsername"]
     myCredAccount.password = account["password"]
+    myCredAccount.wsdlUrl = account["wsdlUrl"]
+    myCredAccount.name = account["name"]
 
     try:
-        myCredAccount.userUUID = (myCredAccount.login).split('/')[1]
+        myCredAccount.userUUID = (myCredAccount.apiUsername).split('/')[1]
     except:
-        printer.out(account["username"] + " is not a valid Flexiant username", printer.ERROR)
+        printer.out(account["apiUsername"] + " is not a valid Flexiant username", printer.ERROR)
         return
 
-    myCredAccount.wsdlLocation = account["wsdlURL"]
-    myCredAccount.name = account["name"]
     return myCredAccount
 
 
-def vcd(account):
+def vclouddirector(account):
     myCredAccount = CredAccountVCloudDirector()
     # doing field verification
+    if not "name" in account:
+        printer.out("name in vcd account not found", printer.ERROR)
+        return
     if not "hostname" in account:
         printer.out("hostname in vcd account not found", printer.ERROR)
         return
-    if not "username" in account:
-        printer.out("username in vcd account not found", printer.ERROR)
+    if not "login" in account:
+        printer.out("login in vcd account not found", printer.ERROR)
         return
     if not "password" in account:
         printer.out("password in vcd account not found", printer.ERROR)
         return
-    if not "name" in account:
-        printer.out("name in vcd account not found", printer.ERROR)
+    if not "organizationName" in account:
+        printer.out("organizationName in vcd account not found", printer.ERROR)
         return
 
-    if "proxyHostname" in account:
-        myCredAccount.proxyHost = account["proxyHostname"]
-    if "proxyPort" in account:
-        myCredAccount.proxyPort = account["proxyPort"]
     if "port" in account:
         port = int(account["port"])
     else:
         port = 443
 
     myCredAccount.name = account["name"]
-    myCredAccount.login = account["username"]
-    myCredAccount.password = account["password"]
     myCredAccount.hostname = account["hostname"]
+    myCredAccount.login = account["login"]
+    myCredAccount.password = account["password"]
+    myCredAccount.organizationName = account["organizationName"]
     myCredAccount.port = port
 
     return myCredAccount
@@ -378,19 +368,18 @@ def vcd(account):
 def vsphere(account):
     myCredAccount = CredAccountVSphere()
     # doing field verification
-    if not "hostname" in account:
-        printer.out("hostname in vcenter account not found", printer.ERROR)
+    if not "name" in account:
+        printer.out("name in vcenter account not found", printer.ERROR)
         return
-    if not "username" in account:
-        printer.out("username in vcenter account not found", printer.ERROR)
+    if not "login" in account:
+        printer.out("login in vcenter account not found", printer.ERROR)
         return
     if not "password" in account:
         printer.out("password in vcenter account not found", printer.ERROR)
         return
-    if not "name" in account:
-        printer.out("name in vcenter account not found", printer.ERROR)
+    if not "hostname" in account:
+        printer.out("hostname in vcenter account not found", printer.ERROR)
         return
-
     if "proxyHostname" in account:
         myCredAccount.proxyHost = account["proxyHostname"]
     if "proxyPort" in account:
@@ -401,7 +390,7 @@ def vsphere(account):
         port = 443
 
     myCredAccount.name = account["name"]
-    myCredAccount.login = account["username"]
+    myCredAccount.login = account["login"]
     myCredAccount.password = account["password"]
     myCredAccount.hostname = account["hostname"]
     myCredAccount.port = port
@@ -447,6 +436,25 @@ def gce(account):
     return myCredAccount
 
 
+def outscale(account):
+    myCredAccount = CredAccountOutscale()
+    # doing field verification
+    if not "name" in account:
+        printer.out("name for outscale account not found", printer.ERROR)
+        return
+    if not "accessKey" in account:
+        printer.out("accessKey in outscale account not found", printer.ERROR)
+        return
+    if not "secretAccessKey" in account:
+        printer.out("secretAccessKey in outscale account not found", printer.ERROR)
+        return
+
+    myCredAccount.secretAccessKeyID = account["secretAccessKey"]
+    myCredAccount.accessKeyID = account["accessKey"]
+    myCredAccount.name = account["name"]
+    return myCredAccount
+
+
 def get_target_platform_object(api, login, targetPlatformName):
     targetPlatformsUser = api.Users(login).Targetplatforms.Getall()
     if targetPlatformsUser is None or len(targetPlatformsUser.targetPlatforms.targetPlatform) == 0:
@@ -456,6 +464,7 @@ def get_target_platform_object(api, login, targetPlatformName):
             if (item.name == targetPlatformName):
                 return item
     return None
+
 
 def assign_target_platform_account(credAccount, targetPlatformName):
     myTargetPlatform = targetPlatform()

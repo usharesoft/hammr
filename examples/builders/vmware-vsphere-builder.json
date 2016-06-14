@@ -1,13 +1,16 @@
 {
   "builders": [
     {
-      "type": "vcenter",
+      "type": "VMware vCenter",
       "account": {
-        "type": "vcenter",
-        "name": "My vCenter Account",
-        "hostname": "10.1.1.2",
-        "username": "joris",
-        "password": "mypassword"
+        "type": "VMware vCenter",
+        "name": "My VCenter account",
+        "login": "mylogin",
+        "password": "mypassword",
+        "hostname": "myhostname",
+        "proxyHostname": "myproxyHostname",
+        "proxyPort": "6354",
+        "port": "443"
       },
       "hardwareSettings": {
         "memory": 1024,
@@ -16,10 +19,11 @@
       "installation": {
         "diskSize": 10240
       },
-      "datacenter": "HQProd",
-      "cluster": "myCluster",
-      "datastore": "myDatastore",
-      "imageName": "CentOS Core"
+      "datastore": "esx2esx_datastore",
+      "datacenterName": "datacentername",
+      "clusterName": "cluster",
+      "displayName": "test_Hammr",
+      "network": "VM_Network"
     }
   ]
 }

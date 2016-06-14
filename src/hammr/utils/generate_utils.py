@@ -216,6 +216,11 @@ def generate_gce(image, builder, installProfile, api, login):
     return image, installProfile
 
 
+def generate_outscale(image, builder, installProfile, api, login):
+    image.compress = False
+    return image, installProfile
+
+
 ##--------------------- Physical Formats
 def generate_iso(image, builder, installProfile, api=None, login=None):
     image.compress = True

@@ -1,14 +1,13 @@
 {
   "builders": [
     {
-      "type": "flexiant-ova",
+      "type": "Flexiant RAW - KVM/Xen",
       "account": {
-        "type": "flexiant",
-        "name": "My Flexiant Account",
-        "username": "test.test@test.fr/hsefjuhseufhew",
-        "password": "myPassWD",
-        "customerUUID": "uhdeuwhedkjhfdwejkfhew-werewi4732hfdw-asnd",
-        "wsdlURL": "https://20.20.20.20:4442/?wsdl"
+        "type": "Flexiant",
+        "name": "My Flexiant account",
+        "apiUsername": "name@domain.com/mykey1111",
+        "password": "mypassword",
+        "wsdlUrl": "myWsdlurl"
       },
       "hardwareSettings": {
         "memory": 1024
@@ -16,9 +15,12 @@
       "installation": {
         "diskSize": 2000
       },
-      "imageName": "CentOS Core",
-      "datacenterUUID": "c8c1873f-799c-3453-b46c-f5db63116b05",
-      "productUUID": "61afdd81-43d9-39b5-9150-cffe9071b1b9"
+      "diskOffering": "21 GB",
+      "virtualDatacenterName": "KVM (CEPH Cluster)",
+      "machineImageName": "test_hammr",
+      "prodUuid": "88888888-4444-4444-4444-222222222222",
+      "userUuid": "12345678-1111-4444-4444-222222222222",
+      "vdcId": "12345678-abcd-efjh-4444-123456789abc"
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "accounts": [
+    {
+      "type": "VMware vCloud Director",
+      "name": "My VcloudDirector account",
+      "hostname": "myhostname",
+      "login": "mylogin",
+      "password": "mypassword",
+      "port": "443",
+      "organizationName": "myorganizationname"
+    }
+  ]
+}
+
+

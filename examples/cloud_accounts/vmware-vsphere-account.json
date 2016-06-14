@@ -1,11 +1,14 @@
 {
   "accounts": [
     {
-      "type": "vcenter",
-      "name": "My vCenter Account",
-      "hostname": "10.1.1.2",
-      "username": "joris",
-      "password": "mypassword"
+      "type": "VMware vCenter",
+      "name": "My VCenter account",
+      "login": "mylogin",
+      "password": "mypassword",
+      "hostname": "myhostname",
+      "proxyHostname": "myproxyHostname",
+      "proxyPort": "6354",
+      "port": "443"
     }
   ]
 }

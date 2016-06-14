@@ -14,6 +14,7 @@
 #    under the License.
 
 from ussclicore.utils import printer
+from uforge.objects.uforge import *
 
 
 def publish_vcd(pimage, builder):
@@ -34,25 +35,31 @@ def publish_vcd(pimage, builder):
     return pimage
 
 
-def publish_vcenter(pimage, builder):
+def publish_vcenter(builder):
+    pimage = PublishImageVSphere()
+
     # doing field verification
-    if not "datacenter" in builder:
-        printer.out("datacenter in vcenter builder not found", printer.ERROR)
-        return
-    if not "cluster" in builder:
-        printer.out("cluster in vcenter builder not found", printer.ERROR)
-        return
     if not "datastore" in builder:
         printer.out("datastore in vcenter builder not found", printer.ERROR)
         return
-    if not "imageName" in builder:
-        printer.out("imageName in vcenter builder not found", printer.ERROR)
+    if not "datacenterName" in builder:
+        printer.out("datacenterName in vcenter builder not found", printer.ERROR)
+        return
+    if not "clusterName" in builder:
+        printer.out("clusterName in vcenter builder not found", printer.ERROR)
+        return
+    if not "displayName" in builder:
+        printer.out("displayName in vcenter builder not found", printer.ERROR)
+        return
+    if not "network" in builder:
+        printer.out("network in vcenter builder not found", printer.ERROR)
         return
 
-    pimage.credAccount.clusterName = builder["cluster"]
-    pimage.credAccount.datacenterName = builder["datacenter"]
-    pimage.credAccount.datastore = builder["datastore"]
-    pimage.credAccount.displayName = builder["imageName"]
+    pimage.datastore = builder["datastore"]
+    pimage.datacenterName = builder["datacenterName"]
+    pimage.clusterName = builder["clusterName"]
+    pimage.displayName = builder["displayName"]
+    pimage.network = builder["network"]
     return pimage
 
 
@@ -106,28 +113,33 @@ def publish_susecloud(pimage, builder):
     return pimage
 
 
-def publish_openstack(pimage, builder):
-    # doing field verification
-    if not "imageName" in builder:
-        printer.out("imageName in openstack builder not found", printer.ERROR)
-        return
-    if not "tenant" in builder:
-        printer.out("tenant in openstack builder not found", printer.ERROR)
-        return
-    if "description" in builder:
-        pimage.credAccount.description = builder["description"]
+def publish_openstack(builder):
+    pimage = PublishImageOpenStack()
 
-    pimage.credAccount.displayName = builder["imageName"]
-    pimage.credAccount.tenantName = builder["tenant"]
+    # doing field verification
+    if not "displayName" in builder:
+        printer.out("displayName in openstack builder not found", printer.ERROR)
+        return
+    if not "tenantName" in builder:
+        printer.out("TenantName in openstack builder not found", printer.ERROR)
+        return
+
+    pimage.displayName = builder["displayName"]
+    pimage.tenantName = builder["tenantName"]
+
     if "publicImage" in builder:
         pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
-    # if "paraVirtualMode" in builder:
-    #        pimage.credAccount. = True if (builder["paraVirtualMode"]=="true") else False
+    if "keystoneDomain" in builder:
+        pimage.keystoneDomain = builder["keystoneDomain"]
+        return
+    if "keystoneProject" in builder:
+        pimage.keystoneProject = builder["keystoneProject"]
+        return
     return pimage
 
 
-def publish_openstackqcow2(pimage, builder):
-    return publish_openstack(pimage, builder)
+def publish_openstackqcow2(builder):
+    return publish_openstack(builder)
 
 
 def publish_openstackvhd(pimage, builder):
@@ -142,49 +154,68 @@ def publish_openstackvdi(pimage, builder):
     return publish_openstack(pimage, builder)
 
 
-def publish_ami(pimage, builder):
+def publish_aws(builder):
+    pimage = PublishImageAws()
+
     # doing field verification
-    if not "s3bucket" in builder:
-        printer.out("s3bucket in AMI builder not found", printer.ERROR)
+    if not "bucket" in builder:
+        printer.out("bucket in AWS builder not found", printer.ERROR)
         return
     if not "region" in builder:
         printer.out("region in AMI builder not found", printer.ERROR)
         return
 
-    pimage.credAccount.bucket = builder["s3bucket"]
-    pimage.publishLocation = builder["region"]
+    pimage.bucket = builder["bucket"]
+    pimage.region = builder["region"]
     return pimage
 
 
-def publish_azure(pimage, builder):
+def publish_azure(builder):
+    pimage = PublishImageAzure()
+
     # doing field verification
     if not "storageAccount" in builder:
+        printer.out("storageAccount in Microsoft Azure not found", printer.ERROR)
+        return
+    if not "region" in builder:
         printer.out("region in Microsoft Azure not found", printer.ERROR)
         return
 
-    pimage.credAccount.bucket = builder["storageAccount"]
-    if "location" in builder:
-        pimage.credAccount.zoneName = builder["location"]
-        pimage.publishLocation = builder["location"]
+    pimage.storageAccount = builder["storageAccount"]
+    pimage.region = builder["region"]
 
     return pimage
 
 
-def publish_flexiant(pimage, builder):
+def publish_flexiant(builder):
+    pimage = PublishImageFlexiant()
+
     # doing field verification
-    if not "imageName" in builder:
-        printer.out("imageName in flexiant builder not found", printer.ERROR)
-        return
-    if not "virtualDatacenter" in builder:
-        printer.out("virtualDatacenter in flexiant builder not found", printer.ERROR)
-        return
     if not "diskOffering" in builder:
         printer.out("diskOffering in flexiant builder not found", printer.ERROR)
         return
+    if not "virtualDatacenterName" in builder:
+        printer.out("virtualDatacenterName in flexiant builder not found", printer.ERROR)
+        return
+    if not "machineImageName" in builder:
+        printer.out("machineImageName in flexiant builder not found", printer.ERROR)
+        return
+    if not "prodUuid" in builder:
+        printer.out("prodUuid in flexiant builder not found", printer.ERROR)
+        return
+    if not "userUuid" in builder:
+        printer.out("userUuid in flexiant builder not found", printer.ERROR)
+        return
+    if not "vdcId" in builder:
+        printer.out("vdcId in flexiant builder not found", printer.ERROR)
+        return
 
-    pimage.credAccount.displayName = builder["imageName"]
-    pimage.credAccount.datacenterName = builder["virtualDatacenter"]
-    pimage.credAccount.category = builder["diskOffering"]
+    pimage.diskOffering = builder["diskOffering"]
+    pimage.virtualDatacenterName = builder["virtualDatacenterName"]
+    pimage.machineImageName = builder["machineImageName"]
+    pimage.prodUuid = builder["prodUuid"]
+    pimage.userUuid = builder["userUuid"]
+    pimage.vdcId = builder["vdcId"]
 
     return pimage
 
@@ -197,8 +228,8 @@ def publish_flexiant_ova(pimage, builder):
     return publish_flexiant(pimage, builder)
 
 
-def publish_flexiant_raw(pimage, builder):
-    return publish_flexiant(pimage, builder)
+def publish_flexiantraw(builder):
+    return publish_flexiant(builder)
 
 
 def publish_abiquo(pimage, builder):
@@ -315,4 +346,16 @@ def publish_gce(pimage, builder):
     pimage.credAccount.displayName = builder["diskNamePrefix"]
     pimage.credAccount.zoneName = builder["computeZone"]
     pimage.publishLocation = builder["bucketLocation"]
+    return pimage
+
+
+def publish_outscale(pimage, builder):
+    # doing field verification
+    if not "zone" in builder:
+        printer.out("zone in outscale builder not found", printer.ERROR)
+        return
+    if not "description" in builder:
+        pimage.credAccount.description = builder["description"]
+
+    pimage.credAccount.zoneName = builder["zone"]
     return pimage

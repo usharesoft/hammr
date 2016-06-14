@@ -1,29 +1,33 @@
 {
- "accounts" : [
-      {
-        "type" : "OpenStack",
-        "name": "unittest1",
-        "endpoint": "http://127.0.0.1:9292/v1",
-        "keystoneEndpoint": "http://127.0.0.1:5000/v2.0",
-        "username": "test",
-        "password": "password"
-      },
-      {
-        "type" : "Amazon",
-        "name": "unittest2",
-        "accountNumber": "123456789012",
-        "x509PrivateKey": "data/pk.pem",
-        "x509Cert": "data/cert.pem",
-        "accessKey": "789456123oidftunr",
-        "secretAccessKey": "is40hPeH1xWppoJ05"
-      },
-      {
-        "type": "VMware vCenter",
-        "name": "unittest3",
-        "hostname": "vcenterdev",
-        "username": "bb",
-        "password": "aa"
-      }
+  "accounts": [
+    {
+      "type": "OpenStack",
+      "name": "unittest1",
+      "glanceUrl": "http://127.0.0.1:9292/v1",
+      "keystoneUrl": "http://127.0.0.1:5000/v2.0",
+      "keystoneVersion": "http://mykeystoneversion:5000/v2.0",
+      "login": "test",
+      "password": "password"
+    },
+    {
+      "type": "Amazon",
+      "accountNumber": "123456789012",
+      "name": "unittest2",
+      "accessKeyId": "789456123oidftunr",
+      "secretAccessKeyId": "is40hPeH1xWppoJ05",
+      "x509Cert": "data/cert.pem",
+      "x509PrivateKey": "data/pk.pem"
+    },
+    {
+      "type": "VMware vCenter",
+      "name": "unittest3",
+      "login": "mylogin",
+      "password": "mypassword",
+      "hostname": "myhostname",
+      "proxyHostname": "myproxyHostname",
+      "proxyPort": "6354",
+      "port": "443"
+    }
   ]
 }
 
