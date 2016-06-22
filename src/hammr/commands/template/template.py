@@ -195,7 +195,7 @@ class Template(Cmd, CoreGlobal):
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
-            template=generics_utils.validate_json_file(file)
+            template=validate_json_file(file)
             if template is None:
                 return 2
             return 0
