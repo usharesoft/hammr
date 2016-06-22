@@ -225,6 +225,7 @@ def get_file(uri):
                 if regexp.search(uri) is not None:
                         print "Downloadling file "+os.path.basename(uri)+": "
                         dlUtils = download_utils.Download()
+                        urllib._urlopener = LocalFancyURLopner()
                         file, headers = urllib.urlretrieve(uri, reporthook=dlUtils.progress_update)
                         dlUtils.progress_finish()
                 else:
@@ -234,7 +235,7 @@ def get_file(uri):
                                 file = None
                 return file
         except Exception, e:
-                print("error downloading "+uri+": "+ str(e))
+                printer.out("error downloading "+uri+": "+ str(e), printer.ERROR)
                 return
             
 def remove_URI_forbidden_char(string):
@@ -267,3 +268,10 @@ def is_superviser_mode(userName):
 def get_target_username(userName):
     if "\\" in userName:
         return userName.split('\\')[1]
+
+class LocalFancyURLopner(urllib.FancyURLopener):
+    def __init__(self, *args, **kwargs):
+        urllib.FancyURLopener.__init__(self, *args, **kwargs)
+    
+    def http_error_default(self, url, fp, errcode, errmsg, headers):
+        raise IOError, ('http error', errcode, errmsg, headers)
