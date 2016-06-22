@@ -72,7 +72,8 @@
       "name": "configure-mysql.sh",
       "source": "data/bootsrcripts/cleanup_tmp.sh",
       "type": "bootscript",
-      "frequency": "firstboot"
+      "frequency": "firstboot",
+      "order" : "1"
     }
     ],
     "os" : {
