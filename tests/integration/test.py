@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2007-2016 UShareSoft SAS, All rights reserved
 #
 #
@@ -214,7 +215,7 @@ class TestAccount(unittest.TestCase):
                 else:
                         raise unittest.SkipTest("No account to delete")
 
-        def test_03_delete_account_3(self):
+        def test_02_delete_account_3(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
                 id = get_account_id(account, "unittest3")
@@ -224,13 +225,23 @@ class TestAccount(unittest.TestCase):
                 else:
                         raise unittest.SkipTest("No account to delete")
 
-        def test_04_create(self):
+        def test_02_delete_account_4(self):
+                account = hammr.commands.account.Account()
+                account.set_globals(api, login, password)
+                id = get_account_id(account, "これはhammrを使って作成したテンプレートです。")
+                if id is not None and id !="":
+                        r = account.do_delete("--id "+id+" --no-confirm")
+                        self.assertEqual(r, 0)
+                else:
+                        raise unittest.SkipTest("No account to delete")
+
+        def test_03_create(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
                 r = account.do_create("--file data/create-account.json")
                 self.assertEqual(r, 0)
 
-        def test_05_japanese_char(self):
+        def test_04_japanese_char(self):
                 # ref issue #35
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
