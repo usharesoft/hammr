@@ -42,10 +42,10 @@ Publishing a Machine Image
 
 To publish an image, the valid keys are:
 
+* ``type`` (mandatory): the builder type, ``ami``
 * ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
 * ``region`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
-* ``s3bucket`` (mandatory): a string providing the bucket name where to store the machine image. Bucket names are global to everyone, so you must choose a unique bucket name that does not already exist (or belongs to you). A bucket name cannot include spaces. Note, that if the bucket exists already in one region (for example Europe) and you wish to upload the same machine image to another region, then you must provide a new bucket name.
-* ``type`` (mandatory): the builder type, ``ami``
+* ``bucket`` (mandatory): a string providing the bucket name where to store the machine image. Bucket names are global to everyone, so you must choose a unique bucket name that does not already exist (or belongs to you). A bucket name cannot include spaces. Note, that if the bucket exists already in one region (for example Europe) and you wish to upload the same machine image to another region, then you must provide a new bucket name.
 
 Valid Regions
 -------------
@@ -69,15 +69,14 @@ Used to authenticate to AWS.
 
 The Amazon cloud account has the following valid keys:
 
-* ``accessKey`` (mandatory): A string providing your AWS access key id. To get your access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Your access key id should be displayed, otherwise create a new one. Note, for security purposes, we recommend you change your access keys every 90 days
-* ``accountNumber`` (mandatory): A string providing your AWS account number. This number can be found at the top right hand side of the Account > Security Credentials page after signing into amazon web services
-* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
-* ``keyPairPrivateKey`` (optional): A string providing the pathname or URL where to retrieve the private key of a key pair that has been created in AWS. This is mandatory if you wish to create an EBS-backed (elastic block storage) machine image. The private key is used to create an instance of the image in AWS in order to attach an EBS volume and create the EBS-backed machine image. To create a key pair, sign into amazon web services (aws.amazon.com), click on Key Pairs to create a new key pair. Download and save the private key. This should be a (.pem) file.
-* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
-* ``secretAccessKey`` (mandatory): A string providing you AWS secret access key. To get your secret access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Click on the Show button to reveal your secret key
 * ``type`` (mandatory): a string providing the cloud account type: aws.
+* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``accountNumber`` (mandatory): A string providing your AWS account number. This number can be found at the top right hand side of the Account > Security Credentials page after signing into Amazon Web Services
+* ``accessKeyId`` (mandatory): A string providing your AWS access key id. To get your access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Your access key id should be displayed, otherwise create a new one. Note, for security purposes, we recommend you change your access keys every 90 days
+* ``secretAccessKeyId`` (mandatory): A string providing you AWS secret access key. To get your secret access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Click on the Show button to reveal your secret key
 * ``x509Cert`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate public key. To create a X.509 certificate, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > X.509 Certificates. Download the X.509 certificate or create a new one. This should be a (.pem) file.
 * ``x509PrivateKey`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate private key. This private key is provided during the X.509 creation process. AWS does not store this private key, so you must download it and store it during this creation process. To create a X.509 certificate, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > X.509 Certificates and create a new certificate. Download and save the Private Key. This should be a (.pem) file
+* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 
 Note: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
@@ -88,28 +87,27 @@ The following example shows an amazon builder with all the information to build 
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "ami",
-	      "account": {
-	        "type": "ami",
-	        "name": "My AWS Account",
-	        "accountNumber": "111122223333",
-	        "x509PrivateKey": "/home/joris/accounts/aws/pk509.pem",
-	        "x509Cert": "/home/joris/accounts/aws/cert509.pem",
-	        "accessKey": "789456123ajdiewjd",
-	        "secretAccessKey": "ks30hPeH1xWqilJ04",
-	        "keyPairPrivateKey": "/home/joris/accounts/aws/pk-mykeypair.pem"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "region": "eu-west-1",
-	      "s3bucket": "joris-uss-bucket"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "ami",
+        "account": {
+          "type": "Amazon",
+          "name": "My AWS account",
+          "accountNumber": "11111-111111-1111",
+          "accessKeyId": "myaccessKeyid",
+          "secretAccessKeyId": "mysecretaccesskeyid",
+          "x509Cert": "/path/to/aws.cert.pem",
+          "x509PrivateKey": "/path/to/aws.key.pem"
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "region": "eu-central-1",
+        "bucket": "testsohammr"
+      }
+    ]
+  }
 
 Referencing the Cloud Account
 
@@ -117,20 +115,19 @@ To help with security, the cloud account information can be referenced by the bu
 
 .. code-block:: json
 
-	{
-	  "accounts": [
-	    {
-	      "type": "ami",
-	      "name": "My AWS Account",
-	      "accountNumber": "111122223333",
-	      "x509PrivateKey": "/home/joris/accounts/aws/pk509.pem",
-	      "x509Cert": "/home/joris/accounts/aws/cert509.pem",
-	      "accessKey": "789456123ajdiewjd",
-	      "secretAccessKey": "ks30hPeH1xWqilJ04",
-	      "keyPairPrivateKey": "/home/joris/accounts/aws/pk-mykeypair.pem"
-	    }
-	  ]
-	}
+  {
+    "accounts": [
+      {
+        "type": "Amazon",
+        "accountNumber": "11111-111111-1111",
+        "name": "My AWS account",
+        "accessKeyId": "myaccessKeyid",
+        "secretAccessKeyId": "mysecretaccesskeyid",
+        "x509Cert": "/path/to/aws.cert.pem",
+        "x509PrivateKey": "/path/to/aws.key.pem"
+      }
+    ]
+  }
 
 The builder section can either reference by using ``file`` or ``name``.
 
@@ -138,38 +135,38 @@ Reference by file:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "ami",
-	      "account": {
-	        "file": "/home/joris/accounts/aws-account.json"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "region": "eu-west-1",
-	      "s3bucket": "joris-uss-bucket"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "ami",
+        "account": {
+              "file": "/path/to/aws-account.json"
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "region": "eu-central-1",
+        "bucket": "test-so-hammr"
+      }
+    ]
+  }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "ami",
-	      "account": {
-	        "name": "My AWS Account"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "region": "eu-west-1",
-	      "s3bucket": "joris-uss-bucket"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "ami",
+        "account": {
+              "name": "My AWS Account"
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "region": "eu-central-1",
+        "bucket": "test-so-hammr"
+      }
+    ]
+  }

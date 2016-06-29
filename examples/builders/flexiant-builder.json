@@ -15,12 +15,9 @@
       "installation": {
         "diskSize": 2000
       },
-      "diskOffering": "21 GB",
       "virtualDatacenterName": "KVM (CEPH Cluster)",
       "machineImageName": "test_hammr",
-      "prodUuid": "88888888-4444-4444-4444-222222222222",
-      "userUuid": "12345678-1111-4444-4444-222222222222",
-      "vdcId": "12345678-abcd-efjh-4444-123456789abc"
+      "diskOffering": "21 GB"
     }
   ]
 }

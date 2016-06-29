@@ -43,11 +43,11 @@ Publishing a Machine Image
 
 To publish an image, the valid keys are:
 
-* ``account`` (mandatory): an object providing the Flexiant cloud account information required to publish the built machine image.
-* ``virtualDatacenter`` (mandatory): a string providing the datacenter name where to register the machine image. Note, the user must have access to this datacenter.
-* ``imageName`` (mandatory): a string providing the name of the machine image to displayed.
-* ``diskOffering`` (mandatory): a string providing the disk offering to register the machine image under.
 * ``type`` (mandatory): a string providing the machine image type to build. For Flexiant: ``flexiant-kvm``, ``flexiant-ovf`` or ``flexiant-raw``.
+* ``account`` (mandatory): an object providing the Flexiant cloud account information required to publish the built machine image.
+* ``virtualDatacenterName`` (mandatory): a string providing the datacenter name where to register the machine image. Note, the user must have access to this datacenter.
+* ``machineImageName`` (mandatory): a string providing the name of the machine image to displayed.
+* ``diskOffering`` (mandatory): a string providing the disk offering to register the machine image under.
 
 Flexiant Cloud Account
 ----------------------
@@ -57,11 +57,11 @@ Used to authenticate the Flexiant platform.
 
 The Flexiant cloud account has the following valid keys:
 
-* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
-* ``password`` (mandatory): a string providing your flexiant cloud orchestrator account password
-* ``username`` (mandatory): a string providing your API username. To get your api username, log in to flexiant cloud orchestrator, click on Settings > Your API Details
-* ``wsdlURL`` (mandatory): a string providing the wsdl URL of the flexiant cloud orchestrator, for example: https://myapi.example2.com:4442/?wsdl
+* ``apiUsername`` (mandatory): a string providing your API username. To get your api username, log in to Flexiant cloud orchestrator, click on Settings > Your API Details
+* ``password`` (mandatory): a string providing your Flexiant cloud orchestrator account password
+* ``wsdlUrl`` (mandatory): a string providing the wsdl URL of the Flexiant cloud orchestrator, for example: https://myapi.example2.com:4442/?wsdl
+* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 
 .. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
@@ -72,48 +72,48 @@ The following example shows a Flexiant builder with all the information to build
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "flexiant-ova",
-	      "account": {
-	        "type": "flexiant",
-	        "name": "My Flexiant Account",
-	        "username": "test.test@test.fr/hsefjuhseufhew",
-	        "password": "myPassWD",
-	        "wsdlURL": "https://20.20.20.20:4442/?wsdl"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024
-	      },
-	      "installation": {
-	        "diskSize": 2000
-	      },
-	      "imageName": "CentOS Core",
-	      "virtualDatacenter": "vdc1",
-	      "diskOffering": "50 GB"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Flexiant RAW - KVM/Xen",
+          "account": {
+            "type": "Flexiant",
+            "name": "My Flexiant account",
+            "apiUsername": "name@domain.com/mykey1111",
+            "password": "mypassword",
+            "wsdlUrl": "myWsdlurl"
+          },
+          "hardwareSettings": {
+            "memory": 1024
+          },
+          "installation": {
+            "diskSize": 2000
+          },
+          "virtualDatacenterName": "KVM (CEPH Cluster)",
+          "machineImageName": "test_hammr",
+          "diskOffering": "21 GB"
+        }
+      ]
+    }
 
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``flexiant-account.json``.
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``Flexiant-account.json``.
 
 .. code-block:: json
 
-	{
-	  "accounts": [
-	    {
-	      "type": "flexiant",
-	      "name": "My Flexiant Account",
-	      "username": "test.test@test.fr/hsefjuhseufhew",
-	      "password": "myPassWD",
-	      "wsdlURL": "https://20.20.20.20:4442/?wsdl"
-	    }
-	  ]
-	}
+    {
+      "accounts": [
+        {
+          "type": "Flexiant",
+          "name": "My Flexiant account",
+          "apiUsername": "name@domain.com/mykey1111",
+          "password": "mypassword",
+          "wsdlUrl": "myWsdlurl"
+        }
+      ]
+    }
 
 The builder section can either reference by using ``file`` or ``name``.
 
@@ -121,46 +121,46 @@ Reference by file:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "flexiant-ova",
-	      "account": {
-	        "file": "/home/joris/accounts/flexiant-account.json"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024
-	      },
-	      "installation": {
-	        "diskSize": 2000
-	      },
-	      "imageName": "CentOS Core",
-	      "virtualDatacenter": "c8c1873f-799c-3453-b46c-f5db63116b05",
-	      "diskOffering": "61afdd81-43d9-39b5-9150-cffe9071b1b9"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Flexiant RAW - KVM/Xen",
+          "account": {
+            "file": "/path/to/flexiant-account.json"
+              },
+          "hardwareSettings": {
+            "memory": 1024
+          },
+          "installation": {
+            "diskSize": 2000
+          },
+          "virtualDatacenterName": "KVM (CEPH Cluster)",
+          "machineImageName": "test_hammr",
+          "diskOffering": "21 GB"
+        }
+      ]
+    }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "flexiant-ova",
-	      "account": {
-	        "name": "My Flexiant Account"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024
-	      },
-	      "installation": {
-	        "diskSize": 2000
-	      },
-	      "imageName": "CentOS Core",
-	      "datacenterUUID": "vdc1",
-	      "diskOffering": "50 GB"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Flexiant RAW - KVM/Xen",
+          "account": {
+            "name": "My Flexiant Account"
+              },
+          "hardwareSettings": {
+            "memory": 1024
+          },
+          "installation": {
+            "diskSize": 2000
+          },
+          "virtualDatacenterName": "KVM (CEPH Cluster)",
+          "machineImageName": "test_hammr",
+          "diskOffering": "21 GB"
+        }
+      ]
+    }

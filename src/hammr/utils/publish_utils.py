@@ -200,22 +200,10 @@ def publish_flexiant(builder):
     if not "machineImageName" in builder:
         printer.out("machineImageName in flexiant builder not found", printer.ERROR)
         return
-    if not "prodUuid" in builder:
-        printer.out("prodUuid in flexiant builder not found", printer.ERROR)
-        return
-    if not "userUuid" in builder:
-        printer.out("userUuid in flexiant builder not found", printer.ERROR)
-        return
-    if not "vdcId" in builder:
-        printer.out("vdcId in flexiant builder not found", printer.ERROR)
-        return
 
     pimage.diskOffering = builder["diskOffering"]
     pimage.virtualDatacenterName = builder["virtualDatacenterName"]
     pimage.machineImageName = builder["machineImageName"]
-    pimage.prodUuid = builder["prodUuid"]
-    pimage.userUuid = builder["userUuid"]
-    pimage.vdcId = builder["vdcId"]
 
     return pimage
 

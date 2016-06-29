@@ -39,12 +39,12 @@ Publishing a Machine Image
 
 To publish an image, the valid keys are:
 
-* ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
-* ``location`` (optional): a string providing the location where to create the storage account. If the storage account already exists, then you should not specify a location. See below for valid locations.
-* ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
 * ``type`` (mandatory): a string providing the machine image type to build: ``azure``
+* ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
+* ``region`` (mandatory): a string providing the region where to create the storage account. If the storage account already exists, then you should not specify a region. See below for valid regions.
+* ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
 
-Valid Azure Locations
+Valid Azure Regions
 ---------------------
 
 * ``North Central US``
@@ -63,12 +63,10 @@ Key: ``account``
 Used to authenticate the Azure platform.
 The Azure cloud account has the following valid keys:
 
-* ``certKey`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate v3 public key associated with your Azure account. This should be a (.pem) file.
-* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
-* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
-* ``rsaPrivateKey`` (mandatory): A string providing the pathname or URL where to retrieve the private RSA key associated with your Azure account. This should be a (.pem) file.
-* ``subscriptionId`` (mandatory): A string providing your Axure subscription Id. To get your subscription Id, log into Windows Azure, click on “Settings”. The id is listed in the table.
 * ``type`` (mandatory): a string providing the cloud account type: ``azure``.
+* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``publishsettings`` (mandatory): A string providing the pathname where to retrieve the publish settings and subscription information file. This should be a (.publishsettings) file.
+* ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 
 .. note:: In the case where name or file is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
@@ -79,22 +77,20 @@ The following example shows an Azure builder with all the information to build a
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "azure",
-	      "account": {
-	        "type": "azure",
-	        "name": "My Azure Account",
-	        "subscriptionId": "xxxbewssbewdsbew-sdsewjwdtg-ssatgh-xxxdft5f323",
-	        "certKey": "/home/joris/accounts/azure/cert.pem",
-	        "rsaPrivateKey": "/home/joris/accounts/azure/key.pem"
-	      },
-	      "storageAccount": "mystorageaccount",
-	      "location": "West Europe"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+          "type": "Microsoft Azure",
+          "name": "My Azure account",
+          "publishsettings": "/path/to/Pay-As-You-Go-4-25-2016-credentials.publishsettings"
+        },
+        "storageAccount":"mystorageaccount",
+        "region":"Central US"
+      }
+    ]
+  }
 
 Referencing the Cloud Account
 -----------------------------
@@ -103,17 +99,15 @@ To help with security, the cloud account information can be referenced by the bu
 
 .. code-block:: json
 
-	{
-	  "accounts": [
-	    {
-	        "type": "azure",
-	        "name": "My Azure Account",
-	        "subscriptionId": "xxxbewssbewdsbew-sdsewjwdtg-ssatgh-xxxdft5f323",
-	        "certKey": "/home/joris/accounts/azure/cert.pem",
-	        "rsaPrivateKey": "/home/joris/accounts/azure/key.pem"
-	    }
-	  ]
-	}
+  {
+    "accounts": [
+      {
+        "type": "Microsoft Azure",
+        "name": "My Azure account",
+        "publishsettings": "/path/to/Pay-As-You-Go-date-credentials.publishsettings"
+      }
+    ]
+  }
 
 The builder section can either reference by using ``file`` or ``name``.
 
@@ -121,32 +115,32 @@ Reference by file:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "azure",
-	      "account": {
-	        "file": "/home/joris/accounts/azure-account.json"
-	      },
-	      "storageAccount": "mystorageaccount",
-	      "location": "West Europe"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+              "file": "/home/joris/accounts/azure-account.json"
+        },
+        "storageAccount":"mystorageaccount",
+        "region":"Central US"
+      }
+    ]
+  }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "abiquo",
-	      "account": {
-	        "name": "My Abiquo Account"
-	      },
-	      "storageAccount": "mystorageaccount",
-	      "location": "West Europe"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+              "name": "My Azure Account"
+        },
+        "storageAccount":"mystorageaccount",
+        "region":"Central US"
+      }
+    ]
+  }

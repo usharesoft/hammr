@@ -7,7 +7,7 @@
         "name": "My Azure account",
         "publishsettings": "/path/to/Pay-As-You-Go-4-25-2016-credentials.publishsettings"
       },
-      "storageAccount":"testsohammr",
+      "storageAccount":"mystorageaccount",
       "region":"Central US"
     }
   ]

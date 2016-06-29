@@ -39,12 +39,13 @@ Publishing a Machine Image
 
 To publish an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the builder type: ``vcenter``
 * ``account`` (mandatory): an object providing the VMware vSphere vCenter cloud account information required to publish the built machine image.
-* ``cluster`` (mandatory): a string providing the name of the cluster to register the machine image.
+* ``clusterName`` (mandatory): a string providing the name of the cluster to register the machine image.
 * ``datacenterName`` (mandatory): a string providing the name of the datacenter to register the machine image.
 * ``datastore`` (mandatory): a string providing the name of the datastore where to store the machine image.
-* ``imageName`` (mandatory): a string providing the name of the machine image to display in VMware vSphere vCenter.
-* ``type`` (mandatory): a string providing the builder type: ``vcenter``
+* ``displayName`` (mandatory): a string providing the name of the machine image to display in VMware vSphere vCenter.
+* ``network`` (optional): a string providing the virtual network name.
 
 vSphere vCenter Cloud Account
 -----------------------------
@@ -54,13 +55,14 @@ Used to authenticate to VMware vSphere vCenter.
 
 The vCenter cloud account has the following valid keys:
 
-* ``hostname`` (mandatory): a string providing the fully-qualified hostname or IP address of the VMware vSphere vCenter platform.
-* ``password`` (mandatory): a string providing the password to use to authenticate to the VMware vSphere vCenter platform
-* ``port`` (optional): an integer providing the VMware vSphere vCenter platform port number (by default: 443 is used).
-* ``proxyHostname`` (optional): a string providing the fully qualified hostname or IP address of the proxy to reach the VMware vSphere vCenter platform.
-* ``proxyPort`` (optional): an integer providing the proxy port number to use to reach the VMware vSphere vCenter platform.
 * ``type`` (mandatory): a string providing the builder type: ``vcenter``
-* ``username`` (mandatory): a string providing the user name to use to authenticate to the VMware vSphere vCenter platform
+* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``login`` (mandatory): a string providing the user name to use to authenticate to the VMware vSphere vCenter platform
+* ``password`` (mandatory): a string providing the password to use to authenticate to the VMware vSphere vCenter platform
+* ``hostname`` (mandatory): a string providing the fully-qualified hostname or IP address of the VMware vSphere vCenter platform.
+* ``proxyHostname`` (optional): a string providing the fully qualified hostname or IP address of the proxy to reach the VMware vSphere vCenter platform.
+* ``port`` (optional): an integer providing the VMware vSphere vCenter platform port number (by default: 443 is used).
+* ``proxyPort`` (optional): an integer providing the proxy port number to use to reach the VMware vSphere vCenter platform.
 
 ..note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
@@ -71,31 +73,35 @@ The following example shows an vCenter builder with all the information to build
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "vcenter",
-	      "account": {
-	        "type": "vcenter",
-	        "name": "My vCenter Account",
-	        "hostname": "10.1.1.2",
-	        "username": "joris",
-	        "password": "mypassword"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024,
-	        "hwType": 7
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "datacenter": "HQProd",
-	      "cluster": "myCluster",
-	      "datastore": "myDatastore",
-	      "imageName": "CentOS Core"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "VMware vCenter",
+        "account": {
+          "type": "VMware vCenter",
+          "name": "My VCenter account",
+          "login": "mylogin",
+          "password": "mypassword",
+          "hostname": "myhostname",
+          "proxyHostname": "myproxyHostname",
+          "proxyPort": "6354",
+          "port": "443"
+        },
+        "hardwareSettings": {
+          "memory": 1024,
+          "hwType": 7
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "clusterName": "cluster",
+        "datacenterName": "datacentername",
+        "datastore": "esx2esx_datastore",
+        "displayName": "test_Hammr",
+        "network": "VM_Network"
+      }
+    ]
+  }
 
 Referencing the Cloud Account
 -----------------------------
@@ -104,17 +110,20 @@ To help with security, the cloud account information can be referenced by the bu
 
 .. code-block:: json
 
-	{
-	  "accounts": [
-	    {
-	      "type": "vcenter",
-	      "name": "My vCenter Account",
-	      "hostname": "10.1.1.2",
-	      "username": "joris",
-	      "password": "mypassword"
-	    }
-	  ]
-	}
+  {
+    "accounts": [
+      {
+        "type": "VMware vCenter",
+        "name": "My VCenter account",
+        "login": "mylogin",
+        "password": "mypassword",
+        "hostname": "myhostname",
+        "proxyHostname": "myproxyHostname",
+        "proxyPort": "6354",
+        "port": "443"
+      }
+    ]
+  }
 
 The builder section can either reference by using ``file`` or ``name``.
 
@@ -122,50 +131,52 @@ Reference by file:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "vcenter",
-	      "account": {
-	        "file": "/home/joris/accounts/vcenter-account.json"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024,
-	        "hwType": 7
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "datacenter": "HQProd",
-	      "cluster": "myCluster",
-	      "datastore": "myDatastore",
-	      "imageName": "CentOS Core"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "VMware vCenter",
+        "account": {
+          "file": "/home/joris/accounts/vcenter-account.json"
+        },
+        "hardwareSettings": {
+          "memory": 1024,
+          "hwType": 7
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "clusterName": "cluster",
+        "datacenterName": "datacentername",
+        "datastore": "esx2esx_datastore",
+        "displayName": "test_Hammr",
+        "network": "VM_Network"
+      }
+    ]
+  }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "vcd",
-	      "account": {
-	        "name": "My vCenter Account"
-	      },
-	      "hardwareSettings": {
-	        "memory": 1024,
-	        "hwType": 7
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "datacenter": "HQProd",
-	      "cluster": "myCluster",
-	      "datastore": "myDatastore",
-	      "imageName": "CentOS Core"
-	    }
-	  ]
-	}
+  {
+    "builders": [
+      {
+        "type": "VMware vCenter",
+        "account": {
+          "name": "My vCenter Account"
+        },
+        "hardwareSettings": {
+          "memory": 1024,
+          "hwType": 7
+        },
+        "installation": {
+          "diskSize": 10240
+        },
+        "clusterName": "cluster",
+        "datacenterName": "datacentername",
+        "datastore": "esx2esx_datastore",
+        "displayName": "test_Hammr",
+        "network": "VM_Network"
+      }
+    ]
+  }

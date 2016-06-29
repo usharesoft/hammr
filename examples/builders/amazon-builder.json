@@ -8,8 +8,8 @@
         "accountNumber": "11111-111111-1111",
         "accessKeyId": "myaccessKeyid",
         "secretAccessKeyId": "mysecretaccesskeyid",
-        "x509Cert": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.cert.pem",
-        "x509PrivateKey": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.key.pem"
+        "x509Cert": "/path/to/aws.cert.pem",
+        "x509PrivateKey": "/path/to/aws.key.pem"
       },
       "installation": {
         "diskSize": 10240
