@@ -1,4 +1,4 @@
-1.0.0.0 (2016-07-01)
+hammr-3.6 0.1 (2016-07-01)
 ============================================
 Evolutions:
 * Compatility with UForge AppCenter 3.6
