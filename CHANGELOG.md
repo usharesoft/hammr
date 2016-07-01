@@ -1,12 +1,12 @@
 hammr-3.6 0.1 (2016-07-01)
 ============================================
 Evolutions:
-* Compatility with UForge AppCenter 3.6
+* Compatibility with UForge AppCenter 3.6
   - Target formats and target platforms support
   - Builder part has been updated
-* Hammr documentation is now inside github repository
+* Hammr documentation now inside github repository
 * Improve setup.py clean command
-* Hammr uses a new download utils
+* Hammr uses a new download utility
 
 Bug fixes:
 * Ability to specify a timezone inside "updateTo" field for "stack"
