@@ -5,12 +5,16 @@
 OpenStack
 =========
 
-Builder type: ``openstack-qcow2``, ``openstack-vmdk``, ``openstack-vhd`` or ``openstack-vdi``
+Default builder type: ``OpenStack QCOW2``, ``OpenStack VMDK``, ``OpenStack VHD`` or ``OpenStack VDI``
 
 Require Cloud Account: Yes
+
 `www.openstack.org <http://www.openstack.org>`_
 
-The OpenStack builder provides information for building and publishing the machine image to the OpenStack cloud platform. This builder supports KVM (``openstack-qcow2``), VMware (``openstack-vmdk``), Microsoft (``openstack-vhd``) or VirtualBox (``openstack-vdi``) based images for Openstack.
+The OpenStack builder provides information for building and publishing the machine image to the OpenStack cloud platform. This builder supports KVM (``OpenStack QCOW2``), VMware (``OpenStack VMDK``), Microsoft (``OpenStack VHD``) or VirtualBox (``OpenStack VDI``) based images for Openstack.
+These builder types are the default names provided by UForge AppCenter.
+
+.. note:: These builder type names can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
 The OpenStack builder requires cloud account information to upload and register the machine image to the OpenStack platform.
 
@@ -21,7 +25,7 @@ The OpenStack builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "openstack-qcow2",
+	      "type": "OpenStack QCOW2",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -32,16 +36,16 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for OpenStack: ``OpenStack QCOW2``, ``OpenStack VMDK``, ``OpenStack VDI`` or ``OpenStack VHD``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
-	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. This cannot be used if an advanced partitioning table is defined in the stack.
-* ``type`` (mandatory): a string providing the machine image type to build. For OpenStack: ``openstack-qcow2``, ``openstack-vmdk``, ``openstack-vdi`` or ``openstack-vhd``
+* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. This cannot be used if an advanced partitioning table is defined in the stack.
 
 Publishing a Machine Image
 --------------------------
 
 To publish an image, the valid keys are:
 
-* ``type`` (mandatory): a string providing the machine image type to build. For OpenStack: ``openstack-qcow2``, ``openstack-vmdk``, ``openstack-vdi`` or ``openstack-vhd``
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for OpenStack: ``OpenStack QCOW2``, ``OpenStack VMDK``, ``OpenStack VDI`` or ``OpenStack VHD``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the OpenStack cloud account information required to publish the built machine image.
 * ``displayName`` (mandatory): a string providing the name of the image that will be displayed.
 * ``tenantName`` (mandatory for keystone v2.0): a string providing the name of the tenant to register the machine image to.  This value is ony required if the cloud account's ``keystoneVersion`` is ``v2.0``
@@ -58,7 +62,7 @@ Used to authenticate the OpenStack platform.
 
 The OpenStack cloud account has the following valid keys:
 
-* ``type`` (mandatory): a string providing the cloud account type: ``openstack``.
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for Openstack is ``OpenStack``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``glanceUrl`` (mandatory): a string providing the API URL endpoint of the OpenStack glance service. For example: http://www.example.com/v1/
 * ``keystoneUrl`` (mandatory): a string providing the URL endpoint for the OpenStack keystone service to authenticate with. For example: http://www.example.com:5000

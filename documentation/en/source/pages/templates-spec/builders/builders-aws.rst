@@ -5,12 +5,16 @@
 Amazon EC2
 ==========
 
-Builder type: ``ami``
+Default builder type: ``Amazon AWS``
 
 Require Cloud Account: Yes
+
 `aws.amazon.com <aws.amazon.com>`_
 
 The Amazon builder provides information for building and publishing machine images for Amazon EC2. The Amazon builder requires cloud account information to upload and register the machine image to AWS (Amazon Web Services) public cloud.
+This builder type is the default name provided by UForge AppCenter.
+
+.. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
 The Amazon builder section has the following definition:
 
@@ -19,7 +23,7 @@ The Amazon builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "ami",
+	      "type": "Amazon AWS",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -30,19 +34,19 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Amazon: ``Amazon AWS``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
 * ``disableRootLogin`` (optional): a boolean flag to determine if root login access should be disabled for any instance provisioned from the machine image.
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
 	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. If the machine image is to be stored in Amazon S3, the maximum disk size is 10GB, otherwise if this is an EBS-backed machine image the maximum disk size is 1TB.
 * ``ebs`` (optional): a boolean flag to determine if the machine image should be EBS-backed.
-* ``type`` (mandatory): the builder type, ``ami``
 
 Publishing a Machine Image
 --------------------------
 
 To publish an image, the valid keys are:
 
-* ``type`` (mandatory): the builder type, ``ami``
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Amazon: ``Amazon AWS``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
 * ``region`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
 * ``bucket`` (mandatory): a string providing the bucket name where to store the machine image. Bucket names are global to everyone, so you must choose a unique bucket name that does not already exist (or belongs to you). A bucket name cannot include spaces. Note, that if the bucket exists already in one region (for example Europe) and you wish to upload the same machine image to another region, then you must provide a new bucket name.
@@ -69,7 +73,7 @@ Used to authenticate to AWS.
 
 The Amazon cloud account has the following valid keys:
 
-* ``type`` (mandatory): a string providing the cloud account type: aws.
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for Amazon: ``Amazon``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``accountNumber`` (mandatory): A string providing your AWS account number. This number can be found at the top right hand side of the Account > Security Credentials page after signing into Amazon Web Services
 * ``accessKeyId`` (mandatory): A string providing your AWS access key id. To get your access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Your access key id should be displayed, otherwise create a new one. Note, for security purposes, we recommend you change your access keys every 90 days
@@ -90,7 +94,7 @@ The following example shows an amazon builder with all the information to build 
   {
     "builders": [
       {
-        "type": "ami",
+        "type": "Amazon AWS",
         "account": {
           "type": "Amazon",
           "name": "My AWS account",
@@ -138,7 +142,7 @@ Reference by file:
   {
     "builders": [
       {
-        "type": "ami",
+        "type": "Amazon AWS",
         "account": {
               "file": "/path/to/aws-account.json"
         },
@@ -158,7 +162,7 @@ Reference by name, note the cloud account must already be created by using ``acc
   {
     "builders": [
       {
-        "type": "ami",
+        "type": "Amazon AWS",
         "account": {
               "name": "My AWS Account"
         },

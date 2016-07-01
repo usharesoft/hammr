@@ -5,12 +5,16 @@
 Microsoft Azure
 ===============
 
-Builder type: ``azure``
+Default builder type: ``Microsoft Azure``
 
 Require Cloud Account: Yes
+
 `azure.microsoft.com <http://azure.microsoft.com>`_
 
 The Azure builder provides information for building and publishing the machine image to the Microsoft Azure cloud platform.
+This builder type is the default name provided by UForge AppCenter.
+
+.. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
 The Azure builder section has the following definition:
 
@@ -19,7 +23,7 @@ The Azure builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "azure",
+	      "type": "Microsoft Azure",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -30,16 +34,16 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Azure: ``Microsoft Azure``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the stack section. The following valid keys for installation are:
 	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the :ref:`template-stack`. This cannot be used if an advanced partitioning table is defined in the stack.
-* ``type`` (mandatory): a string providing the machine image type to build: ``azure``
 
 Publishing a Machine Image
 --------------------------
 
 To publish an image, the valid keys are:
 
-* ``type`` (mandatory): a string providing the machine image type to build: ``azure``
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Azure: ``Microsoft Azure``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
 * ``region`` (mandatory): a string providing the region where to create the storage account. If the storage account already exists, then you should not specify a region. See below for valid regions.
 * ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
@@ -63,7 +67,7 @@ Key: ``account``
 Used to authenticate the Azure platform.
 The Azure cloud account has the following valid keys:
 
-* ``type`` (mandatory): a string providing the cloud account type: ``azure``.
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for Microsoft Azure: ``Microsoft Azure``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``publishsettings`` (mandatory): A string providing the pathname where to retrieve the publish settings and subscription information file. This should be a (.publishsettings) file.
 * ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.

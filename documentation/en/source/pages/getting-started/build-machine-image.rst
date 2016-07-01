@@ -16,13 +16,13 @@ For security reasons, it is recommended not to add any cloud account information
   {
     "accounts": [
       {
-        "type": "ami",
-        "name": "My AWS Account",
-        "accountNumber": "111122223333",
-        "x509PrivateKey": "/home/joris/accounts/aws/pk509.pem",
-        "x509Cert": "/home/joris/accounts/aws/cert509.pem",
-        "accessKey": "AAAABBBBCCCCDDDDEEEE",
-        "secretAccessKey": "aaaa1111bbbb2222cccc3333dddd4444eeee5555"
+        "type": "Amazon",
+        "name": "James AWS Account",
+        "accountNumber": "11111-111111-1111",
+        "accessKeyId": "myaccessKeyid",
+        "secretAccessKeyId": "mysecretaccesskeyid",
+        "x509Cert": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.cert.pem",
+        "x509PrivateKey": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.key.pem"
       }
     ]
   }
@@ -65,9 +65,9 @@ Lets now use this account to build a machine image for Amazon EC2. Open up the f
     },
     "builders": [
       {
-        "type": "ami",
+        "type": "Amazon",
         "account": {
-          "name": "My AWS Account"
+          "name": "James AWS Account"
         },
         "installation": {
           "diskSize": 10240

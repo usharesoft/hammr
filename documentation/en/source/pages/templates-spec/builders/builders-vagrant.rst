@@ -5,10 +5,14 @@
 Vagrant Base Box
 ================
 
-Builder type: ``vagrant``
+Default builder type: ``Vagrant Base Box``
 Require Cloud Account: No
 
 The Vagrant builder provides information for building Vagrant base-box machine images.
+This builder type is the default name provided by UForge AppCenter.
+
+.. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
+
 The Vagrant builder section has the following definition:
 
 .. code-block:: javascript
@@ -16,7 +20,7 @@ The Vagrant builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "vagrant",
+	      "type": "Vagrant Base Box",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -27,6 +31,7 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Vagrant: ``Vagrant Base Box``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``hardwareSettings`` (mandatory): an object providing hardware settings to be used for the machine image. The following valid keys for hardware settings are:
 	* ``memory`` (mandatory): an integer providing the amount of RAM to provide to an instance provisioned from the machine image (in MB).
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
@@ -36,7 +41,6 @@ For building an image, the valid keys are:
 * ``sshKey`` (optional): an object providing the public SSH key information to add to the base box. The object contains:
 	* ``name`` (mandatory): a string providing the name of the public ssh key
 	* ``publicKey`` (mandatory): a string providing the public ssh key. A public key must begin with string ``ssh-rsa`` or ``ssh-dss``.  This is mandatory if the base box is private, otherwise this value is ignored and the `default public ssh key <https://github.com/mitchellh/vagrant/blob/master/keys/vagrant.pub>`_ is used.
-* ``type`` (mandatory): the builder type: ``vagrant``
 
 .. note:: You can get copies of the SSH keypairs for public base boxes `here <https://github.com/mitchellh/vagrant/tree/master/keys>`_.
 
@@ -53,7 +57,7 @@ The following example shows a Vagrant builder creating a public base box.
 	{
 	  "builders": [
 	    {
-	      "type": "vagrant",
+	      "type": "Vagrant Base Box",
 	      "hardwareSettings": {
 	        "memory": 1024
 	      },
@@ -72,7 +76,7 @@ The following example shows a Vagrant builder for a private base box (note, that
 	{
 	  "builders": [
 	    {
-	      "type": "vagrant",
+	      "type": "Vagrant Base Box",
 	      "hardwareSettings": {
 	        "memory": 1024
 	      },

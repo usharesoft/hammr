@@ -46,8 +46,8 @@ class Format(Cmd, CoreGlobal):
             else:
                 targetFormatsUser = generics_utils.order_list_object_by(targetFormatsUser.targetFormats.targetFormat,"name")
                 table = Texttable(200)
-                table.set_cols_align(["l", "l", "l", "l", "l", "c"])
-                table.header(["Name", "Format", "Category", "Type", "CredAccountType", "Access"])
+                table.set_cols_align(["l", "l", "l", "l", "c"])
+                table.header(["Builder Type", "Format", "Category", "Cloud Account Type", "Access"])
                 for item in targetFormatsUser:
                     if item.access:
                         access = "X"
@@ -58,7 +58,7 @@ class Format(Cmd, CoreGlobal):
                     else:
                         credAccountType = item.credAccountType
                     table.add_row(
-                        [item.name, item.format.name, item.category.name, item.type, credAccountType,
+                        [item.name, item.format.name, item.category.name, credAccountType,
                          access])
                 print table.draw() + "\n"
             return 0

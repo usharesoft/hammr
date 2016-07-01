@@ -5,12 +5,17 @@
 CloudStack
 ==========
 
-Builder type: ``cloudstack-ovf``, ``cloudstack-qcow2`` or ``cloudstack-vhd``
+Default builder type: ``CloudStack VMware (OVA)``, ``CloudStack KVM (QCOW2)`` or ``CloudStack Citrix Xen (VHD)``
 
 Require Cloud Account: Yes
+
 `cloudstack.apache.org <http://cloudstack.apache.org>`_
 
-The CloudStack builder provides information for building and publishing the machine image to the CloudStack cloud platform. This builder supports KVM (``cloudstack-qcow2``), Xen (``cloudstack-vhd``) or VMware (``cloudstack-ova``) based images for CloudStack.
+The CloudStack builder provides information for building and publishing the machine image to the CloudStack cloud platform. This builder supports KVM (``CloudStack KVM (QCOW2)``), Xen (``CloudStack Citrix Xen (VHD)``) or VMware (``CloudStack VMware (OVA)``) based images for CloudStack.
+These builder types are the default names provided by UForge AppCenter.
+
+.. note:: These builder type names can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
+
 
 The CloudStack builder requires cloud account information to upload and register the machine image to the CloudStack platform.
 
@@ -21,7 +26,7 @@ The CloudStack builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "cloudstack-qcow2",
+	      "type": "CloudStack KVM (QCOW2)",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -32,18 +37,18 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for CloudStack: ``CloudStack VMware (OVA)``, ``CloudStack KVM (QCOW2)`` or ``CloudStack Citrix Xen (VHD)``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``hardwareSettings`` (mandatory): an object providing hardware settings to be used for the machine image. If an OVF machine image is being built, then the hardware settings are mandatory. The following valid keys for hardware settings are:
 * ``memory`` (mandatory): an integer providing the amount of RAM to provide to an instance provisioned from the machine image (in MB).
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
 * ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. This cannot be used if an advanced partitioning table is defined in the stack.
-* ``type`` (mandatory): a string providing the machine image type to build. For CloudStack: ``cloudstack-qcow2``, ``cloudstack-vhd`` or ``cloudstack-ova``.
 
 Publishing a Machine Image
 --------------------------
 
 To publish an image, the valid keys are:
 
-* ``type`` (mandatory): a string providing the machine image type to build. For CloudStack: ``cloudstack-qcow2``, ``cloudstack-vhd`` or ``cloudstack-ova``.
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for CloudStack: ``CloudStack VMware (OVA)``, ``CloudStack KVM (QCOW2)`` or ``CloudStack Citrix Xen (VHD)``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the CloudStack cloud account information required to publish the built machine image.
 * ``imageName`` (mandatory): a string providing the displayed name of the machine image.
 * ``zone`` (mandatory): a string providing the zone to publish the machine image
@@ -58,7 +63,7 @@ Used to authenticate the CloudStack platform.
 
 The CloudStack cloud account has the following valid keys:
 
-* ``type`` (mandatory): a string providing the cloud account type: ``cloudstack``.
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for CloudStack is ``CloudStack``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``publicApiKey`` (mandatory): a string providing your public API key. If you do not have a public/secret key pair, please refer to the CloudStack documentation to generate them, or contact your cloud administrator
 * ``secretApiKey`` (mandatory): a string providing your secret API key. If you do not have a public/secret key pair, please refer to the CloudStack documentation to generate them, or contact your cloud administrator
@@ -77,7 +82,7 @@ The following example shows a CloudStack builder with all the information to bui
   {
     "builders": [
       {
-        "type": "cloudstack-qcow2",
+        "type": "CloudStack KVM (QCOW2)",
         "account": {
           "type": "CloudStack",
           "name": "My CloudStack account",
@@ -119,7 +124,7 @@ Reference by file:
   {
     "builders": [
       {
-        "type": "cloudstack-qcow2",
+        "type": "CloudStack KVM (QCOW2)",
         "account": {
           "file": "/path/to/cloudstack-account.json"
         },
@@ -136,7 +141,7 @@ Reference by name, note the cloud account must already be created by using ``acc
   {
     "builders": [
       {
-        "type": "cloudstack-qcow2",
+        "type": "CloudStack KVM (QCOW2)",
         "account": {
           "name": "My CloudStack Account"
         },

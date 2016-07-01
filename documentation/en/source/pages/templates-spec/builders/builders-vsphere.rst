@@ -5,10 +5,14 @@
 VMware vSphere vCenter
 ======================
 
-Builder type: ``vcenter``
+Builder type: ``VMware vCenter``
 Require Cloud Account: Yes
 
 The VMware vCenter builder provides information for building VMware vSphere vCenter compatible machine images.
+This builder type is the default name provided by UForge AppCenter.
+
+.. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
+
 The VMware vCenter builder section has the following definition:
 
 .. code-block:: javascript
@@ -16,7 +20,7 @@ The VMware vCenter builder section has the following definition:
 	{
 	  "builders": [
 	    {
-	      "type": "vcenter",
+	      "type": "VMware vCenter",
 	      ...the rest of the definition goes here.
 	    }
 	  ]
@@ -27,19 +31,19 @@ Building a Machine Image
 
 For building an image, the valid keys are:
 
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for VMware vCenter: ``VMware vCenter``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``hardwareSettings`` (mandatory): an object providing hardware settings to be used for the machine image. The following valid keys for hardware settings are:
 	* ``memory`` (mandatory): an integer providing the amount of RAM to provide to an instance provisioned from the machine image (in MB).
 	* ``hwType`` (optional): an integer providing the hardware type for the machine image. This is the VMware hardware type: 4 (ESXi>3.x), 7 (ESXi>4.x) or 9 (ESXi>5.x)
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
 	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. This cannot be used if an advanced partitioning table is defined in the stack.
-* ``type`` (mandatory): the builder type: ``vcenter``
 
 Publishing a Machine Image
 --------------------------
 
 To publish an image, the valid keys are:
 
-* ``type`` (mandatory): a string providing the builder type: ``vcenter``
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for VMware vCenter: ``VMware vCenter``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the VMware vSphere vCenter cloud account information required to publish the built machine image.
 * ``clusterName`` (mandatory): a string providing the name of the cluster to register the machine image.
 * ``datacenterName`` (mandatory): a string providing the name of the datacenter to register the machine image.
@@ -55,7 +59,7 @@ Used to authenticate to VMware vSphere vCenter.
 
 The vCenter cloud account has the following valid keys:
 
-* ``type`` (mandatory): a string providing the builder type: ``vcenter``
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for VMware vCenter: ``VMware vCenter``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``login`` (mandatory): a string providing the user name to use to authenticate to the VMware vSphere vCenter platform
 * ``password`` (mandatory): a string providing the password to use to authenticate to the VMware vSphere vCenter platform
