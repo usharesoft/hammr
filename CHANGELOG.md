@@ -14,6 +14,7 @@ Bug fixes:
 Known issues:
 * Amazon AWS format is not working
 * Bootscript order is mandatory (incompatibility with Hammr on UForge AppCenter 3.5.1)
+* Not possible to use both hammr 0.2.x and hammr-3.6 on the same system
 
 0.2.5.10 (2016-04-29)
 ============================================
