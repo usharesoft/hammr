@@ -1,9 +1,9 @@
-1.0.0.0 (2016-07-31)
+1.0.0.0 (2016-07-01)
 ============================================
 Evolutions:
 * Compatility with UForge AppCenter 3.6
-** Target formats and target platforms support
-** Builder part has been updated
+  - Target formats and target platforms support
+  - Builder part has been updated
 * Hammr documentation is now inside github repository
 * Improve setup.py clean command
 * Hammr uses a new download utils
