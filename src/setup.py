@@ -47,7 +47,7 @@ setup (
   
   # Fill in these to make your Egg ready for upload to
   # PyPI
-  name = 'hammr',
+  name = 'hammr-3.6',
   version = VERSION,
   description='Command-line tool for building conistent and repeatable machine images for multiple cloud platforms',
   long_description='command-line tool for building/publishing/migrating consistent machine images for virtual datacenters and cloud platforms',

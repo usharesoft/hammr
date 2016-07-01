@@ -17,7 +17,7 @@ Run the following command:
 	$ sudo easy_install pip
 	$ sudo easy_install readline
 	$ sudo easy_install progressbar==2.3
-	$ sudo pip install hammr
+	$ sudo pip install hammr-3.6
 
 If you already have hammr installed and want to upgrade to the latest version you can run:
 
