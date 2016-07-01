@@ -37,7 +37,7 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Successfully scanned |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Scan successfully
 
-Once you have run the scan of your system, a scan report is saved to your account. You can list your scans by running ``scan list``. The output will be similar to the following. As you can see below, the “scanExample” is the group name. The actual scan appears below it with “Scan #1″ added to the name. If you run the scan on the same machine again, the scan number will increase. This allows you to compare scans.
+Once you have run the scan of your system, a scan report is saved to your account. You can list your scans by running ``scan list``. The output will be similar to the following. As you can see below, the “scanExample” is the group name. The actual scan appears below it with “Scan #1“ added to the name. If you run the scan on the same machine again, the scan number will increase. This allows you to compare scans.
 
 .. code-block:: shell
 
