@@ -1,3 +1,20 @@
+1.0.0.0 (2016-07-31)
+============================================
+Evolutions:
+* Compatility with UForge AppCenter 3.6
+** Target formats and target platforms support
+** Builder part has been updated
+* Hammr documentation is now inside github repository
+* Improve setup.py clean command
+* Hammr uses a new download utils
+
+Bug fixes:
+* Ability to specify a timezone inside "updateTo" field for "stack"
+
+Known issues:
+* Amazon AWS format is not working
+* Bootscript order is mandatory (incompatibility with Hammr on UForge AppCenter 3.5.1)
+
 0.2.5.10 (2016-04-29)
 ============================================
 Evolutions:
