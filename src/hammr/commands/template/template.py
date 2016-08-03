@@ -56,7 +56,7 @@ class Template(Cmd, CoreGlobal):
             if appliances is None or not hasattr(appliances, 'appliance'):
                 printer.out("No template")
             else:
-                images = self.api.Users(self.login).Images.Get()
+                images = self.api.Users(self.login).Images.Getall()
                 images = images.images
                 table = Texttable(800)
                 table.set_cols_dtype(["t","t","t","t","t","t","t","t","t","t"])
@@ -362,7 +362,7 @@ class Template(Cmd, CoreGlobal):
                 printer.out("No template found on the plateform")
                 return 0
             myAppliance=myAppliance[0]
-            rInstallProfile = self.api.Users(self.login).Appliances(myAppliance.dbId).Installprofile("").Get()
+            rInstallProfile = self.api.Users(self.login).Appliances(myAppliance.dbId).Installprofile("").Getdeprecated()
             if rInstallProfile is None:
                 printer.out("No installation found on the template '"+template["stack"]["name"]+"'", printer.ERROR)
                 return 0
@@ -528,7 +528,7 @@ class Template(Cmd, CoreGlobal):
             # appImport.useMajor = isUseMajor
             # appImport = self.api.Users(self.login).Imports.Import(appImport)
 
-            appImport = self.api.Users(self.login).Imports.Import(None, None, Imported=isImport, Force=isForce, Reusebundles=rbundles, Usemajor=isUseMajor)
+            appImport = self.api.Users(self.login).Imports.Import(Imported=isImport, Force=isForce, Reusebundles=rbundles, Usemajor=isUseMajor)
             if appImport is None:
                 if isImport:
                     printer.out("error importing appliance", printer.ERROR)

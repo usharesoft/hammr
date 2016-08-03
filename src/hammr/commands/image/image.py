@@ -48,10 +48,10 @@ class Image(Cmd, CoreGlobal):
             # call UForge API
             # get images
             printer.out("Getting all images and publications for [" + self.login + "] ...")
-            images = self.api.Users(self.login).Images.Get()
+            images = self.api.Users(self.login).Images.Getall()
             images = images.images.image
             # get publications
-            pimages = self.api.Users(self.login).Pimages.Get()
+            pimages = self.api.Users(self.login).Pimages.Getall()
             pimages = pimages.publishImages.publishImage
             if images is None or len(images) == 0:
                 printer.out("No images available")
@@ -126,7 +126,7 @@ class Image(Cmd, CoreGlobal):
 
             try:
                 if doArgs.id:
-                    images = self.api.Users(self.login).Images.Get()
+                    images = self.api.Users(self.login).Images.Getall()
                     images = images.images.image
                     if images is None or len(images) == 0:
                         printer.out("No images available")
@@ -212,7 +212,7 @@ class Image(Cmd, CoreGlobal):
                 return
             # call UForge API
             printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Get()
+            images = self.api.Users(self.login).Images.Getall()
             images = images.images.image
             if images is None or len(images) == 0:
                 printer.out("No images available")
@@ -266,7 +266,7 @@ class Image(Cmd, CoreGlobal):
                 return
             # call UForge API
             printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Get()
+            images = self.api.Users(self.login).Images.Getall()
             images = images.images.image
             if images is None or len(images) == 0:
                 printer.out("No images available")
@@ -327,7 +327,7 @@ class Image(Cmd, CoreGlobal):
                 return
             # call UForge API
             printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Get()
+            images = self.api.Users(self.login).Images.Getall()
             images = images.images.image
             if images is None or len(images) == 0:
                 printer.out("No images available")

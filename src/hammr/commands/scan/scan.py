@@ -371,7 +371,7 @@ class Scan(Cmd, CoreGlobal):
                     statusWidget.status = status
                     progress.update(status.percentage)
                     status = (self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
-                        myScan.dbId).Imports().Get(Status="true", I=rScanImport.uri)).status[0]
+                        myScan.dbId).Imports().Status().Get(I=rScanImport.uri)).status[0]
                     time.sleep(2)
                 statusWidget.status = status
                 progress.finish()
