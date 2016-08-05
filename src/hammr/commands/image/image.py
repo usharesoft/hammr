@@ -70,19 +70,19 @@ class Image(Cmd, CoreGlobal):
                 print table.draw() + "\n"
                 printer.out("Found " + str(len(images)) + " images")
 
-            if pimages is None or not hasattr(pimages, 'get_publishImage'):
+            if pimages is None or len(pimages) == 0:
                 printer.out("No publication available")
             else:
                 printer.out("Publications:")
                 table = Texttable(800)
                 table.set_cols_dtype(["t", "t", "t", "t", "t", "t"])
                 table.header(["Template name", "Image ID", "Account name", "Format", "Cloud ID", "Status"])
-                pimages = generics_utils.order_list_object_by(pimages.get_publishImage(), "name")
+                pimages = generics_utils.order_list_object_by(pimages, "name")
                 for pimage in pimages:
                     pubStatus = self.get_publish_status(pimage.status)
                     table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri),
                                    pimage.credAccount.name if pimage.credAccount is not None else "-",
-                                   generate_utils.map_format(pimage.format.name),
+                                   pimage.credAccount.targetPlatform.name,
                                    pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
                 print table.draw() + "\n"
                 printer.out("Found " + str(len(pimages)) + " publications")
