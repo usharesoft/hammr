@@ -42,7 +42,7 @@ The following example shows the declaration of two boot scripts, one to be execu
 	      "name": "check-stats.sh",
 	      "source": "http://downloads.mysite.com/config/check-stats.sh",
 	      "type": "bootscript",
-	      "frequency": "everyboot"
+	      "frequency": "everyboot",
 	      "order": "1"
 	    }
 	  ]
