@@ -140,6 +140,7 @@ class TestTemplate(unittest.TestCase):
                 template.set_globals(api, login, password)
                 id = get_template_id(template, "templateFull")
                 r = template.do_export("--id "+id)
+                os.remove("archive.tar.gz")
                 self.assertEqual(r, 0)
 
 

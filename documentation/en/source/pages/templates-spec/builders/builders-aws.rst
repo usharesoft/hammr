@@ -35,11 +35,9 @@ Building a Machine Image
 For building an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Amazon: ``Amazon AWS``. To get the available builder type, please refer to :ref:`command-line-format`
-* ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
 * ``disableRootLogin`` (optional): a boolean flag to determine if root login access should be disabled for any instance provisioned from the machine image.
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
-	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. If the machine image is to be stored in Amazon S3, the maximum disk size is 10GB, otherwise if this is an EBS-backed machine image the maximum disk size is 1TB.
-* ``ebs`` (optional): a boolean flag to determine if the machine image should be EBS-backed.
+	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. As EBS-backed machine image is created, the maximum disk size is 1TB.
 
 Publishing a Machine Image
 --------------------------

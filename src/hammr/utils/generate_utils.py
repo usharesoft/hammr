@@ -168,23 +168,14 @@ def generate_azure(image, builder, installProfile, api, login):
     return image, installProfile
 
 
-def generate_ami(image, builder, installProfile, api, login):
-    if not "account" in builder:
-        printer.out("Account not found in builder", printer.ERROR)
-        return None, None, None
-    if not "name" in builder["account"]:
-        printer.out("Account anme not found in builder", printer.ERROR)
-        return None, None, None
+def generate_aws(image, builder, installProfile, api, login):
+    image.ebs = True
+    if "diskSize" in builder["installation"]:
+        image.ebsVolumeSize = builder["installation"]["diskSize"]
+    else:
+        printer.out("No disksize set for ebs volume in builder [aws]", printer.ERROR)
+        return None, None
 
-    accounts = api.Users(login).Accounts.Getall()
-    if accounts is None or not hasattr(accounts, 'get_credAccount'):
-        printer.out("No accounts available", printer.ERROR)
-        return None, None, None
-
-    for account in accounts.get_credAccount():
-        if account.name == builder["account"]["name"]:
-            image.credAccount = account
-            break
     if "disableRootLogin" in builder:
         myrootUser = osUser()
         if builder["disableRootLogin"] == "true":
@@ -192,20 +183,10 @@ def generate_ami(image, builder, installProfile, api, login):
         elif builder["disableRootLogin"] == "false":
             val = False
         else:
-            printer.out("Unknown value for 'disableRootLogin' in builder [ami]", printer.ERROR)
-            return None, None, None
+            printer.out("Unknown value for 'disableRootLogin' in builder [aws]", printer.ERROR)
+            return None, None
         myrootUser.disablePasswordLogin = val
         installProfile.rootUser = myrootUser
-
-    if "updateAWSTools" in builder:
-        image.update
-
-    if "ebs" in builder:
-        if "installation" in builder and "diskSize" in builder["installation"]:
-            installProfile.ebsVolumeSize = builder["installation"]["diskSize"]
-        else:
-            printer.out("No disksize set for ebs volume in builder [ami]", printer.ERROR)
-            return None, None, None
 
     image.compress = False
     return image, installProfile
