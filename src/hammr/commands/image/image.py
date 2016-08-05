@@ -112,10 +112,12 @@ class Image(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_publish()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             # --
             file = generics_utils.get_file(doArgs.file)
             if file is None:

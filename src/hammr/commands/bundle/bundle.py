@@ -72,10 +72,12 @@ class Bundle(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_delete()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             #call UForge API
             printer.out("Searching bundle with id ["+doArgs.id+"] ...")
             myBundle = self.api.Users(self.login).Mysoftware(doArgs.id).Get()

@@ -90,10 +90,12 @@ class Hammr(Cmd):
     def do_batch(self, args):
         try:
             doParser = self.arg_batch()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             with open(doArgs.file) as f:
                 for line in f:
                     try:

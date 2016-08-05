@@ -29,7 +29,7 @@ requires=['uforge_python_sdk>=3.6.0.8',
                     'termcolor==1.1.0',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
-                    'ussclicore']
+                    'ussclicore==1.0.7']
 
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""

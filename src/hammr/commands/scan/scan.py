@@ -89,10 +89,12 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_run()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             # download scan binary
             uri = generics_utils.get_uforge_url_from_ws_url(self.api._url)
             download_url = uri + constants.URI_SCAN_BINARY

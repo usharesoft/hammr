@@ -95,11 +95,13 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_export()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
-                #call UForge API
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
+            #call UForge API
             printer.out("Exporting template with id ["+doArgs.id+"] :")
             myAppliance = self.api.Users(self.login).Appliances(doArgs.id).Get()
             if myAppliance is None or type(myAppliance) is not Appliance:
@@ -160,11 +162,13 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_import()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
-                #call UForge API
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
+            #call UForge API
             return self.import_stack(doArgs.file, True, doArgs.force, doArgs.rbundles, doArgs.use_major)
         except ArgumentParserError as e:
             printer.out("In Arguments: "+str(e)+"\n", printer.ERROR)
@@ -188,10 +192,12 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_validate()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
@@ -225,10 +231,12 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_create()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             #--
             #get json file (remote or local)
             file = generics_utils.get_file(doArgs.file)
@@ -342,10 +350,12 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_build()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             #--
             template=validate_json_file(doArgs.file)
             if template is None:
@@ -583,10 +593,12 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_delete()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
             #call UForge API
             printer.out("Searching template with id ["+doArgs.id+"] ...")
             myAppliance = self.api.Users(self.login).Appliances(doArgs.id).Get()
@@ -631,11 +643,13 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_clone()
-            try:
-                doArgs = doParser.parse_args(args.split())
-            except SystemExit as e:
-                return
-                #call UForge API
+            doArgs = doParser.parse_args(args.split())
+
+            #if the help command is called, parse_args returns None object
+            if not doArgs:
+                    return 2
+
+            #call UForge API
             printer.out("Clonnig template with id ["+doArgs.id+"] ...")
             myAppliance = appliance()
             myAppliance.name = doArgs.name
