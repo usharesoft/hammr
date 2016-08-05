@@ -50,7 +50,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             # call UForge API
             printer.out("Getting scans for [" + self.login + "] ...")
-            myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+            myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
             myScannedInstances = myScannedInstances.scannedInstances.scannedInstance
             if myScannedInstances is None or len(myScannedInstances) == 0:
                 printer.out("No scans available")
@@ -123,7 +123,7 @@ class Scan(Cmd, CoreGlobal):
             printer.out("Searching scan on uforge ...")
             running = True
             while running:
-                myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true",
+                myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
                                                                                     Name=doArgs.name)
                 myScannedInstances = myScannedInstances.scannedInstances.scannedInstance
                 if myScannedInstances is None or len(myScannedInstances) == 0:
@@ -199,15 +199,15 @@ class Scan(Cmd, CoreGlobal):
                 return 2
             data = generics_utils.check_json_syntax(file)
             if "builders" in data:
-                builders = generics_utils.check_mandatory_builders(data["builders"])
-                builders = generics_utils.check_mandatory_generate_scan(builders)
+                builders = hammr_utils.check_mandatory_builders(data["builders"])
+                builders = hammr_utils.check_mandatory_generate_scan(builders)
             else:
                 printer.out("no builder section found", printer.ERROR)
                 return
             if builders is None:
                 return
             try:
-                myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+                myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
                 if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
                     printer.out("scan not found", printer.ERROR)
                     return
@@ -342,7 +342,7 @@ class Scan(Cmd, CoreGlobal):
                 return
 
             printer.out("Import scan id [" + doArgs.id + "] ...")
-            myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+            myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
             if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
                 printer.out("scan not found", printer.ERROR)
                 return
@@ -445,7 +445,7 @@ class Scan(Cmd, CoreGlobal):
                 if searchedScanType == 'all':
                     extraInfo = 'Retrieving all scan instances and associated scans'
             printer.out(extraInfo)
-            myScannedInstances = self.api.Users(self.login).Scannedinstances.Get(None, Includescans="true")
+            myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
             myScannedInstances = myScannedInstances.scannedInstances.scannedInstance
             if myScannedInstances is None or len(myScannedInstances) == 0:
                 printer.out("Nothing found")
