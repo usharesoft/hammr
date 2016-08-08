@@ -1,3 +1,14 @@
+hammr-3.6 1.0 (2016-08-08)
+============================================
+Evolutions:
+* Compatibility with UForge AppCenter 3.6
+* new way to handle helper in argument parser library
+* Amazon AWS format support and cleanup
+
+Bug fixes:
+* scan build method generate exception
+* publication is not displayed in hammr image list command
+
 hammr-3.6 0.1 (2016-07-01)
 ============================================
 Evolutions:
