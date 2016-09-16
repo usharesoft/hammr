@@ -206,28 +206,28 @@ else:
         elif "user" in data:
             username=data["user"]
         else:
-            printer.out("username not found in credentials file", printer.ERROR, 1)
+            printer.out("username not found in credentials file", printer.ERROR)
         if mainArgs.password:
             password=mainArgs.password
         elif "password" in data:
             password=data["password"]
         else:
-            printer.out("password not found in credentials file", printer.ERROR, 1)
+            printer.out("password not found in credentials file", printer.ERROR)
         if mainArgs.url:
             url=mainArgs.url
         elif "url" in data:
             url=data["url"]
         else:
-            printer.out("url not found in credentials file", printer.ERROR, 1)
+            printer.out("url not found in credentials file", printer.ERROR)
         printer.out("Using url " + url, printer.INFO)
         if "acceptAutoSigned" in data:
             sslAutosigned=data["acceptAutoSigned"]
         else:
             sslAutosigned=True
     except ValueError as e:
-        printer.out("JSON parsing error in credentials file: "+str(e), printer.ERROR, 1)
+        printer.out("JSON parsing error in credentials file: "+str(e), printer.ERROR)
     except IOError as e:
-        printer.out("File error in credentials file: "+str(e), printer.ERROR, 1)
+        printer.out("File error in credentials file: "+str(e), printer.ERROR)
 
 #UForge API instanciation
 api = Api(url, username = username, password = password, headers = None, disable_ssl_certificate_validation = sslAutosigned, timeout = constants.HTTP_TIMEOUT)
