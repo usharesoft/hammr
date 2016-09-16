@@ -5,7 +5,7 @@
 files
 =====
 
-Within a ``bundle``, the ``files`` sub-section describes the list of files, binaries, archives or native packages that are part of the bundle.
+Within a ``bundle``, the ``files`` sub-section describes the list of files, binaries, archives or native packages that are part of the bundle. Within the ``files`` you can also list a folder.
 
 The definition of a files section is:
 
@@ -35,6 +35,8 @@ Basic Example
 
 The following example shows how to declare a set of files to uploaded as part of a bundle.
 
+.. note:: If you declare the same file twice, the second file will overwrite the first one.
+
 .. code-block:: json
 
 	{
@@ -45,6 +47,24 @@ The following example shows how to declare a set of files to uploaded as part of
 	    }
 	  ]
 	}
+
+Example of a Folder in Files Sub-section
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following example shows how to declare a folder to be uploaded as part of a bundle. All the files within the declared bundle will be uploaded.
+
+.. note:: You cannot upload the same source folder with two different names. In the end, the source folder and files will only be uploaded once.
+
+.. code-block:: json
+
+      {
+        "files": [
+          {
+            "name": "folder",
+            "source": "/usr/local/folder"
+          }
+        ]
+      }
 
 
 Overriding Bundle Destination

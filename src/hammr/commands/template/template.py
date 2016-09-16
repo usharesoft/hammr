@@ -205,7 +205,7 @@ class Template(Cmd, HammrGlobal):
                 return doParser
         
         def do_create(self, args):
-                try:            
+                try:
                         #add arguments
                         doParser = self.arg_create()
                         try:
@@ -235,24 +235,52 @@ class Template(Cmd, HammrGlobal):
                                                 printer.out("No source file found in config", printer.ERROR)
                                                 return 2
                         try:
+                                checkList = []
                                 if "bundles" in template["stack"]:
                                         for bundle in template["stack"]["bundles"]:
                                                 if "files" in bundle:
                                                         for files in bundle["files"]:
-                                                                #add to list of file to tar
-                                                                file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
-                                                                archive_files.append([file_tar_path,files["source"]])
-                                                                #changing source path to archive related source path
-                                                                files["source"]=file_tar_path
+                                                                #if it's a directory
+                                                                if os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
+                                                                        #add the source path to the check list
+                                                                        checkList.append(ntpath.basename(files["source"]))
+
+                                                                        # creating an archive and add it to the file_tar_path
+                                                                        output_filename = files["name"] + ".tar.gz"
+                                                                        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(output_filename)
+                                                                        source_dir = files["source"]
+                                                                        with tarfile.open(output_filename, "w:gz") as tar:
+                                                                                tar.add(source_dir, arcname=os.path.basename(source_dir))
+                                                                                tar.close
+                                                                        archive_files.append([file_tar_path,output_filename])
+
+                                                                        #changing the name of the file
+                                                                        files["name"] = output_filename
+
+                                                                        #changing source path to archive related source path
+                                                                        files["source"]=file_tar_path
+                                                                #if it's a file
+                                                                elif not os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
+                                                                        #add the source path to the check list
+                                                                        checkList.append(ntpath.basename(files["source"]))
+
+                                                                        #add to list of file to tar
+                                                                        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
+                                                                        archive_files.append([file_tar_path,files["source"]])
+                                                                        #changing source path to archive related source path
+                                                                        files["source"]=file_tar_path
+                                                                else:
+                                                                        printer.out("found two files with the same source path in the bundles section", printer.ERROR)
+                                                                        return 2
                                                 else:
                                                         printer.out("No files section found for bundle", printer.ERROR)
                                                         return 2
                                                 if "license" in bundle and "source" in bundle["license"]:
                                                         #add to list of file to tar
-                                                        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(bundle["license"]["source"])) 
+                                                        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(bundle["license"]["source"]))
                                                         archive_files.append([file_tar_path,bundle["license"]["source"]])
                                                         #changing source path to archive related source path
-                                                        bundle["license"]["source"]=file_tar_path                                              
+                                                        bundle["license"]["source"]=file_tar_path
                         except KeyError as e:
                                 printer.out("Error in bundle", printer.ERROR)
                                 return 2
@@ -262,8 +290,8 @@ class Template(Cmd, HammrGlobal):
                                 archive_files.append([file_tar_path,template["stack"]["source_logo"]])
                                 #changing source path to archive related source path
                                 template["stack"]["source_logo"]=file_tar_path
-                        
-                        
+
+
                         if os.path.isdir(constants.TMP_WORKING_DIR):
                                 #delete tmp dir
                                 shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -272,25 +300,25 @@ class Template(Cmd, HammrGlobal):
                         json.dump(template, file, indent=4, separators=(',', ': '))
                         file.close()
                         archive_files.append([constants.TEMPLATE_JSON_FILE_NAME, constants.TMP_WORKING_DIR+ os.sep +constants.TEMPLATE_JSON_NEW_FILE_NAME])
-                        
-                        
+
+
                         if doArgs.archive_path is not None:
                                 tar_path = doArgs.archive_path
                         else:
                                 tar_path = constants.TMP_WORKING_DIR+os.sep+"archive.tar.gz"
                         tar = tarfile.open(tar_path, "w|gz")
                         for file_tar_path,file_global_path in archive_files:
-                                file = generics_utils.get_file(file_global_path)                                        
+                                file = generics_utils.get_file(file_global_path)
                                 if file is None:
                                         return 2
                                 tar.add(file, arcname=file_tar_path)
                         tar.close()
-                        
+
                         #arhive is created, doing import
                         r = self.import_stack(tar_path, False, doArgs.force, doArgs.rbundles, doArgs.use_major)
                         if r != 0:
                                 return r
-                        
+
                         #delete tmp dir
                         shutil.rmtree(constants.TMP_WORKING_DIR)
                         return 0
@@ -301,9 +329,9 @@ class Template(Cmd, HammrGlobal):
                 except ArgumentParserError as e:
                         printer.out("In Arguments: "+str(e), printer.ERROR)
                         self.help_create()
-                except Exception as e:        
+                except Exception as e:
                         return generics_utils.handle_uforge_exception(e)
-            
+
         def help_create(self):
                 doParser = self.arg_create()
                 doParser.print_help()

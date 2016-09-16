@@ -1,0 +1,39 @@
+{
+  "stack": {
+    "name": "mycustomTemplate",
+    "version": "1.1",
+    "os": {
+      "name": "CentOS",
+      "version": "7",
+      "arch": "x86_64",
+      "profile": "Minimal",
+      "pkgs": [
+        {
+          "name": "nginx"
+        }
+      ]
+    },
+    "installation": {
+      "diskSize": 12288
+    },
+    "bundles": [
+      {
+        "name": "myBundle",
+        "version": "6.0",
+        "destination": "/tmp/myBundle",
+        "files": [
+          {
+            "name": "directoryTest",
+            "source": "data/directoryTest",
+            "destination": "/usr/local/myBundle",
+            "extract": true
+          }
+        ],
+        "license": {
+          "name": "license.html",
+          "source": "~/custom.json"
+        }
+      }
+    ]
+  }
+}
