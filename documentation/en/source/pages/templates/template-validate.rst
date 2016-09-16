@@ -9,7 +9,7 @@ Once you have created and modified your template file, it is best practice to va
 
 .. code-block:: shell
 
-	$ hammr validate --file <path/filename>.json
+	$ hammr template validate --file <path/filename>.json
 	Validating the template file [/Users/james/nginx-template.json] ...
 	OK: Syntax of template file [/Users/james/nginx-template.json] is ok
 
