@@ -106,6 +106,12 @@ class TestTemplate(unittest.TestCase):
                 r = template.do_create("--file data/template.json")
                 self.assertNotEqual(r, None)
 
+        def test_04_create_bundle_with_directory(self):
+                template = hammr.commands.template.Template()
+                template.set_globals(api, login, password)
+                r = template.do_create("--file data/templateForBundleDirectoryTest.json")
+                self.assertEqual(r, 0)
+
         def test_05_build(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
