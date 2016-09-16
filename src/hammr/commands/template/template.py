@@ -33,6 +33,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget
 from hammr.utils.hammr_utils import *
 from hammr.utils import constants
 from hammr.utils import generate_utils
+from os.path import realpath
 
 
 class Template(Cmd, CoreGlobal):
@@ -204,6 +205,7 @@ class Template(Cmd, CoreGlobal):
             template=validate_json_file(file)
             if template is None:
                 return 2
+            print "OK : Syntax of template file [" + realpath(file) + "] is ok"
             return 0
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
