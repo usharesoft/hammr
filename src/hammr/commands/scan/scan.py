@@ -18,6 +18,7 @@ import os.path
 import shutil
 import paramiko
 import getpass
+import shlex
 import sys
 import time
 
@@ -89,7 +90,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_run()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -190,7 +191,7 @@ class Scan(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_build()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # --
@@ -335,9 +336,8 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_import()
-            # doParser.add_argument('--org', dest='org', required=False)
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
 
@@ -421,7 +421,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             doParser = self.arg_delete()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API

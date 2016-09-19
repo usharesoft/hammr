@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import shlex
 from texttable import Texttable
 from ussclicore.argumentParser import ArgumentParser, ArgumentParserError
 from ussclicore.cmd import Cmd, CoreGlobal
@@ -72,7 +73,7 @@ class Bundle(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_delete()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
