@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import shlex
 from hurry.filesize import size
 
 from texttable import Texttable
@@ -90,7 +91,7 @@ class Os(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_search()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
