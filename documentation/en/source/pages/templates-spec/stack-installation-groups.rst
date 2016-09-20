@@ -15,7 +15,7 @@ The definition of a groups section is:
 	    ...the list of groups goes here.
 	]
 
-The valid keys to use within a user are:
+The valid keys to use within a group are:
 
 * ``name`` (mandatory): a string providing the name of the group. The name cannot contain any spaces.
 * ``systemGroup`` (optional): a boolean determining if the group is a system user.

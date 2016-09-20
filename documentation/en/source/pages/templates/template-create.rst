@@ -11,7 +11,7 @@ The mandatory values when creating a template are:
 
 	* ``name``: the name of the template to create. You can easily make the name unique by using the timestamp keyword (surrounded by curly brackets).
 	* ``version``: the version of the template.
-	* ``os`` : the operating system details to use the in your images. You must include the OS family name, version and architecture type. For more information regarding OS and package parameters, see Adding OSes and Packages to Your Template
+	* ``os`` : the operating system details to use the in your images. You must include the OS family name, version and architecture type. For more information regarding OS and package parameters, see :ref:`template-add-pkgs`
 	
 For more details about the various parameters you can set in your template to define the machine image you want to create, refer to the :ref:`templates-spec` section.
 

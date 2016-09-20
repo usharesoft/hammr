@@ -6,6 +6,7 @@ VHD
 ===
 
 Default builder type: ``VHD``
+
 Require Cloud Account: No
 
 The VHD builder provides information for building VHD (Virtual Hard Disk) compatible machine images.

@@ -6,6 +6,7 @@ VMware vCloud Director
 ======================
 
 Default builder type: ``VMware vCloud Director``
+
 Require Cloud Account: Yes
 
 The VMware vCloud Director builder provides information for building VMware vCloud Director compatible machine images.
