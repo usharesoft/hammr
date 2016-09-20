@@ -18,7 +18,7 @@ The definition of a pkgs section is:
 The valid keys to use within the pkgs object are:
 
 * ``arch`` (optional): a string providing architecture to use
-* fullName (optional): a string providing the name, version, release and architecture information. If used, the mandatory name key is not required.
+* ``fullName`` (optional): a string providing the name, version, release and architecture information. If used, the mandatory name key is not required.
 * ``name`` (mandatory): a string providing the name of the package to use
 * ``release`` (optional): a string providing the release of the package to use
 * ``version`` (optional): a string providing the version of the package to use
@@ -63,7 +63,7 @@ The following example uses CentOS 6.4 64 bit operating system for the template a
 Adding a Version and Release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By adding ``version``, ``release`` and ``arch`` or ``fullName`, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called making the package "sticky".
+By adding ``version``, ``release`` and ``arch`` or ``fullName``, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called making the package "sticky".
 
 .. code-block:: json
 

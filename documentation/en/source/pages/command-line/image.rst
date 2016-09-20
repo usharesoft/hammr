@@ -34,7 +34,7 @@ Deletes a machine image or publish information. The options are:
 
 Downloads a machine image to the local filesystem. The options are:
 
-	* ``--id`` (mandatory): the ID of the machine image to delete
+	* ``--id`` (mandatory): the ID of the machine image to download
 	* ``--file`` (mandatory): the pathname where to store the machine image
 
 ``list`` sub-command

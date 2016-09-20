@@ -6,6 +6,7 @@ Vagrant Base Box
 ================
 
 Default builder type: ``Vagrant Base Box``
+
 Require Cloud Account: No
 
 The Vagrant builder provides information for building Vagrant base-box machine images.

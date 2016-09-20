@@ -7,7 +7,7 @@ Publishing a Machine Image
 
 In order to publish a machine image of the template you created, you must make sure that the ``builders`` section of the template has the necessary info for each machine image you want to publish to. This includes defining the machine image you want to build as well the information for the cloud platform you want to publish you.
 
-You will also need to set the information for your cloud account. We recommend that this information not be included in the template file, but rather set as a value that hammr will access in a seperate read-only file. For more information on creating a credential file with your cloud account information refer to the details in .
+You will also need to set the information for your cloud account. We recommend that this information not be included in the template file, but rather set as a value that hammr will access in a seperate read-only file. For more information on creating a credential file with your cloud account information refer to the details in :ref:`cloud-accounts`.
 
 The following is an example of the builders section illustrating the publication to OpenStack. Note that you can incorporate details for several cloud platforms in the same configuration file. For details of the required parameters for each of the image types, refer to the documentation.
 

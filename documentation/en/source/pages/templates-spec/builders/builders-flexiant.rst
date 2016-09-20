@@ -11,7 +11,8 @@ Require Cloud Account: Yes
 
 `flexiant.com <http://flexiant.com>`_
 
-The Flexiant builder provides information for building and publishing the machine image to a Flexiant cloud platform. This builder supports KVM (``Flexiant QCOW2 - KVM/Xen/VMware``), VMware (``Flexiant OVA - VMware``) or Raw (``Flexiant RAW - KVM/Xen`) based images for Flexiant.
+The Flexiant builder provides information for building and publishing the machine image to a Flexiant cloud platform. This builder supports KVM (``Flexiant QCOW2 - KVM/Xen/VMware``), VMware (``Flexiant OVA - VMware``) or Raw (``Flexiant RAW - KVM/Xen``) based images for Flexiant.
+
 These builder types are the default names provided by UForge AppCenter.
 
 .. note:: These builder type names can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`

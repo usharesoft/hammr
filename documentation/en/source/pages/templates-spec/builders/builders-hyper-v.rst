@@ -6,6 +6,7 @@ Hyper-V
 =======
 
 Default builder type: ``Hyper-V``
+
 Require Cloud Account: No
 
 This builder type is the default name provided by UForge AppCenter.
