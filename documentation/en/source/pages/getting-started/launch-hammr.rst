@@ -100,6 +100,7 @@ For example
 
 These parameters need to be passed each time you wish to use the command-line.
 
+.. _credential-file:
 
 Using a Credential File
 -----------------------
