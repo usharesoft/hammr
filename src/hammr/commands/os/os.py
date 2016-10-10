@@ -82,9 +82,9 @@ class Os(Cmd, CoreGlobal):
         mandatory.add_argument('--id', dest='id', required=True, help="Os id")
         mandatory.add_argument('--pkg', dest='pkg', required=True, help='''\
                 Regular expression of the package:\n\
-                "string" : search all packages wich contains "string"\n\
-                "*string": search all packages wich start with "string"\n\
-                "string*": search all packages wich end with "string"''')
+                "string" : search all packages which contains "string"\n\
+                "*string": search all packages which end with "string"\n\
+                "string*": search all packages which start with "string"''')
         return doParser
 
     def do_search(self, args):
