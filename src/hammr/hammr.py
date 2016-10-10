@@ -28,6 +28,7 @@ import getpass
 import os
 import json
 import sys
+import shlex
 
 
 from ussclicore.cmd import Cmd, CmdUtils
@@ -90,7 +91,7 @@ class Hammr(Cmd):
     def do_batch(self, args):
         try:
             doParser = self.arg_batch()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:

@@ -14,6 +14,7 @@
 #    under the License.
 
 import time
+import shlex
 from hurry.filesize import size
 
 from texttable import Texttable
@@ -112,7 +113,7 @@ class Image(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_publish()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -209,7 +210,7 @@ class Image(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_delete()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
@@ -263,7 +264,7 @@ class Image(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_cancel()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
@@ -324,7 +325,7 @@ class Image(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_download()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
