@@ -6,6 +6,7 @@ Raw
 ===
 
 Default builder type: ``Raw Virtual Disk``
+
 Require Cloud Account: No
 
 The Raw builder provides information for building a Raw Virtual Disk compatible machine images.

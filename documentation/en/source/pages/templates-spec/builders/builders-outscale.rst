@@ -6,6 +6,7 @@ Outscale
 ========
 
 Default builder type: ``Outscale``
+
 Require Cloud Account: Yes
 
 `outscale.com <http://outscale.com>`_

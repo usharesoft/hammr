@@ -80,7 +80,7 @@ The Amazon cloud account has the following valid keys:
 * ``x509PrivateKey`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate private key. This private key is provided during the X.509 creation process. AWS does not store this private key, so you must download it and store it during this creation process. To create a X.509 certificate, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > X.509 Certificates and create a new certificate. Download and save the Private Key. This should be a (.pem) file
 * ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 
-Note: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
+.. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
 Example
 -------
@@ -112,6 +112,7 @@ The following example shows an amazon builder with all the information to build 
   }
 
 Referencing the Cloud Account
+-----------------------------
 
 To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``aws-account.json``.
 
