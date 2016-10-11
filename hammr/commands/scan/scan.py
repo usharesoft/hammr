@@ -18,6 +18,7 @@ import os.path
 import shutil
 import paramiko
 import getpass
+import shlex
 import sys
 import time
 
@@ -77,6 +78,8 @@ class Scan(Cmd, CoreGlobal):
         mandatory.add_argument('--name', dest='name', required=True,
                                help="the scan name to use when creating the scan meta-data")
         optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--scan-port', dest='port', required=False,
+                              help="the ssh port of the running system")
         optional.add_argument('--scan-password', dest='password', required=False,
                               help="the root password to authenticate to the running system")
         optional.add_argument('--dir', dest='dir', required=False,
@@ -89,7 +92,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_run()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -190,7 +193,7 @@ class Scan(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_build()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # --
@@ -335,9 +338,8 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_import()
-            # doParser.add_argument('--org', dest='org', required=False)
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
 
@@ -421,7 +423,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             doParser = self.arg_delete()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
@@ -504,6 +506,10 @@ class Scan(Cmd, CoreGlobal):
             passW = getpass.getpass('Password for %s@%s: ' % (username, hostname))
         else:
             passW = args.password
+        if not args.port:
+            port = 22
+        else:
+            port = int(args.port)
 
         # paramiko.util.log_to_file('/tmp/ssh.log') # sets up logging
 
@@ -532,7 +538,7 @@ class Scan(Cmd, CoreGlobal):
                 dir = "/tmp"
             else:
                 dir = args.dir
-            t = paramiko.Transport((hostname, 22))
+            t = paramiko.Transport((hostname, port))
             t.connect(username=username, password=passW, hostkey=hostkey)
             sftp = paramiko.SFTPClient.from_transport(t)
 
@@ -543,7 +549,7 @@ class Scan(Cmd, CoreGlobal):
             client = paramiko.SSHClient()
             client.load_system_host_keys()
             client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
-            client.connect(hostname, 22, username, passW)
+            client.connect(hostname, port, username, passW)
 
             # test service
             stdin, stdout, stderr = client.exec_command(

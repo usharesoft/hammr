@@ -19,6 +19,7 @@ import os.path
 import ntpath
 import shutil
 import json
+import shlex
 from junit_xml import TestSuite, TestCase
 
 from texttable import Texttable
@@ -96,7 +97,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_export()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -163,7 +164,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_import()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -193,7 +194,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_validate()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -233,7 +234,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_create()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -373,7 +374,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_build()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -616,7 +617,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_delete()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -666,7 +667,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_clone()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -677,7 +678,7 @@ class Template(Cmd, CoreGlobal):
             myAppliance = appliance()
             myAppliance.name = doArgs.name
             myAppliance.version = doArgs.version
-            rAppliance = self.api.Users(self.login).Appliances(doArgs.id).Clones.Clone(myAppliance)
+            rAppliance = self.clone_appliance(doArgs.id, myAppliance)
             if type(rAppliance) is Appliance:
                 printer.out("Clonned successfully", printer.OK)
             else:
@@ -688,6 +689,8 @@ class Template(Cmd, CoreGlobal):
         except Exception as e:
             return handle_uforge_exception(e)
 
+    def clone_appliance(self, id, appliance):
+        return self.api.Users(self.login).Appliances(id).Clones.Clone(appliance)
 
     def help_clone(self):
         doParser = self.arg_clone()
