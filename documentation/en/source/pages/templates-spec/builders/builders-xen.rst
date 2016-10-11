@@ -6,6 +6,7 @@ Xen
 ===
 
 Default builder type: ``Xen``
+
 Require Cloud Account: No
 
 The Xen builder provides information for building a Xen.org compatible machine images.

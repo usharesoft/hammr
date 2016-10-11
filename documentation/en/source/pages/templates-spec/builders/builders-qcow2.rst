@@ -6,6 +6,7 @@ QCOW2
 =====
 
 Default builder type: ``QCOW2``
+
 Require Cloud Account: No
 
 The QCOW2 builder provides information for building a QCOW2 compatible machine images.

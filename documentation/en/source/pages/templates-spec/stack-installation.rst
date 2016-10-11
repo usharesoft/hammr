@@ -17,14 +17,14 @@ The definition of a pkgs section is:
 
 The valid keys to use within an installation are:
 
-* ``diskSize`` (optional): an integer value (in MB) providing the disk size of the machine image. This value is ignored if an advanced partitioning table is provided (see xxx)
+* ``diskSize`` (optional): an integer value (in MB) providing the disk size of the machine image. This value is ignored if an advanced partitioning table is provided (see :ref:`stack-installation-partitioning`)
 * ``displayLicense`` (optional): a boolean value to display any EULA during the first boot of a provisioned instance (includes operating system EULA and any license information provided in the :ref:`stack-bundles` section of the stack). If the value is ``false`` then no license information is displayed. If ``displayLicense`` is not used, then by default all license information is displayed during first boot.
 * ``internetSettings`` (optional): a string providing the network settings. Only two possible values ``dhcp`` or ``static``. If no value is provided, dhcp is set by default.
 * ``kernelParams`` (optional): an array of strings providing the kernel parameters to use. These parameters are used when provisioning an instance from the machine image. If no kernel parameters are provided, the ``rhbg`` and ``quiet`` parameters are set by default
 * ``keyboard`` (optional): a string providing the keyboard layout to use. If no keyboard setting is provided, then during first boot the keyboard setting is prompted. See :ref:`stack-installation-keyboard` sub-section for all available values for keyboard
 * ``partitioning`` (optional): an array of objects describing an advanced partitioning table. Refer to :ref:`stack-installation-partitioning` sub-section for more information.
 * ``rootUser`` (optional): an object describing the configuration information of the root user (or primary administrator). If ``rootUser`` is not provided, then during first boot the root user password is prompted
-* ``swapSize`` (optional): an integer value (in MB) providing the swap size to be allocated. This value is ignored if an advanced partitioning table is provided (see xxx)
+* ``swapSize`` (optional): an integer value (in MB) providing the swap size to be allocated. This value is ignored if an advanced partitioning table is provided (see :ref:`stack-installation-partitioning`)
 * ``timezone`` (optional): a string providing the timezone to use. If no timezone is provided, then during first boot the timezone is prompted. See :ref:`stack-installation-timezone` sub-section for all available values for timezone.
 * ``firewall`` (optional): a boolean to enable or disable the firewall service. If no firewall is given, then the firewall is asked during installation.
 * ``welcomeMessage`` (optional): a string providing a welcome message displayed during the first boot of a provisioned instance

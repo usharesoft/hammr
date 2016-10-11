@@ -6,6 +6,7 @@ VMware vSphere vCenter
 ======================
 
 Builder type: ``VMware vCenter``
+
 Require Cloud Account: Yes
 
 The VMware vCenter builder provides information for building VMware vSphere vCenter compatible machine images.
@@ -68,7 +69,7 @@ The vCenter cloud account has the following valid keys:
 * ``port`` (optional): an integer providing the VMware vSphere vCenter platform port number (by default: 443 is used).
 * ``proxyPort`` (optional): an integer providing the proxy port number to use to reach the VMware vSphere vCenter platform.
 
-..note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
+.. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
 Example
 -------
