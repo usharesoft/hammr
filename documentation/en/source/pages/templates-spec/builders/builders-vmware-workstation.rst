@@ -6,6 +6,7 @@ VMware Workstation
 ==================
 
 Default builder type: ``VMware Server``
+
 Require Cloud Account: No
 
 The VMware Workstation builder provides information for building VMware Workstation compatible machine images.

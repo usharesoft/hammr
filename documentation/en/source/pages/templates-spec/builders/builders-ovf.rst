@@ -6,6 +6,7 @@ OVF
 ===
 
 Default builder type: ``OVF or OVA``
+
 Require Cloud Account: No
 
 The OVF builder provides information for building OVF (Open Virtualization Format) compatible machine images.

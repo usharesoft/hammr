@@ -129,7 +129,7 @@ Creating Logical Partitions Example
 
 In this example the, logical partitions are created inside the ``space`` partition. The ``space`` partition now has the filesystem type ``Extended``.
 
-..warning:: only one partition within a disk can have logical partitions. When a partition is ``extended``, you cannot specify a mount point or a label. Logical partitions must start with number 5
+.. warning:: only one partition within a disk can have logical partitions. When a partition is ``extended``, you cannot specify a mount point or a label. Logical partitions must start with number 5
 
 .. image:: /images/partitioning-ex3.png
 

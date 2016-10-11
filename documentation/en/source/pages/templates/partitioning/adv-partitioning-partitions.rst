@@ -52,7 +52,7 @@ The following example shows 3 physical partitions of a disk: ``/boot``, ``swap``
 		}
 	}
 
-.. note:: Note: In a partitioning table, at least one partition must be the ``/boot`` partition. In the above example this is one of the physical partitions. Furthermore, the sum of the physical partition sizes must be smaller or equal to the disk size.
+.. note:: In a partitioning table, at least one partition must be the ``/boot`` partition. In the above example this is one of the physical partitions. Furthermore, the sum of the physical partition sizes must be smaller or equal to the disk size.
 
 
 

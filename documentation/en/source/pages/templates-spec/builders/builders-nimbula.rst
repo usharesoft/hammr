@@ -6,6 +6,7 @@ Nimbula
 =======
 
 Default builder type: ``Nimbula ESX`` or ``Nimbula KVM``
+
 Require Cloud Account: Yes
 
 The Nimbula builder provides information for building and publishing the machine image to the Nimbula cloud platform. This builder supports KVM (``Nimbula KVM``) or VMware (``Nimbula ESX``) based images for Nimbula.
@@ -60,7 +61,7 @@ The Nimbula cloud account has the following valid keys:
 * ``type`` (mandatory): a string providing the cloud account type. Default platform type for Nimbula is ``Nimbula``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 * ``endpoint`` (mandatory): URL endpoint of the Nimbula cloud
-* name (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``password`` (mandatory): a string providing the password used to to authenticate to Nimbula Director
 * ``username`` (mandatory): a string providing the user used to authenticate to Nimbula Director. This is in the form of a URI, for example ``/root/root``
 
