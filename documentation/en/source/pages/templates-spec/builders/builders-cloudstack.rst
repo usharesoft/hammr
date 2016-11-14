@@ -19,7 +19,16 @@ These builder types are the default names provided by UForge AppCenter.
 
 The CloudStack builder requires cloud account information to upload and register the machine image to the CloudStack platform.
 
-The CloudStack builder section has the following definition:
+The CloudStack builder section has the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: CloudStack KVM (QCOW2)
+    # the rest of the definition goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -77,6 +86,24 @@ Example
 
 The following example shows a CloudStack builder with all the information to build and publish a machine image to CloudStack.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: CloudStack KVM (QCOW2)
+    account:
+      type: CloudStack
+      name: My CloudStack account
+      publicApiKey: mypublicapikey
+      secretApiKey: mysecretapiKey
+      endpointUrl: myendpointurl
+    imageName: CentOS Core
+    zone: zone1
+
+If you are using JSON:
+
 .. code-block:: json
 
   {
@@ -99,7 +126,19 @@ The following example shows a CloudStack builder with all the information to bui
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``cloudstack-account.json``.
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``cloudstack-account.yml``.
+
+.. code-block:: yaml
+
+  ---
+  accounts:
+  - type: CloudStack
+    name: My CloudStack account
+    publicApiKey: mypublicapikey
+    secretApiKey: mysecretapiKey
+    endpointUrl: myendpointurl
+
+If you are using JSON, create a JSON file ``cloudstack-account.json``:
 
 .. code-block:: json
 
@@ -119,6 +158,20 @@ The builder section can either reference by using ``file`` or ``name``.
 
 Reference by file:
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: CloudStack KVM (QCOW2)
+    account:
+      file: "/path/to/cloudstack-account.yml"
+    imageName: CentOS Core
+    zone: zone1
+
+If you are using JSON:
+
 .. code-block:: json
 
   {
@@ -136,7 +189,21 @@ Reference by file:
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
-.. code-block:: javascript
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: CloudStack KVM (QCOW2)
+    account:
+      name: My CloudStack Account
+    imageName: CentOS Core
+    zone: zone1
+
+If you are using JSON:
+
+.. code-block:: json
 
   {
     "builders": [

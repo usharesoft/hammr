@@ -20,7 +20,7 @@ Sub Commands
 
 Builds a machine image from the template. The options are:
 
-	* ``--file`` (mandatory): json file providing the builder parameters
+	* ``--file`` (mandatory): json or yaml file providing the builder parameters
 
 ``clone`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~
@@ -34,9 +34,9 @@ Clones the template. The clone is copying the meta-data of the template. The opt
 ``create`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Creates a new template and saves it to the UForge server. Hammr creates a tar.gz archive which includes the .json file and binaries and imports it to UForge. The options are:
+Creates a new template and saves it to the UForge server. Hammr creates a tar.gz archive which includes the JSON or YAML file and binaries, and imports it to UForge. The options are:
 
-	* ``--file`` (mandatory): json file containing the template content
+	* ``--file`` (mandatory): json or yaml file containing the template content
 	* ``--archive-path`` (optional): path of where to store the archive (tar.gz) of the created template. If provided, hammr creates an archive of the created template, equivalent to running ``template export``
 	* ``--force`` (optional): force template creation (delete template/bundle if already exist)
 	* ``--rbundles`` (optional): if a bundle already exists, use it in the new template. Warning: this option ignore the content of the bundle described in the template file
@@ -52,15 +52,16 @@ Deletes an existing template. The options are:
 ``export`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Exports a template by creating an archive (compressed tar file) that includes the json template configuration file. The options are:
+Exports a template by creating an archive (compressed tar file) that includes the JSON or YAML configuration file. The options are:
 
 	* ``--id`` (mandatory): the ID of the template to export
 	* ``--file`` (optional): destination path where to store the template configuration file on the local filesystem
+	* ``--outputFormat`` (optional): output format (yaml or json) of the template file to export (yaml is the default one)
 
 ``import`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Creates a template from an archive. The archive file must be a tar.gz (which includes the .json and binaries). The options are:
+Creates a template from an archive. The archive file must be a tar.gz (which includes the .json or yaml, and binaries). The options are:
 
 	* ``--file`` (mandatory): the path of the archive
 	* ``--force`` (optional): force template creation (delete template/bundle if already exist)
@@ -76,4 +77,4 @@ Displays all the created templates.
 
 Validates the syntax of a template configuration file. The options are:
 
-	* ``--file`` (mandatory): the json template configuration file
+	* ``--file`` (mandatory): the json or yaml configuration file

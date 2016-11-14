@@ -7,7 +7,15 @@ Stack
 
 Within a template, the stack section describes the packages, files and configuration information required to be added when building a machine image. It can also contain low level installation information (for example keyboard settings, partitioning, timezone etc) to be configured as part of the build or prompted during the first boot of an instance using the machine image.
 
-The definition of a ``stack`` section is:
+The definition of a ``stack`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	stack:
+	  # the stack definition goes here
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -39,7 +47,22 @@ Stack sub-sections are:
 
 .. rubric:: Example
 
-The following example shows a simple ``stack`` definition.
+The following example shows a simple ``stack`` definition, when using YAML:
+
+.. code-block:: yaml
+
+	---
+	stack:
+	  name: CentOS Base Template
+	  version: '6.4'
+	  description: This is a CentOS core template.
+	  os:
+		name: CentOS
+		version: '6.4'
+		arch: x86_64
+		profile: Minimal
+
+If you are using JSON:
 
 .. code-block:: json
 

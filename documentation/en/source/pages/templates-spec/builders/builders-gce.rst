@@ -16,7 +16,16 @@ This builder type is the default name provided by UForge AppCenter.
 
 .. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
-The GCE builder section has the following definition:
+The GCE builder section has the following definition when using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Google Compute Engine
+		# the rest of the definition goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -102,6 +111,29 @@ Example
 
 The following example shows a GCE builder with all the information to build and publish a machine image to Google Compute Engine.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Google Compute Engine
+	  account:
+	    type: Google Compute Engine
+	    name: My GCE Account
+	    username: joris
+	    certPassword: myCertPassword
+	    cert: "/home/joris/certs/gce.pem"
+	  computeZone: europe-west1-a
+	  bucketLocation: EU
+	  bucket: jorisbucketname
+	  projectId: jorisproject
+	  storageClass: STANDARD
+	  diskNamePrefix: uss-
+	  description: CentOS Core machine image
+
+If you are using JSON:
+
 .. code-block:: json
 
 	{
@@ -129,7 +161,19 @@ The following example shows a GCE builder with all the information to build and 
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``gce-account.json``.
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``gce-account.yml``.
+
+.. code-block:: yaml
+
+	---
+	accounts:
+	- type: Google Compute Engine
+	  name: My GCE Account
+	  username: joris
+	  certPassword: myCertPassword
+	  cert: "/home/joris/certs/gce.pem"
+
+If you are using JSON, create a JSON file ``gce-account.json``:
 
 .. code-block:: json
 
@@ -148,6 +192,25 @@ To help with security, the cloud account information can be referenced by the bu
 The builder section can either reference by using ``file`` or ``name``.
 
 Reference by file:
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Google Compute Engine
+	  account:
+	    file: "/home/joris/accounts/gce-account.yml"
+	  computeZone: europe-west1-a
+	  bucketLocation: EU
+	  bucket: jorisbucketname
+	  projectId: jorisproject
+	  storageClass: STANDARD
+	  diskNamePrefix: uss-
+	  description: CentOS Core machine image
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -170,6 +233,25 @@ Reference by file:
 	}
 
 Reference by name, note the cloud account must already be created by using ``account create``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Google Compute Engine
+	  account:
+	    name: My GCE Account
+	  computeZone: europe-west1-a
+	  bucketLocation: EU
+	  bucket: jorisbucketname
+	  projectId: jorisproject
+	  storageClass: STANDARD
+	  diskNamePrefix: uss-
+	  description: CentOS Core machine image
+
+If you are using JSON:
 
 .. code-block:: json
 

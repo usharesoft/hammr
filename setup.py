@@ -29,11 +29,15 @@ requires=['uforge_python_sdk>=3.6.0.8',
                     'argparse',
                     'paramiko==1.12',
                     'pyparsing==2.0.2',
+                    'pyyaml==3.12',
                     'hurry.filesize==0.9',
                     'termcolor==1.1.0',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
                     'ussclicore==1.0.7']
+
+test_requires=['mock']
+
 
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""
@@ -49,6 +53,7 @@ class CleanCommand(Command):
 setup (  
 
   install_requires=requires,
+  tests_require = test_requires,
   
   # Fill in these to make your Egg ready for upload to
   # PyPI
