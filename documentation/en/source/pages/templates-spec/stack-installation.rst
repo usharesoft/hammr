@@ -28,6 +28,7 @@ The valid keys to use within an installation are:
 * ``timezone`` (optional): a string providing the timezone to use. If no timezone is provided, then during first boot the timezone is prompted. See :ref:`stack-installation-timezone` sub-section for all available values for timezone.
 * ``firewall`` (optional): a boolean to enable or disable the firewall service. If no firewall is given, then the firewall is asked during installation.
 * ``welcomeMessage`` (optional): a string providing a welcome message displayed during the first boot of a provisioned instance
+* ``seLinuxMode`` (optional): a string indicating the SELinux mode (see :ref:``)
 
 
 Sub-sections
@@ -44,6 +45,7 @@ The installation sub-sections are:
    stack-installation-rootuser
    stack-installation-timezone
    stack-installation-users
+   stack-installation-selinux
 
 
 Example
