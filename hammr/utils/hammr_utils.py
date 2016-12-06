@@ -14,6 +14,7 @@
 #    under the License.
 
 import json
+import yaml
 import sys
 import re
 import traceback
@@ -25,6 +26,8 @@ from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
 from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
+from hammr.utils.bundle_utils import *
+from hammr.utils import constants
 
 
 def check_mandatory_stack(stack):
@@ -138,13 +141,51 @@ def validate_configurations_file(file, isJson):
         stack=check_mandatory_stack(data["stack"])
         if stack is None:
             return
-    #else:
-    #        print "No stack section find in the template file"
-    #        return
+        if "bundles" in data["stack"]:
+            for bundle in data["stack"]["bundles"]:
+                bundle = check_bundle(bundle)
+                if bundle is None:
+                    return
 
     if "builders" in data:
         check_mandatory_builders(data["builders"])
     return data
+
+def validate_bundle(file):
+    try:
+        isJson = check_extension_is_json(file)
+        if isJson:
+            print "you provided a json file, checking..."
+            data = generics_utils.check_json_syntax(file)
+        else:
+            print "you provided a yaml file, checking..."
+            data = generics_utils.check_yaml_syntax(file)
+
+        if data is None:
+            return
+        data = check_bundle(data)
+        if data is None:
+            return
+
+        return data
+    except ValueError as e:
+        printer.out("JSON parsing error: "+str(e), printer.ERROR)
+        printer.out("Syntax of bundle file ["+file+"]: FAILED")
+    except IOError as e:
+        printer.out("unknown error bundle json file", printer.ERROR)
+    
+def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
+    file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")
+
+    if isJsonFile:
+        json.dump(data, file, indent=4, separators=(',', ': '))
+    else:
+        yaml.safe_dump(data, file, default_flow_style=False, indent=2, explicit_start='---')
+
+    file.close()
+    archive_files.append([fileName, constants.TMP_WORKING_DIR + os.sep + newFileName])
+
+    return archive_files
 
 #manage uforge exception
 def is_uforge_exception(e):
