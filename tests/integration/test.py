@@ -61,6 +61,16 @@ def get_image_id(image, name):
         os.remove("stdout_file")
         return id
 
+def get_bundle_id(bundle, name):
+        stdout = sys.stdout
+        sys.stdout = open('stdout_file', 'w')
+        bundle.do_list(None)
+        sys.stdout = stdout
+        cmd = os.popen("cat stdout_file | grep "+name+" | grep -v Getting | cut -d '|' -f2")
+        id = cmd.read().rstrip()
+        os.remove("stdout_file")
+        return id
+
 class TestCLI(unittest.TestCase):
 
         global api
@@ -276,6 +286,44 @@ class TestBundle(unittest.TestCase):
                 bundle = hammr.commands.bundle.Bundle()
                 bundle.set_globals(api, login, password)
                 r = bundle.do_list(None)
+                self.assertEqual(r, 0)
+
+        def test_02_validate(self):
+                bundle = hammr.commands.bundle.Bundle()
+                bundle.set_globals(api, login, password)
+                r = bundle.do_validate("--file data/bundleFull.json")
+                self.assertEqual(r, 0)
+
+        def test_03_delete(self):
+                bundle = hammr.commands.bundle.Bundle()
+                bundle.set_globals(api, login, password)
+                id = get_bundle_id(bundle, "Bundle")
+                if id is not None and id !="":
+                        r = bundle.do_delete("--id "+id)
+                        self.assertEqual(r, 0)
+                else:
+                        raise unittest.SkipTest("No bundle to delete")
+
+        def test_04_create(self):
+                bundle = hammr.commands.bundle.Bundle()
+                bundle.set_globals(api, login, password)
+                r = bundle.do_create("--file data/bundleFull.json")
+                self.assertNotEqual(r, None)
+
+        def test_05_export(self):
+                bundle = hammr.commands.bundle.Bundle()
+                bundle.set_globals(api, login, password)
+                id = get_bundle_id(bundle, "Bundle")
+                r = bundle.do_export("--id "+id)
+                self.assertEqual(r, 0)
+
+        def test_06_import(self):
+                bundle = hammr.commands.bundle.Bundle()
+                bundle.set_globals(api, login, password)
+                id = get_bundle_id(bundle, "Bundle")
+                bundle.do_delete("--id "+id)
+                r = bundle.do_import("--file Bundle.tar.gz")
+                os.remove("Bundle.tar.gz")
                 self.assertEqual(r, 0)
 
 

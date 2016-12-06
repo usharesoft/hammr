@@ -1,0 +1,15 @@
+{
+  "name": "Bundle",
+  "destination": "/tmp/myBundle",
+  "files": [
+    {
+      "name": "directoryTest",
+      "source": "tests/integration/data/directoryTest",
+      "destination": "/usr/local/myBundle"
+    }
+  ],
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}
