@@ -4,6 +4,9 @@ import os
 import sys
 
 
+ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
 # Declare your packages' dependencies here, for eg:
 requires=['uforge_python_sdk>=3.5.1.4, <3.6',
                     'cmd2==0.6.7',                    
@@ -32,7 +35,8 @@ class CleanCommand(Command):
     def finalize_options(self):
         pass
     def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.egg-info | find -iname "*.pyc" -exec rm {} +')
+        os.system('rm -vrf '+ROOT_DIR+'/build '+ROOT_DIR+'/dist '+ROOT_DIR+'/*.pyc '+ROOT_DIR+'/*.egg-info')
+        os.system('find '+ROOT_DIR+' -iname "*.pyc" -exec rm {} +')
 
                     
 setup (  
