@@ -1,4 +1,4 @@
-Hammr
+Hammr [![Build Status](https://travis-ci.org/usharesoft/hammr.svg?branch=master)](https://travis-ci.org/usharesoft/hammr)
 =====
 
 A command-line tool for building consistent and repeatable machine images for different platforms.
