@@ -5,7 +5,7 @@
 Templates Specification
 =======================
 
-Templates contain all the information used to create stacks; build machine images and publish them to the target platform. They are JSON files, passed as a parameter to the hammr command-line.
+Templates contain all the information used to create stacks; build machine images and publish them to the target platform. They are JSON or YAML files, passed as a parameter to the hammr command-line.
 
 A template has two main parts:
 

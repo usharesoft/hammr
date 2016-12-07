@@ -26,7 +26,6 @@ except ImportError:
 import argparse
 import getpass
 import os
-import json
 import sys
 import shlex
 
@@ -38,6 +37,7 @@ from ussclicore.utils import printer
 import commands
 from uforge.application import Api
 from utils import *
+from utils.hammr_utils import *
 
 class CmdBuilder(object):
     @staticmethod
@@ -147,14 +147,19 @@ def set_globals_cmds(subCmds):
                 set_globals_cmds(subCmds[cmd].subCmds)
 
 def check_credfile(credfile):
+    printer.out("Checking given credentials file: " + credfile, printer.INFO)
     if os.path.isfile(credfile):
         return credfile
-    if not credfile.endswith(".json") and os.path.isfile(credfile + ".json"):
-        return credfile + ".json"
-    if os.path.isfile(hammr_utils.get_hammr_dir()+os.sep+credfile):
-        return hammr_utils.get_hammr_dir()+os.sep+credfile
-    if not credfile.endswith(".json") and os.path.isfile(hammr_utils.get_hammr_dir()+os.sep+credfile+".json"):
-        return hammr_utils.get_hammr_dir()+os.sep+credfile+".json"
+    return None
+
+def check_default_credfile():
+    printer.out("Checking default credentials file...", printer.INFO)
+    credfile_yaml=hammr_utils.get_hammr_dir()+os.sep+"credentials.yml"
+    if os.path.isfile(credfile_yaml):
+        return credfile_yaml
+    credfile_json=hammr_utils.get_hammr_dir()+os.sep+"credentials.json"
+    if os.path.isfile(credfile_json):
+        return credfile_json
     return None
 
 #Generate hammr base command + help base command
@@ -168,7 +173,7 @@ CoreArgumentParser.actions=myactions
 mainParser.add_argument('-a', '--url', dest='url', type=str, help='the UForge server URL endpoint to use', required = False)
 mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user name used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
-mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.json)', required = False)
+mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.yml or ~/.hammr/credentials.json)', required = False)
 mainParser.add_argument('-v', action='version', help='displays the current version of the hammr tool', version="%(prog)s version '"+constants.VERSION+"'")
 mainParser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit', required = False)
 mainParser.set_defaults(help=False)
@@ -189,19 +194,23 @@ if mainArgs.user is not None:
     password=mainArgs.password
     sslAutosigned=True
 else:
-    credfile="credentials.json"
     if mainArgs.credentials is not None:
         credfile=mainArgs.credentials
+        credpath=check_credfile(credfile)
+        if credpath is None:
+            printer.out("credentials file '" + credfile + "' not found\n", printer.ERROR)
+            exit(1)
+    else:
+        credpath=check_default_credfile()
+        if credpath is None:
+            printer.out("credentials file 'credentials.yml' or 'credentials.json' not found\n", printer.ERROR)
+            exit(1)
+
     printer.out("no username nor password provided on command line, trying credentials file", printer.INFO)
-    credpath=check_credfile(credfile)
-    if credpath is None:
-        printer.out("credentials file " + credfile + " not found\n", printer.ERROR)
-        exit(1)
+
     printer.out("Using credentials file: " + credpath, printer.INFO)
     try:
-        json_data=open(credpath)
-        data = json.load(json_data)
-        json_data.close()
+        data = load_data(credpath)
         if mainArgs.user:
             username=mainArgs.user
         elif "user" in data:
@@ -226,9 +235,12 @@ else:
         else:
             sslAutosigned=True
     except ValueError as e:
-        printer.out("JSON parsing error in credentials file: "+str(e), printer.ERROR)
+        printer.out("parsing error in credentials file: "+str(e), printer.ERROR)
     except IOError as e:
         printer.out("File error in credentials file: "+str(e), printer.ERROR)
+    except Exception as e:
+        print_uforge_exception(e)
+        exit(1)
 
 #UForge API instanciation
 api = Api(url, username = username, password = password, headers = None, disable_ssl_certificate_validation = sslAutosigned, timeout = constants.HTTP_TIMEOUT)

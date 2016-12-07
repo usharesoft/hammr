@@ -7,7 +7,15 @@ installation
 
 Within a :ref:`template-stack`, the ``installation`` sub-section describes questions that are normally related to the installation of an operating system. This includes root password, keyboard settings, timezone, and partitioning. These questions are only asked once as part of the operating system installation; consequently decided by the person when building machine images manually. Hammr provides a mechanism that allows some of the installation questions to be asked as part of the first-boot when provisioning an instance from the machine image. This makes any machine image built by hammr to be more flexible, for example if you have a team in the UK and another team in France then their keyboard settings are most likely to be QWERTY and AZERTY respectively. By allowing the end-user to choose the keyboard settings as part of first-boot can help resolve hours of frustration.
 
-The definition of a pkgs section is:
+The definition of a ``pkgs`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	installation:
+	  # the installation definition goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -54,6 +62,23 @@ Example
 The following example sets the timezone, disk size, swap size, kernel parameters and automatically accepts all the licenses on the end-user’s behalf (license information not displayed on boot).
 
 .. note:: By default without any installation information specified, the internet settings is set to ``dhcp``; kernel parameters ``rhgb`` and ``quiet`` are set and display licenses is set to ``true``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	installation:
+	  timezone: Europe/London
+	  internetSettings: dhcp
+	  kernelParams:
+	  - rhgb
+	  - quiet
+	  diskSize: 12288
+	  swapSize: 512
+	  displayLicenses: false
+
+If you are using JSON:
 
 .. code-block:: json
 

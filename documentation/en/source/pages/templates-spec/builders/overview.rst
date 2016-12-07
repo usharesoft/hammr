@@ -15,7 +15,7 @@ Please refer to the specific machine image format for the mandatory and optional
 
 For "cloud" machine images, for example Amazon EC2, Azure CloudStack, OpenStack, Flexiant and Eucalyptus, the ``builder`` requires account information to the cloud environment. Information from the builder is used to correctly generate the machine image (for example AMI images for Amazon EC2 requires to have certain certificates embedded into the machine image) and to upload and register the machine image into the correct region, zone or datacenter.
 
-The cloud account information can be part of the builder section, however as this includes sensitive information, hammr provides other mechanisms to include this information in the builder section. A safer way is to store this information in a separate JSON file and create the cloud account using ``account create``; then reference the account ``name`` in the builder.
+The cloud account information can be part of the builder section, however as this includes sensitive information, hammr provides other mechanisms to include this information in the builder section. A safer way is to store this information in a separate file (JSON or YAML) and create the cloud account using ``account create``; then reference the account ``name`` in the builder.
 
 Please refer to the specific machine image format for the cloud account options and examples.
 

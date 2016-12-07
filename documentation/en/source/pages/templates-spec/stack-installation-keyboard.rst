@@ -9,6 +9,16 @@ The following is a list of all the accepted keyboard values that can be used for
 
 You do not need to enter the full name; only the short form is required. For example, for ``Danish`` use:
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	installation:
+	  keyboard: dk
+
+If you are using JSON:
+
 .. code-block:: json
 
 	{

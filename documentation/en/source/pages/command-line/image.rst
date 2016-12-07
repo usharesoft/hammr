@@ -47,4 +47,4 @@ Displays all the machine images built and publish information of those machine i
 
 Publish (upload and register) a built machine image to a target environment. The options are:
 
-	* ``--file`` (mandatory): json file providing the cloud account parameters required for upload and registration
+	* ``--file`` (mandatory): json or yaml file providing the cloud account parameters required for upload and registration

@@ -15,7 +15,16 @@ These builder types are the default names provided by UForge AppCenter.
 .. note:: These builder type names can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
 The Nimbula builder requires cloud account information to upload and register the machine image to the Nimbula platform.
-The Nimbula builder section has the following definition:
+The Nimbula builder section has the following definition when using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Nimbula KVM
+		# the rest of the definition goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -72,6 +81,29 @@ Example
 
 The following example shows an Nimbula builder with all the information to build and publish a machine image to Nimbula.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Nimbula KVM
+	  account:
+	    type: Nimbula
+	    name: My Nimbula Account
+	    endpoint: http://20.20.20.201
+	    username: myLogin
+	    password: myPassWD
+	  hardwareSettings:
+	    memory: 1024
+	  installation:
+	    diskSize: 2000
+	  imageListName: "/usharesoft/administrator/myimages"
+	  imageVersion: '1'
+	  description: CentOS Core Image
+
+If you are using JSON:
+
 .. code-block:: json
 
 	{
@@ -101,7 +133,20 @@ The following example shows an Nimbula builder with all the information to build
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``nimbula-account.json``.
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``nimbula-account.yml``.
+
+.. code-block:: yaml
+
+	---
+	accounts:
+	- type: Nimbula
+	  name: My Nimbula Account
+	  endpoint: http://20.20.20.201
+	  username: myLogin
+	  password: myPassWD
+
+
+If you are using JSON, create a JSON file ``nimbula-account.json``:
 
 .. code-block:: json
 
@@ -120,6 +165,25 @@ To help with security, the cloud account information can be referenced by the bu
 The builder section can either reference by using ``file`` or ``name``.
 
 Reference by file:
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Nimbula KVM
+	  account:
+	    file: "/home/joris/accounts/nimbula-account.yml"
+	  hardwareSettings:
+	    memory: 1024
+	  installation:
+	    diskSize: 2000
+	  imageListName: "/usharesoft/administrator/myimages"
+	  imageVersion: '1'
+	  description: CentOS Core Image
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -144,6 +208,25 @@ Reference by file:
 	}
 
 Reference by name, note the cloud account must already be created by using ``account create``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	builders:
+	- type: Nimbula KVM
+	  account:
+	    name: My Nimbula Account
+	  hardwareSettings:
+	    memory: 1024
+	  installation:
+	    diskSize: 2000
+	  imageListName: "/usharesoft/administrator/myimages"
+	  imageVersion: '1'
+	  description: CentOS Core Image
+
+If you are using JSON:
 
 .. code-block:: json
 
