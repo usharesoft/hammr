@@ -15,6 +15,10 @@
 
 from setuptools import setup,find_packages,Command
 from hammr.utils.constants import *
+import os
+
+
+ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # Declare your packages' dependencies here, for eg:
@@ -39,7 +43,8 @@ class CleanCommand(Command):
     def finalize_options(self):
         pass
     def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.egg-info | find -iname "*.pyc" -exec rm {} +')
+        os.system('rm -vrf '+ROOT_DIR+'/build '+ROOT_DIR+'/dist '+ROOT_DIR+'/*.pyc '+ROOT_DIR+'/*.egg-info')
+        os.system('find '+ROOT_DIR+' -iname "*.pyc" -exec rm {} +')
 
 setup (  
 
