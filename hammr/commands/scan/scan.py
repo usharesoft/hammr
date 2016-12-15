@@ -18,6 +18,7 @@ import os.path
 import shutil
 import paramiko
 import getpass
+import shlex
 import sys
 import time
 
@@ -77,6 +78,8 @@ class Scan(Cmd, CoreGlobal):
         mandatory.add_argument('--name', dest='name', required=True,
                                help="the scan name to use when creating the scan meta-data")
         optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--scan-port', dest='port', required=False,
+                              help="the ssh port of the running system")
         optional.add_argument('--scan-password', dest='password', required=False,
                               help="the root password to authenticate to the running system")
         optional.add_argument('--dir', dest='dir', required=False,
@@ -89,7 +92,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_run()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -190,7 +193,7 @@ class Scan(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_build()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # --
@@ -208,12 +211,12 @@ class Scan(Cmd, CoreGlobal):
                 return
             try:
                 myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
-                if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
+                if myScannedInstances is None or not hasattr(myScannedInstances, 'scannedInstances'):
                     printer.out("scan not found", printer.ERROR)
                     return
                 else:
                     myScan = None
-                    for myScannedInstance in myScannedInstances.get_scannedInstance():
+                    for myScannedInstance in myScannedInstances.scannedInstances.scannedInstance:
                         for scan in myScannedInstance.scans.scan:
                             if str(scan.dbId) == doArgs.id:
                                 myScan = scan
@@ -228,6 +231,11 @@ class Scan(Cmd, CoreGlobal):
                         printer.out(
                             "Generating '" + builder["type"] + "' image (" + str(i) + "/" + str(len(builders)) + ")")
                         format_type = builder["type"]
+                        targetFormat = generate_utils.get_target_format_object(self.api, self.login, format_type)
+
+                        if targetFormat is None:
+                            printer.out("Builder type unknown: "+format_type, printer.ERROR)
+                            return 2
                         myimage = image()
 
                         myinstallProfile = installProfile()
@@ -235,36 +243,15 @@ class Scan(Cmd, CoreGlobal):
                             myinstallProfile.swapSize = builder["installation"]["swapSize"]
                         myinstallProfile.diskSize = builder["installation"]["diskSize"]
 
-                        if format_type in generate_utils.CLOUD_FORMATS:
-                            func = getattr(generate_utils,
-                                           "generate_" + generics_utils.remove_special_chars(format_type), None)
-                            if func:
-                                myimage, myimageFormat, myinstallProfile = func(myimage, builder, myinstallProfile,
-                                                                                self.api, self.login)
-                            else:
-                                printer.out("Builder type unknown: " + format_type, printer.ERROR)
-                                return
-                        elif format_type in generate_utils.VIRTUAL_FORMATS:
-                            func = getattr(generate_utils,
-                                           "generate_" + generics_utils.remove_special_chars(format_type), None)
-                            if func:
-                                myimage, myimageFormat, myinstallProfile = func(myimage, builder, myinstallProfile)
-                            else:
-                                printer.out("Builder type unknown: " + format_type, printer.ERROR)
-                                return
-                        elif format_type in generate_utils.PHYSICAL_FORMATS:
-                            func = getattr(generate_utils,
-                                           "generate_" + generics_utils.remove_special_chars(format_type), None)
-                            if func:
-                                myimage, myimageFormat, myinstallProfile = func(myimage, builder, myinstallProfile)
-                            else:
-                                printer.out("Builder type unknown: " + format_type, printer.ERROR)
-                                return
-                        else:
-                            printer.out("Builder type unknown: " + format_type, printer.ERROR)
-                            return
 
-                        myimage.format = myimageFormat
+                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(targetFormat.format.name), None)
+                        if func:
+                            myimage, myinstallProfile = func(myimage, builder, myinstallProfile, self.api, self.login)
+                        else:
+                            printer.out("Builder type unknown: "+format_type, printer.ERROR)
+                            return 2
+
+                        myimage.targetFormat = targetFormat
                         myimage.installProfile = myinstallProfile
                         rImage = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
                             myScan.dbId).Images().Generate(myimage)
@@ -335,20 +322,19 @@ class Scan(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_import()
-            # doParser.add_argument('--org', dest='org', required=False)
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
 
             printer.out("Import scan id [" + doArgs.id + "] ...")
             myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
-            if myScannedInstances is None or not hasattr(myScannedInstances, 'get_scannedInstance'):
+            if myScannedInstances is None or not hasattr(myScannedInstances, 'scannedInstances'):
                 printer.out("scan not found", printer.ERROR)
                 return
             else:
                 myScan = None
-                for myScannedInstance in myScannedInstances.get_scannedInstance():
+                for myScannedInstance in myScannedInstances.scannedInstances.scannedInstance:
                     for scan in myScannedInstance.scans.scan:
                         if str(scan.dbId) == doArgs.id:
                             myScan = scan
@@ -361,7 +347,7 @@ class Scan(Cmd, CoreGlobal):
                 myScanImport = scanImport()
                 myScanImport.applianceName = doArgs.name
                 myScanImport.applianceVersion = doArgs.version
-                myScanImport.orgUri = (self.api.Users(self.login).Orgs().Getall()).org[0].uri
+                myScanImport.orgUri = (self.api.Users(self.login).Orgs().Getall()).orgs.org[0].uri
                 rScanImport = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
                     myScan.dbId).Imports().Import(myScanImport)
                 status = rScanImport.status
@@ -373,7 +359,7 @@ class Scan(Cmd, CoreGlobal):
                     statusWidget.status = status
                     progress.update(status.percentage)
                     status = (self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
-                        myScan.dbId).Imports().Status().Get(I=rScanImport.uri)).status[0]
+                        myScan.dbId).Imports().Status.Get(I=rScanImport.uri)).statuses.status[0]
                     time.sleep(2)
                 statusWidget.status = status
                 progress.finish()
@@ -421,7 +407,7 @@ class Scan(Cmd, CoreGlobal):
         try:
             doParser = self.arg_delete()
             try:
-                doArgs = doParser.parse_args(args.split())
+                doArgs = doParser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
@@ -504,6 +490,10 @@ class Scan(Cmd, CoreGlobal):
             passW = getpass.getpass('Password for %s@%s: ' % (username, hostname))
         else:
             passW = args.password
+        if not args.port:
+            port = 22
+        else:
+            port = int(args.port)
 
         # paramiko.util.log_to_file('/tmp/ssh.log') # sets up logging
 
@@ -532,7 +522,7 @@ class Scan(Cmd, CoreGlobal):
                 dir = "/tmp"
             else:
                 dir = args.dir
-            t = paramiko.Transport((hostname, 22))
+            t = paramiko.Transport((hostname, port))
             t.connect(username=username, password=passW, hostkey=hostkey)
             sftp = paramiko.SFTPClient.from_transport(t)
 
@@ -543,7 +533,7 @@ class Scan(Cmd, CoreGlobal):
             client = paramiko.SSHClient()
             client.load_system_host_keys()
             client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
-            client.connect(hostname, 22, username, passW)
+            client.connect(hostname, port, username, passW)
 
             # test service
             stdin, stdout, stderr = client.exec_command(

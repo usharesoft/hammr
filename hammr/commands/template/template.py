@@ -19,6 +19,7 @@ import os.path
 import ntpath
 import shutil
 import json
+import shlex
 from junit_xml import TestSuite, TestCase
 
 from texttable import Texttable
@@ -33,6 +34,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget
 from hammr.utils.hammr_utils import *
 from hammr.utils import constants
 from hammr.utils import generate_utils
+from os.path import realpath
 
 
 class Template(Cmd, CoreGlobal):
@@ -95,7 +97,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_export()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -162,7 +164,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_import()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -192,7 +194,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_validate()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -204,6 +206,7 @@ class Template(Cmd, CoreGlobal):
             template=validate_json_file(file)
             if template is None:
                 return 2
+            print "OK : Syntax of template file [" + realpath(file) + "] is ok"
             return 0
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: "+str(e), printer.ERROR)
@@ -231,7 +234,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_create()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -260,15 +263,38 @@ class Template(Cmd, CoreGlobal):
                         printer.out("No source file found in config", printer.ERROR)
                         return 2
             try:
+                checkList = []
                 if "bundles" in template["stack"]:
                     for bundle in template["stack"]["bundles"]:
                         if "files" in bundle:
                             for files in bundle["files"]:
-                                #add to list of file to tar
-                                file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
-                                archive_files.append([file_tar_path,files["source"]])
-                                #changing source path to archive related source path
-                                files["source"]=file_tar_path
+                                #if it's a directory
+                                if os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
+                                    #add the source path to the check list
+                                    checkList.append(ntpath.basename(files["source"]))
+                                    # creating an archive and add it to the file_tar_path
+                                    output_filename = files["name"] + ".tar.gz"
+                                    file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(output_filename)
+                                    source_dir = files["source"]
+                                    with tarfile.open(output_filename, "w:gz") as tar:
+                                        tar.add(source_dir, arcname=os.path.basename(source_dir))
+                                        tar.close
+                                    archive_files.append([file_tar_path,output_filename])
+                                    #changing the name of the file
+                                    files["name"] = output_filename
+                                    #changing source path to archive related source path
+                                    files["source"]=file_tar_path
+                                elif not os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
+                                    #add the source path to the check list
+                                    checkList.append(ntpath.basename(files["source"]))
+                                    #add to list of file to tar
+                                    file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
+                                    archive_files.append([file_tar_path,files["source"]])
+                                    #changing source path to archive related source path
+                                    files["source"]=file_tar_path
+                                else:
+                                    printer.out("found two files with the same source path in the bundles section", printer.ERROR)
+                                    return 2
                         else:
                             printer.out("No files section found for bundle", printer.ERROR)
                             return 2
@@ -288,7 +314,6 @@ class Template(Cmd, CoreGlobal):
                 #changing source path to archive related source path
                 template["stack"]["source_logo"]=file_tar_path
 
-
             if os.path.isdir(constants.TMP_WORKING_DIR):
                 #delete tmp dir
                 shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -297,7 +322,6 @@ class Template(Cmd, CoreGlobal):
             json.dump(template, file, indent=4, separators=(',', ': '))
             file.close()
             archive_files.append([constants.TEMPLATE_JSON_FILE_NAME, constants.TMP_WORKING_DIR+ os.sep +constants.TEMPLATE_JSON_NEW_FILE_NAME])
-
 
             if doArgs.archive_path is not None:
                 tar_path = doArgs.archive_path
@@ -350,7 +374,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_build()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -593,7 +617,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_delete()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -643,7 +667,7 @@ class Template(Cmd, CoreGlobal):
         try:
             #add arguments
             doParser = self.arg_clone()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -654,7 +678,7 @@ class Template(Cmd, CoreGlobal):
             myAppliance = appliance()
             myAppliance.name = doArgs.name
             myAppliance.version = doArgs.version
-            rAppliance = self.api.Users(self.login).Appliances(doArgs.id).Clones.Clone(myAppliance)
+            rAppliance = self.clone_appliance(doArgs.id, myAppliance)
             if type(rAppliance) is Appliance:
                 printer.out("Clonned successfully", printer.OK)
             else:
@@ -665,6 +689,8 @@ class Template(Cmd, CoreGlobal):
         except Exception as e:
             return handle_uforge_exception(e)
 
+    def clone_appliance(self, id, appliance):
+        return self.api.Users(self.login).Appliances(id).Clones.Clone(appliance)
 
     def help_clone(self):
         doParser = self.arg_clone()

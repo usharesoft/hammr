@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import shlex
 from hurry.filesize import size
 
 from texttable import Texttable
@@ -81,16 +82,16 @@ class Os(Cmd, CoreGlobal):
         mandatory.add_argument('--id', dest='id', required=True, help="Os id")
         mandatory.add_argument('--pkg', dest='pkg', required=True, help='''\
                 Regular expression of the package:\n\
-                "string" : search all packages wich contains "string"\n\
-                "*string": search all packages wich start with "string"\n\
-                "string*": search all packages wich end with "string"''')
+                "string" : search all packages which contains "string"\n\
+                "*string": search all packages which end with "string"\n\
+                "string*": search all packages which start with "string"''')
         return doParser
 
     def do_search(self, args):
         try:
             #add arguments
             doParser = self.arg_search()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:

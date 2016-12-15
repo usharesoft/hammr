@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import shlex
 from texttable import Texttable
 from ussclicore.argumentParser import ArgumentParser, ArgumentParserError
 from ussclicore.cmd import Cmd, CoreGlobal
@@ -50,7 +51,7 @@ class Account(Cmd, CoreGlobal):
                 accounts = generics_utils.order_list_object_by(accounts, "name")
                 for account in accounts:
                     table.add_row(
-                        [account.dbId, account.name, type(account), account.created.strftime("%Y-%m-%d %H:%M:%S")])
+                        [account.dbId, account.name, account.targetPlatform.name, account.created.strftime("%Y-%m-%d %H:%M:%S")])
                 print table.draw() + "\n"
                 printer.out("Found " + str(len(accounts)) + " accounts")
             return 0
@@ -73,7 +74,7 @@ class Account(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_create()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -159,7 +160,7 @@ class Account(Cmd, CoreGlobal):
         try:
             # add arguments
             doParser = self.arg_delete()
-            doArgs = doParser.parse_args(args.split())
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
             if not doArgs:
@@ -175,7 +176,7 @@ class Account(Cmd, CoreGlobal):
                 table.set_cols_dtype(["t", "t", "t", "t"])
                 table.header(["Id", "Name", "Type", "Created"])
                 table.add_row(
-                    [account.dbId, account.name, type(account), account.created.strftime("%Y-%m-%d %H:%M:%S")])
+                    [account.dbId, account.name, account.targetPlatform.name, account.created.strftime("%Y-%m-%d %H:%M:%S")])
                 print table.draw() + "\n"
                 if doArgs.no_confirm:
                     self.api.Users(self.login).Accounts(doArgs.id).Delete()
