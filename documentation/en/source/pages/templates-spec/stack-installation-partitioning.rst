@@ -7,9 +7,9 @@ partitioning
 
 Within an :ref:`stack-installation` section, the partitioning sub-section allows you to describe an advanced partitioning table.
 
-.. warning:: not all clouds support advanced partitioning. When building a machine image for an environment that does not support advanced partitioning, the build will fail with an appropriate error message.
+.. warning:: Not all clouds support advanced partitioning. When building a machine image for an environment that does not support advanced partitioning, the build will fail with an appropriate error message.
 
-The definition of a partitioning section when using YAML is:
+The definition of a ``partitioning`` section when using YAML is:
 
 .. code-block:: yaml
 

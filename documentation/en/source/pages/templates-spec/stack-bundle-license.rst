@@ -7,7 +7,7 @@ license
 
 Within a ``bundle``, the ``license`` sub-section describes the license information or EULA for the files that make up the bundle.
 
-The definition of a license section when using YAML is:
+The definition of a ``license`` section when using YAML is:
 
 .. code-block:: yaml
 
@@ -25,8 +25,8 @@ If you are using JSON:
 
 The valid keys to use within a license are:
 
-* name (mandatory): a string providing the name of the license.
-* source (mandatory): a string providing the location of where to get the license. This can be a filesystem path or URL.
+* ``name`` (mandatory): a string providing the name of the license.
+* ``source`` (mandatory): a string providing the location of where to get the license. This can be a filesystem path or URL.
 
 Example
 -------

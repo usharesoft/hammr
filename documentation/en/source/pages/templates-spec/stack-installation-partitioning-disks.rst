@@ -7,7 +7,7 @@ disks
 
 Within a :ref:`stack-installation-partitioning` section, the ``disks`` sub-section describes all the physical disks for an advanced partitioning table. Each disk may be partitioned, i.e. the act of dividing the physical disk into logical sections with the goal to treat one physical disk drive as if it were multiple disks. These are called physical partitions. A disk may have a maximum of 4 physical partitions.
 
-The definition of a disks section when using YAML is:
+The definition of a ``disks`` section when using YAML is:
 
 .. code-block:: yaml
 

@@ -48,7 +48,7 @@ The VMware Workstation builder has the following valid keys:
 Example
 -------
 
-The following example shows an VMware Workstation builder.
+The following example shows a VMware Workstation builder.
 
 If you are using YAML:
 
@@ -66,13 +66,13 @@ If you are using JSON:
 .. code-block:: json
 
 	{
-	  "builders": [
-	    {
+		"builders": [
+		{
 	      "type": "VMware Server",
 	      "hardwareSettings": {
 	        "memory": 1024,
 	        "hwType": 7
 	      }
-	    }
-	  ]
+		}
+	]
 	}

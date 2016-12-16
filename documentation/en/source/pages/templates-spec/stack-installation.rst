@@ -5,7 +5,7 @@
 installation
 ============
 
-Within a :ref:`template-stack`, the ``installation`` sub-section describes questions that are normally related to the installation of an operating system. This includes root password, keyboard settings, timezone, and partitioning. These questions are only asked once as part of the operating system installation; consequently decided by the person when building machine images manually. Hammr provides a mechanism that allows some of the installation questions to be asked as part of the first-boot when provisioning an instance from the machine image. This makes any machine image built by hammr to be more flexible, for example if you have a team in the UK and another team in France then their keyboard settings are most likely to be QWERTY and AZERTY respectively. By allowing the end-user to choose the keyboard settings as part of first-boot can help resolve hours of frustration.
+Within a :ref:`template-stack`, the ``installation`` sub-section describes questions that are normally related to the installation of an operating system. This includes root password, keyboard settings, timezone, and partitioning. These questions are only asked once as part of the operating system installation; consequently decided by the person when building machine images manually. Hammr provides a mechanism that allows some of the installation questions to be asked as part of the first-boot when provisioning an instance from the machine image. This makes any machine image built by hammr to be more flexible, for example if you have a team in the UK and another team in France then their keyboard settings are most likely to be QWERTY and AZERTY respectively. Allowing the end-user to choose the keyboard settings as part of first-boot can help resolve hours of frustration.
 
 The definition of a ``pkgs`` section when using YAML is:
 
@@ -29,20 +29,20 @@ The valid keys to use within an installation are:
 * ``displayLicense`` (optional): a boolean value to display any EULA during the first boot of a provisioned instance (includes operating system EULA and any license information provided in the :ref:`stack-bundles` section of the stack). If the value is ``false`` then no license information is displayed. If ``displayLicense`` is not used, then by default all license information is displayed during first boot.
 * ``internetSettings`` (optional): a string providing the network settings. Only two possible values ``dhcp`` or ``static``. If no value is provided, dhcp is set by default.
 * ``kernelParams`` (optional): an array of strings providing the kernel parameters to use. These parameters are used when provisioning an instance from the machine image. If no kernel parameters are provided, the ``rhbg`` and ``quiet`` parameters are set by default
-* ``keyboard`` (optional): a string providing the keyboard layout to use. If no keyboard setting is provided, then during first boot the keyboard setting is prompted. See :ref:`stack-installation-keyboard` sub-section for all available values for keyboard
+* ``keyboard`` (optional): a string providing the keyboard layout to use. If no keyboard setting is provided, then during first boot the keyboard setting is prompted. See :ref:`stack-installation-keyboard` for all available values for keyboard
 * ``partitioning`` (optional): an array of objects describing an advanced partitioning table. Refer to :ref:`stack-installation-partitioning` sub-section for more information.
 * ``rootUser`` (optional): an object describing the configuration information of the root user (or primary administrator). If ``rootUser`` is not provided, then during first boot the root user password is prompted
 * ``swapSize`` (optional): an integer value (in MB) providing the swap size to be allocated. This value is ignored if an advanced partitioning table is provided (see :ref:`stack-installation-partitioning`)
-* ``timezone`` (optional): a string providing the timezone to use. If no timezone is provided, then during first boot the timezone is prompted. See :ref:`stack-installation-timezone` sub-section for all available values for timezone.
+* ``timezone`` (optional): a string providing the timezone to use. If no timezone is provided, then during first boot the timezone is prompted. See :ref:`stack-installation-timezone` for all available values for timezone.
 * ``firewall`` (optional): a boolean to enable or disable the firewall service. If no firewall is given, then the firewall is asked during installation.
 * ``welcomeMessage`` (optional): a string providing a welcome message displayed during the first boot of a provisioned instance
-* ``seLinuxMode`` (optional): a string indicating the SELinux mode (see :ref:``)
+* ``seLinuxMode`` (optional): a string indicating the SELinux mode (see :ref:`stack-installation-selinux`)
 
 
 Sub-sections
 ------------
 
-The installation sub-sections are:
+The ``installation`` sub-sections are:
 
 .. toctree::
    :titlesonly:

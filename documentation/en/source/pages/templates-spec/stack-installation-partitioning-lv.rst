@@ -7,7 +7,7 @@ logical volumes
 
 Within a :ref:`stack-installation-partitioning` section, the ``logicalVolumes`` sub-section describes the way a volume group should be partitioned.
 
-The definition of a logicalVolumes section when using YAML is:
+The definition of a ``logicalVolumes`` section when using YAML is:
 
 .. code-block:: yaml
 

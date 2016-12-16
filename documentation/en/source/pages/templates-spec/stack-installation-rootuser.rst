@@ -7,7 +7,7 @@ rootUser
 
 Within an :ref:`stack-installation`, the ``rootUser`` sub-section describes information for the root user to be created as part of the machine image build. If no root user information is provided, when an instance is provisioned from the machine image, the root user password is prompted.
 
-The definition of a rootUser section when using YAML is:
+The definition of a ``rootUser`` section when using YAML is:
 
 .. code-block:: yaml
 

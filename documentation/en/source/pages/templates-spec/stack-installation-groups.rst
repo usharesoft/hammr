@@ -7,7 +7,7 @@ groups
 
 Within an :ref:`stack-installation` section, the ``groups`` sub-section describes extra operating system groups to create as part of the machine image build process.
 
-The definition of a groups section when using YAML is:
+The definition of a ``groups`` section when using YAML is:
 
 .. code-block:: yaml
 
@@ -35,7 +35,7 @@ Examples
 Basic Example
 ~~~~~~~~~~~~~
 
-The following example describes groups to be created during the build. As no groupId is specified, the next available group Id numbers are used automatically during the build of the machine image.
+The following example describes groups to be created during the build. As no ``groupId`` is specified, the next available group Id numbers are used automatically during the build of the machine image.
 
 If you are using YAML:
 
