@@ -7,7 +7,7 @@ config
 
 Within a ``stack``, the ``config`` sub-section describes boot scripts to be added to the template and executed as part of the boot sequence of an instance.
 
-The definition of a config section when using YAML is:
+The definition of a ``config`` section when using YAML is:
 
 .. code-block:: yaml
 

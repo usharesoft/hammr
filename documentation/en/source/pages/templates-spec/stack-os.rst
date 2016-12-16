@@ -9,7 +9,7 @@ Within a ``stack``, the ``os`` sub-section describes the operating system to use
 
 To use a particular operating system, you must have access to it in the UForge server you are using. To determine which operating systems are available, use the ``os list`` command (please refer :ref:`command-line` for more information).
 
-The definition of an os section when using YAML is:
+The definition of an ``os`` section when using YAML is:
 
 .. code-block:: yaml
 

@@ -7,7 +7,7 @@ pkgs
 
 Within the :ref:`stack-os` section, the ``pkgs`` sub-section is an array of objects describing any extra packages that should be installed as part of the machine image build. Any package information provided in this section must exist in the corresponding operating system repository, otherwise this will result in a build failure.
 
-The definition of a pkgs section when using YAML is:
+The definition of a ``pkgs`` section when using YAML is:
 
 .. code-block:: yaml
 

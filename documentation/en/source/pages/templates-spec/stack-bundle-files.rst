@@ -7,7 +7,7 @@ files
 
 Within a ``bundle``, the ``files`` sub-section describes the list of files, binaries, archives or native packages that are part of the bundle. Within the ``files`` you can also list a folder.
 
-The definition of a files section when using YAML is:
+The definition of a ``files`` section when using YAML is:
 
 .. code-block:: yaml
 

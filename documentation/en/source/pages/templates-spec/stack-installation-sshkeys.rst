@@ -7,7 +7,7 @@ sshKeys
 
 The ``sshKeys`` sub-section describes one or more public SSH keys that can be used for a particular user.
 
-The definition of a sshKeys section when using YAML is:
+The definition of an ``sshKeys`` section when using YAML is:
 
 .. code-block:: yaml
 

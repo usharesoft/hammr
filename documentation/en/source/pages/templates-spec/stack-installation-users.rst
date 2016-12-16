@@ -7,7 +7,7 @@ users
 
 Within an :ref:`stack-installation` section, the ``users`` sub-section describes extra operating system users to create as part of the machine image build process.
 
-The definition of a users section when using YAML is:
+The definition of a ``users`` section when using YAML is:
 
 .. code-block:: yaml
 
@@ -41,7 +41,7 @@ Examples
 Basic Example
 ~~~~~~~~~~~~~~
 
-The following example provides the minimal information to create users during a build. As no userId is specified, the next available user Id numbers are used automatically during the build of the machine image. Furthermore, as no primary group is provided, the primary group will have the same name as the user name.
+The following example provides the minimal information to create users during a build. As no ``userId`` is specified, the next available user Id numbers are used automatically during the build of the machine image. Furthermore, as no primary group is provided, the primary group will have the same name as the user name.
 
 If you are using YAML:
 
@@ -134,4 +134,4 @@ If you are using JSON:
 	  ]
 	}
 
-.. warning:: By setting ``/sbin/nologin`` the user will not be able to log via the machine's console.
+.. warning:: By setting ``/sbin/nologin`` the user will not be able to log in via the machine's console.
