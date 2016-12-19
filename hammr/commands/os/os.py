@@ -53,7 +53,7 @@ class Os(Cmd, CoreGlobal):
                 distributions = generics_utils.order_list_object_by(distributions.distribution, "name")
                 for distribution in distributions:
                     profiles = self.api.Distributions(distribution.dbId).Profiles.Getall()
-                    profiles = profiles.distribProfileTemplates.distribProfileTemplate
+                    profiles = profiles.distribProfiles.distribProfile
                     if len(profiles) > 0:
                         profile_text=""
                         for profile in profiles:
