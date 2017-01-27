@@ -107,7 +107,7 @@ If you are using YAML:
       name: My OpenStack Account
       glanceUrl: http://myglanceurl/v1/
       keystoneUrl: http://mykeystoneurl:9292/v1
-      keystoneVersion: http://mykeystoneversion:5000/v2.0
+      keystoneVersion: v2.0
       login: mylogin
       password: mypassword
     displayName: OpenStack_testHammr
@@ -126,7 +126,7 @@ If you are using JSON:
           "name": "My OpenStack Account",
           "glanceUrl": "http://myglanceurl/v1/",
           "keystoneUrl": "http://mykeystoneurl:9292/v1",
-          "keystoneVersion": "http://mykeystoneversion:5000/v2.0",
+          "keystoneVersion": "v2.0",
           "login": "mylogin",
           "password": "mypassword"
         },
