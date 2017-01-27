@@ -97,7 +97,7 @@ The following example shows an OpenStack builder with all the information to bui
           "name": "My OpenStack Account",
           "glanceUrl": "http://myglanceurl/v1/",
           "keystoneUrl": "http://mykeystoneurl:9292/v1",
-          "keystoneVersion": "http://mykeystoneversion:5000/v2.0",
+          "keystoneVersion": "v2.0",
           "login": "mylogin",
           "password": "mypassword"
         },
