@@ -201,6 +201,9 @@ def generate_outscale(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
+def generate_k5vmdk(image, builder, installProfile, api, login):
+    image.compress = False
+    return image, installProfile
 
 ##--------------------- Physical Formats
 def generate_iso(image, builder, installProfile, api=None, login=None):

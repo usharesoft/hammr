@@ -32,6 +32,7 @@ Cloud Targets
    builders-flexiant
    builders-gce
    builders-azure
+   builders-k5
    builders-nimbula
    builders-openstack
    builders-outscale
@@ -64,4 +65,3 @@ Physical Targets
    :titlesonly:
 
    builders-iso
-

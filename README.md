@@ -9,6 +9,7 @@ Hammr supports the following platforms and machine image formats:
 * VMware : Desktop (Workstation, Fusion, Player); vSphere vCenter; vCloud Director
 * Microsoft Azure
 * Google Compute Engine
+* Fujitsu K5
 * Flexiant
 * SuseCloud
 * CloudStack

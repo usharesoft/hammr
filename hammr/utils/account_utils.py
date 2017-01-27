@@ -454,6 +454,23 @@ def outscale(account):
     myCredAccount.name = account["name"]
     return myCredAccount
 
+def k5(account):
+    myCredAccount = CredAccountK5()
+    # doing field verification
+    if not "name" in account:
+        printer.out("name for K5 account not found", printer.ERROR)
+        return
+    if not "login" in account:
+        printer.out("login in K5 account not found", printer.ERROR)
+        return
+    if not "password" in account:
+        printer.out("password in K5 account not found", printer.ERROR)
+        return
+
+    myCredAccount.name = account["name"]
+    myCredAccount.login = account["login"]
+    myCredAccount.password = account["password"]
+    return myCredAccount
 
 def get_target_platform_object(api, login, targetPlatformName):
     targetPlatformsUser = api.Users(login).Targetplatforms.Getall()

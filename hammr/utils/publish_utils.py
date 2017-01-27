@@ -347,3 +347,27 @@ def publish_outscale(pimage, builder):
 
     pimage.credAccount.zoneName = builder["zone"]
     return pimage
+
+def publish_k5vmdk(builder):
+    pimage = PublishImageK5()
+
+    # doing field verification
+    if not "displayName" in builder:
+        printer.out("displayName in k5 builder not found", printer.ERROR)
+        return
+    if not "domain" in builder:
+        printer.out("domain in k5 builder not found", printer.ERROR)
+        return
+    if not "project" in builder:
+        printer.out("project in k5 builder not found", printer.ERROR)
+        return
+    if not "region" in builder:
+        printer.out("region in k5 builder not found", printer.ERROR)
+        return
+
+    pimage.displayName = builder["displayName"]
+    pimage.keystoneDomain = builder["domain"]
+    pimage.keystoneProject = builder["project"]
+    pimage.publishLocation = builder["region"]
+
+    return pimage
