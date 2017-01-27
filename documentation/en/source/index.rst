@@ -15,18 +15,16 @@ Contents:
    pages/introduction
    pages/getting-started/overview
    pages/authentication/overview
-   
    pages/command-line/overview
-
    pages/account/overview
    pages/templates/overview
    pages/machine-images/overview
    pages/importing/overview
-
    pages/templates-spec/overview
-
    pages/migration/migrate-system.rst
-
+      
+   changelog
+   
 Trademarks
 ==========
 
@@ -43,4 +41,5 @@ Apache Ant, Ant, and Apache are trademarks of The Apache Software Foundation.
 UNIX is a registered trademark of the Open Group in the United States and in other countries.
 
 Other company names and product names are trademarks or registered trademarks of their respective owners.
+
 
