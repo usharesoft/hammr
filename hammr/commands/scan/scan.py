@@ -185,7 +185,7 @@ class Scan(Cmd, CoreGlobal):
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True,
                                help="the ID of the scan to generate the machine image from")
-        mandatory.add_argument('--file', dest='file', required=True, help="yaml/json file providing the builder parameters")
+        mandatory.add_argument('--file', dest='file', required=True, help="json file providing the builder parameters")
         return doParser
 
     def do_build(self, args):
@@ -200,7 +200,7 @@ class Scan(Cmd, CoreGlobal):
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
-            data = load_data(file)
+            data = generics_utils.check_json_syntax(file)
             if "builders" in data:
                 builders = hammr_utils.check_mandatory_builders(data["builders"])
                 builders = hammr_utils.check_mandatory_generate_scan(builders)
@@ -283,7 +283,7 @@ class Scan(Cmd, CoreGlobal):
                     printer.out("Impossible to generate this scan", printer.ERROR)
 
             except KeyError as e:
-                printer.out("unknown error template file", printer.ERROR)
+                printer.out("unknown error template json file", printer.ERROR)
 
 
 

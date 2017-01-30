@@ -16,26 +16,16 @@ This builder type is the default name provided by UForge AppCenter.
 
 .. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
-The Abiquo builder section has the following definition when using YAML:
-
-.. code-block:: yaml
-
-	---
-	builders:
-	- type: Abiquo
-	  account:
-	    type: Abiquo
-
-If you are using JSON:
+The Abiquo builder section has the following definition:
 
 .. code-block:: javascript
 
 	{
 	  "builders": [
-		{
-		  "type": "Abiquo",
-		  ...the rest of the definition goes here.
-		}
+	    {
+	      "type": "Abiquo",
+	      ...the rest of the definition goes here.
+	    }
 	  ]
 	}
 
@@ -90,31 +80,6 @@ Basic Example
 
 The following example shows an abiquo builder with all the information to build and publish a machine image to the Abiquo Cloud platform.
 
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	builders:
-	- type: Abiquo
-	  account:
-	    type: Abiquo
-	    name: My Abiquo Account
-	    hostname: test.abiquo.com
-	    username: myLogin
-	    password: myPassWD
-	  hardwareSettings:
-	    memory: 1024
-	  installation:
-	    diskSize: 2000
-	  enterprise: UShareSoft
-	  datacenter: London
-	  productName: CentOS Core
-	  category: OS
-	  description: CentOS Core template.
-
-If you are using JSON:
-
 .. code-block:: json
 
 	{
@@ -146,19 +111,7 @@ If you are using JSON:
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``abiquo-account.yml``.
-
-.. code-block:: yaml
-
-	---
-	account:
-	    type: Abiquo
-	    name: My Abiquo Account
-	    hostname: test.abiquo.com
-	    username: myLogin
-	    password: myPassWD
-
-If you are using JSON, create a JSON file ``abiquo-account.json``:
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``abiquo-account.json``.
 
 .. code-block:: json
 
@@ -177,27 +130,6 @@ If you are using JSON, create a JSON file ``abiquo-account.json``:
 The builder section can either reference by using ``file`` or ``name``.
 
 Reference by file:
-
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	builders:
-	- type: Abiquo
-	  account:
-	    file: "/home/joris/accounts/abiquo-account.yml"
-	  hardwareSettings:
-	    memory: 1024
-	  installation:
-	    diskSize: 2000
-	  enterprise: UShareSoft
-	  datacenter: London
-	  productName: CentOS Core
-	  category: OS
-	  description: CentOS Core template.
-
-If you are using JSON:
 
 .. code-block:: json
 
@@ -224,27 +156,6 @@ If you are using JSON:
 	}
 
 Reference by name, note the cloud account must already be created by using ``account create``.
-
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	builders:
-	- type: Abiquo
-	  account:
-	    name: My Abiquo Account
-	  hardwareSettings:
-	    memory: 1024
-	  installation:
-	    diskSize: 2000
-	  enterprise: UShareSoft
-	  datacenter: London
-	  productName: CentOS Core
-	  category: OS
-	  description: CentOS Core template.
-
-If you are using JSON:
 
 .. code-block:: json
 

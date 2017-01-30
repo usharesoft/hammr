@@ -33,6 +33,6 @@ These parameters need to be passed each time you want to use the command-line.
 Using a Credential File
 =======================
 
-Rather than passing the authentication information as part of the command-line, you can instead store this information in a credential file (``credentials.json`` or ``credentials.yml``) that will be used every time hammr is launched.  Hammr searches for this file in a sub-directory named ``.hammr`` located in the home directory of the user launching hammr.
+Rather than passing the authentication information as part of the command-line, you can instead store this information in a credential file (``credentials.json``) that will be used every time hammr is launched.  Hammr searches for this file in a sub-directory named ``.hammr`` located in the home directory of the user launching hammr.
 
 For more information, refer to :ref:`credential-file`.

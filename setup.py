@@ -30,7 +30,6 @@ requires=['uforge_python_sdk==3.7-2',
                     'argparse',
                     'paramiko==1.12',
                     'pyparsing==2.0.2',
-                    'pyyaml==3.12',
                     'hurry.filesize==0.9',
                     'termcolor==1.1.0',
                     'junit-xml==1.3',
@@ -55,7 +54,7 @@ setup (
 
   install_requires=requires,
   tests_require = test_requires,
-  
+
   # Fill in these to make your Egg ready for upload to
   # PyPI
   name = 'hammr',

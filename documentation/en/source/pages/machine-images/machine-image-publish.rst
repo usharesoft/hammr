@@ -9,27 +9,7 @@ In order to publish a machine image of the template you created, you must make s
 
 You will also need to set the information for your cloud account. We recommend that this information not be included in the template file, but rather set as a value that hammr will access in a seperate read-only file. For more information on creating a credential file with your cloud account information refer to the details in :ref:`cloud-accounts`.
 
-The following is a YAML example of the builders section illustrating the publication to OpenStack. Note that you can incorporate details for several cloud platforms in the same configuration file. For details of the required parameters for each of the image types, refer to the documentation. You can use either YAML or JSON to create your template.
-
-.. code-block:: yaml
-
-	---
-	builders:
-	- type: openstack
-	  hardwareSettings:
-	    memory: 1024
-	  installation:
-	    diskSize: 2000
-	  account: Openstack OW2
-	  tenant: opencloudware
-	  imageName: openstack-test
-	  publicImage: 'no'
-	  endpoint: http://ow2-04.xsalto.net:9292/v1
-	  keystoneEndpoint: http://ow2-04.xsalto.net:5000/v2.0
-	  username: test
-	  password: password
-
-If you are using JSON:
+The following is an example of the builders section illustrating the publication to OpenStack. Note that you can incorporate details for several cloud platforms in the same configuration file. For details of the required parameters for each of the image types, refer to the documentation.
 
 .. code-block:: json
 
@@ -59,9 +39,9 @@ Publish the image(s) by running the command ``image publish``:
 
 .. code-block:: shell
 
-	$ hammr image publish --id <the id> --file <your-template>.yml
-	Validating the template file [/tmp/centOS.yml] ...
-	OK: Syntax of template file [/tmp/centOS.yml] is ok
+	$ hammr image publish --id <the id> --file <your-template>.json
+	Validating the template file [/tmp/centOS.json] ...
+	OK: Syntax of template file [/tmp/centOS.json] is ok
 	Publishing 'ami' image (1/1)
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Done, published o... |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Publication to 'amazon' is ok

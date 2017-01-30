@@ -289,17 +289,8 @@ class TestImage(unittest.TestCase):
                 image.set_globals(api, login, password)
                 r = image.do_list(None)
                 self.assertEqual(r, 0)
+        
 
-
-class TestFilesYam(unittest.TestCase):
-        global api
-        api = Api(url, username = login, password = password, headers = None, disable_ssl_certificate_validation = True)
-
-        def test_template_create_with_yaml(self):
-                template = hammr.commands.template.Template()
-                template.set_globals(api, login, password)
-                r = template.do_create("--file data/test-parsing.yml --force")
-                self.assertEqual(r, 0)
 
 
 if __name__ == '__main__':

@@ -18,44 +18,6 @@ The following example shows 3 physical partitions of a disk, where the last phys
 
 .. image:: /images/partitioning-ex6.png
 
-.. code-block:: yaml
-
-	---
-	partitioning:
-	  disks:
-	  - name: sda
-		type: msdos
-		size: 20480
-		partitions:
-		- number: 1
-		  fstype: ext3
-		  size: 2048
-		  mountPoint: "/boot"
-		- number: 2
-		  fstype: linux-swap
-		  size: 1024
-		- number: 3
-		  fstype: Extended
-		  size: 17408
-		  partitions:
-		  - number: 5
-			fstype: ext3
-			size: 8192
-			mountPoint: "/space"
-			label: space
-		  - number: 6
-			fstype: ext3
-			size: 8192
-			mountPoint: "/home"
-			label: home
-		  - number: 7
-			fstype: ext3
-			size: 1024
-			mountPoint: "/tmp"
-			label: tmp
-
-If you are using JSON:
-
 .. code-block:: json
 
 	{
@@ -101,7 +63,7 @@ If you are using JSON:
 		                "fstype": "ext3",
 		                "size": 1024,
 		                "mountPoint": "/tmp",
-		                "label": "tmp"
+		                "label": "tmp"              
 		              }
 		            ]
 		          }

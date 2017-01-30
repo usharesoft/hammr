@@ -7,15 +7,7 @@ bundles
 
 Within a ``stack``, the ``bundles`` sub-section describes any custom software to be added to the filesystem of the machine image during the build phase. Software bundles can contain any file, archive or native package. Native packages can be installed and archives can be uncompressed as part of this process.
 
-The definition of a ``bundles`` section when using YAML is:
-
-.. code-block:: yaml
-
-	---
-	bundles:
-	- # the list of bundles goes here.
-
-If you are using JSON:
+The definition of a ``bundles`` section is:
 
 .. code-block:: javascript
 
@@ -54,25 +46,6 @@ Basic Example
 
 The following example describes the mandatory information in a bundle to be uploaded and used in the template. All the files described in the bundle are placed in the ``/tmp/wordpress`` directory.
 
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	bundles:
-	- name: wordpress
-	  version: '3.5'
-	  destination: "/tmp/wordpress"
-	  files:
-	  - # add files definition here.
-	- name: wordpress language pack
-	  version: '3.5'
-	  destination: "/tmp/wordpress"
-	  files:
-	  - # add files definition here.
-
-If you are using JSON:
-
 .. code-block:: javascript
 
 	{
@@ -82,7 +55,7 @@ If you are using JSON:
 	      "version": "3.5",
 	      "destination": "/tmp/wordpress",
 	      "files": [
-	          ...add files definition here.
+	          ...add files definition here.  
 	      ]
 	    },
 	    {
@@ -90,7 +63,7 @@ If you are using JSON:
 	      "version": "3.5",
 	      "destination": "/tmp/wordpress",
 	      "files": [
-	          ...add files definition here.
+	          ...add files definition here.  
 	      ]
 	    }
 	  ]
@@ -100,23 +73,6 @@ Adding a Description and License
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following example show how you can add license information and a description to the bundle.
-
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	bundles:
-	- name: wordpress
-	  version: '3.5'
-	  description: The wordpress files from wordpress.org
-	  destination: "/tmp/wordpress"
-	  files:
-	  - # add files definition here (see :ref:`stack-bundle-files` sub-section)
-	  license:
-	    # add license definition here (see :ref:`stack-bundle-license` sub-section)
-
-If you are using JSON:
 
 .. code-block:: javascript
 

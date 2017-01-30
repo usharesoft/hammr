@@ -67,7 +67,7 @@ class Account(Cmd, CoreGlobal):
                                   description="Creates a new cloud account")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--file', dest='file', required=True,
-                               help="yaml/json file providing the cloud account parameters")
+                               help="json file providing the cloud account parameters")
         return doParser
 
     def do_create(self, args):
@@ -84,7 +84,7 @@ class Account(Cmd, CoreGlobal):
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
-            data = load_data(file)
+            data = generics_utils.check_json_syntax(file)
             if data is None:
                 return 2
             if "builders" in data:
@@ -131,7 +131,7 @@ class Account(Cmd, CoreGlobal):
                 return 0
 
             except KeyError as e:
-                printer.out("unknown error template file", printer.ERROR)
+                printer.out("unknown error template json file", printer.ERROR)
 
         except IOError as e:
             printer.out("File error: " + str(e), printer.ERROR)

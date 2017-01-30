@@ -17,56 +17,6 @@ In this example, an extended physical partition that has two logical partitions 
 
 .. image:: /images/partitioning-ex41.png
 
-.. code-block:: yaml
-
-	---
-	partitioning:
-	  disks:
-	  - name: sda
-		type: msdos
-		size: 20480
-		partitions:
-		- number: 1
-		  fstype: ext3
-		  mountPoint: "/boot"
-		  size: 1024
-		- number: 2
-		  fstype: linux-swap
-		  size: 1024
-		- number: 3
-		  fstype: extended
-		  size: 18432
-		  partitions:
-		  - number: 5
-			fstype: lvm2
-			size: 9216
-		  - number: 6
-			fstype: lvm2
-			size: 9216
-	  - name: sdb
-		type: lvm
-		size: 122880
-	  volumeGroups:
-	  - name: grp1
-		physicalVolumes:
-		- name: sda5
-		- name: sda6
-		- name: sdb
-	  logicalVolumes:
-	  - name: vol1
-		vg_name: grp1
-		fstype: ext3
-		mountPoint: "/home"
-		size: 4098
-	  - name: vol2
-		vg_name: grp1
-		fstype: ext3
-		mountPoint: "/space"
-		size: 64
-		grow: true
-
-If you are using JSON:
-
 .. code-block:: json
 
 	{

@@ -330,7 +330,7 @@ def generate_vcenter(image, builder, installProfile, api=None, login=None):
     if installProfile == 2:
         return None, None, None
     if "hwType" in builder["hardwareSettings"]:
-        installProfile.hwType = str(builder["hardwareSettings"]["hwType"])
+        installProfile.hwType = builder["hardwareSettings"]["hwType"]
     image.compress = False
     return image, installProfile
 

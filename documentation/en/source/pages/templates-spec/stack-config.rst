@@ -7,15 +7,7 @@ config
 
 Within a ``stack``, the ``config`` sub-section describes boot scripts to be added to the template and executed as part of the boot sequence of an instance.
 
-The definition of a ``config`` section when using YAML is:
-
-.. code-block:: yaml
-
-	---
-	config:
-	- # the list of configuration file definitions goes here.
-
-If you are using JSON:
+The definition of a ``config`` section is:
 
 .. code-block:: javascript
 
@@ -35,24 +27,6 @@ Example
 -------
 
 The following example shows the declaration of two boot scripts, one to be execute only once the first time the machine is instantiated; the second to be executed every time the instance is rebooted.
-
-If you are using YAML:
-
-.. code-block:: yaml
-
-	---
-	config:
-	- name: configure-mysql.sh
-	  source: "/home/joris/demo/configure-mysql.sh"
-	  type: bootscript
-	  frequency: firstboot
-	- name: check-stats.sh
-	  source: http://downloads.mysite.com/config/check-stats.sh
-	  type: bootscript
-	  frequency: everyboot
-	  order: '1'
-
-If you are using JSON:
 
 .. code-block:: json
 
