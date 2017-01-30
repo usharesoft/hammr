@@ -9,7 +9,7 @@ For Mac users, you need to have ``XCode`` installed (or any other C compiler).
 
 You can download the latest version of Xcode from the Apple developer website or get it using the Mac App Store
 
-Run the following command:
+Run the following command to install the latest version of Hammr:
 
 .. code-block:: shell
 
@@ -17,7 +17,13 @@ Run the following command:
 	$ sudo easy_install pip
 	$ sudo easy_install readline
 	$ sudo easy_install progressbar==2.3
-	$ sudo pip install hammr-3.6
+	$ sudo pip install hammr
+
+If you want to install a specific version of Hammr, see :ref:`install-compatibility` to know the compatibility with the version of UForge, replace the latest line above by this one (where HAMMR-VERSION is the version you want):
+
+.. code-block:: shell
+
+	$ sudo pip install hammr==HAMMR-VERSION
 
 If you already have hammr installed and want to upgrade to the latest version you can run:
 

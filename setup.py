@@ -22,7 +22,8 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # Declare your packages' dependencies here, for eg:
-requires=['uforge_python_sdk>=3.6.0.8',
+# Always put an '==' dependency with uforge_python_sdk
+requires=['uforge_python_sdk==3.7-2',
                     'httplib2==0.9',
                     'texttable>=0.8.1',
                     'progressbar==2.3',
@@ -34,7 +35,7 @@ requires=['uforge_python_sdk>=3.6.0.8',
                     'termcolor==1.1.0',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
-                    'ussclicore==1.0.7']
+                    'ussclicore==1.0.8']
 
 test_requires=['mock']
 
@@ -57,7 +58,7 @@ setup (
   
   # Fill in these to make your Egg ready for upload to
   # PyPI
-  name = 'hammr-3.6',
+  name = 'hammr',
   version = VERSION,
   description='Command-line tool for building conistent and repeatable machine images for multiple cloud platforms',
   long_description='command-line tool for building/publishing/migrating consistent machine images for virtual datacenters and cloud platforms',

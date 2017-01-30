@@ -35,9 +35,8 @@ from ussclicore.argumentParser import CoreArgumentParser, ArgumentParser, Argume
 from ussclicore.utils import generics_utils
 from ussclicore.utils import printer
 import commands
-from uforge.application import Api
-from utils import *
-from utils.hammr_utils import *
+from uforge.application import Api, checkUForgeCompatible
+from utils import constants, hammr_utils
 
 class CmdBuilder(object):
     @staticmethod
@@ -120,6 +119,17 @@ class Hammr(Cmd):
             code = self.run_commands_at_invocation([str.join(' ', args)])
             sys.exit(code)
         else:
+            try:
+                compatible, serviceStatusVersion = checkUForgeCompatible(api)
+                if not compatible:
+                    printer.out("Sorry but this version of Hammr (version = '"+str(constants.VERSION)+ "') is not compatible with the version of UForge (version = '"+str(serviceStatusVersion)+ "').", printer.ERROR)
+                    printer.out("Please go to documentation, 'Install compatibility' section, to know how to install a compatible version of Hammr.", printer.ERROR)
+                    sys.exit(2)
+
+            except Exception as e:
+                hammr_utils.print_uforge_exception(e)
+                sys.exit(2)
+
             self._cmdloop()
 
 def generate_base_doc(app, hamm_help):
@@ -210,7 +220,7 @@ else:
 
     printer.out("Using credentials file: " + credpath, printer.INFO)
     try:
-        data = load_data(credpath)
+        data = hammr_utils.load_data(credpath)
         if mainArgs.user:
             username=mainArgs.user
         elif "user" in data:
@@ -239,7 +249,7 @@ else:
     except IOError as e:
         printer.out("File error in credentials file: "+str(e), printer.ERROR)
     except Exception as e:
-        print_uforge_exception(e)
+        hammr_utils.print_uforge_exception(e)
         exit(1)
 
 #UForge API instanciation
