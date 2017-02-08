@@ -58,6 +58,14 @@ Virtual Targets
    builders-vsphere
    builders-xen
 
+Container Targets
+-----------------
+
+.. toctree::
+   :titlesonly:
+
+   builders-docker
+
 Physical Targets
 ----------------
 

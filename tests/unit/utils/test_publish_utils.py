@@ -83,3 +83,54 @@ class TestPublishK5(TestCase):
         if project is not None: builder["project"] = project
         if region is not None: builder["region"] = region
         return builder
+
+
+class TestPublishDocker(TestCase):
+    def test_publish_docker_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_builder("testNamespace", "testRepositoryName", "testTagName")
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertEqual(pimage.namespace, builder["namespace"])
+        self.assertEqual(pimage.repositoryName, builder["repositoryName"])
+        self.assertEqual(pimage.tagName, builder["tagName"])
+
+    def test_publish_docker_should_return_none_when_missing_namespace(self):
+        # given
+        builder = self.build_builder(None, "testRepositoryName", "testTagName")
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertIsNone(pimage)
+
+    def test_publish_docker_should_return_none_when_missing_repository_name(self):
+        # given
+        builder = self.build_builder("testNamespace", None, "testTagName")
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertIsNone(pimage)
+
+    def test_publish_docker_should_return_none_when_missing_tag_name(self):
+        # given
+        builder = self.build_builder("testNamespace", "testRepositoryName", None)
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertIsNone(pimage)
+
+    def build_builder(self, namespace, repository_name, tag_name):
+        builder = {}
+        if namespace is not None: builder["namespace"] = namespace
+        if repository_name is not None: builder["repositoryName"] = repository_name
+        if tag_name is not None: builder["tagName"] = tag_name
+        return builder

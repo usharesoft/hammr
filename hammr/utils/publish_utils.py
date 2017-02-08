@@ -374,6 +374,7 @@ def publish_outscale(pimage, builder):
     pimage.credAccount.zoneName = builder["zone"]
     return pimage
 
+
 def publish_k5vmdk(builder):
     pimage = PublishImageK5()
 
@@ -396,4 +397,23 @@ def publish_k5vmdk(builder):
     pimage.keystoneProject = builder["project"]
     pimage.publishLocation = builder["region"]
 
+    return pimage
+
+
+def publish_docker(builder):
+    pimage = PublishImageDocker()
+
+    if not "namespace" in builder:
+        printer.out("namespace in Docker builder is missing", printer.ERROR)
+        return
+    if not "repositoryName" in builder:
+        printer.out("repositoryName in Docker builder is missing", printer.ERROR)
+        return
+    if not "tagName" in builder:
+        printer.out("tagName in Docker builder is missing", printer.ERROR)
+        return
+
+    pimage.namespace = builder["namespace"]
+    pimage.repositoryName = builder["repositoryName"]
+    pimage.tagName = builder["tagName"]
     return pimage

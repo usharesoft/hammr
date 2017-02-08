@@ -340,7 +340,13 @@ def generate_targz(image, builder, installProfile, api=None, login=None):
     return image, installProfile
 
 
+##--------------------- Container Formats
 def generate_lxc(image, builder, installProfile, api=None, login=None):
+    image.compress = True
+    return image, installProfile
+
+
+def generate_docker(image, builder, installProfile, api=None, login=None):
     image.compress = True
     return image, installProfile
 

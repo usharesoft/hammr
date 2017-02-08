@@ -8,6 +8,7 @@ Hammr supports the following platforms and machine image formats:
 * Amazon EC2 (AMI) - EBS-backed and Ephemeral
 * VMware : Desktop (Workstation, Fusion, Player); vSphere vCenter; vCloud Director
 * Microsoft Azure
+* Docker
 * Google Compute Engine
 * Fujitsu K5
 * Flexiant

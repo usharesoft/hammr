@@ -500,6 +500,29 @@ def k5(account):
     myCredAccount.password = account["password"]
     return myCredAccount
 
+def docker(account):
+    myCredAccount = CredAccountDocker()
+
+    if not "name" in account:
+        printer.out("name for Docker account is missing", printer.ERROR)
+        return
+    if not "endpointUrl" in account:
+        printer.out("endpointUrl for Docker account is missing", printer.ERROR)
+        return
+    if not "login" in account:
+        printer.out("login for Docker account is missing", printer.ERROR)
+        return
+    if not "password" in account:
+        printer.out("password for Docker account is missing", printer.ERROR)
+        return
+
+    myCredAccount.name = account["name"]
+    myCredAccount.endpointUrl = account["endpointUrl"]
+    myCredAccount.login = account["login"]
+    myCredAccount.password = account["password"]
+    return myCredAccount
+
+
 def get_target_platform_object(api, login, targetPlatformName):
     targetPlatformsUser = api.Users(login).Targetplatforms.Getall()
     if targetPlatformsUser is None or len(targetPlatformsUser.targetPlatforms.targetPlatform) == 0:

@@ -70,3 +70,71 @@ class TestK5(TestCase):
         if login is not None: account["login"] = login
         if password is not None: account["password"] = password
         return account
+
+
+class TestDocker(TestCase):
+    def test_docker_should_return_cred_account_when_valid_entries(self):
+        # given
+        account_given = self.build_account("testName", "testUrl", "testLogin", "testPassword")
+
+        # when
+        account = docker(account_given)
+
+        # then
+        self.assertEqual(account.name, account_given["name"])
+        self.assertEqual(account.endpointUrl, account_given["endpointUrl"])
+        self.assertEqual(account.login, account_given["login"])
+        self.assertEqual(account.password, account_given["password"])
+
+
+    def test_docker_should_return_none_when_missing_name(self):
+        # given
+        accountMocked = self.build_account(None, "testUrl", "testLogin", "testPassword")
+
+        # when
+        account = docker(accountMocked)
+
+        # then
+        self.assertIsNone(account)
+
+
+    def test_docker_should_return_none_when_missing_url(self):
+        # given
+        accountMocked = self.build_account("testName", None, "testLogin", "testPassword")
+
+        # when
+        account = docker(accountMocked)
+
+        # then
+        self.assertIsNone(account)
+
+
+    def test_docker_should_return_none_when_missing_login(self):
+        # given
+        accountMocked = self.build_account("testName", "testUrl", None, "testPassword")
+
+        # when
+        account = docker(accountMocked)
+
+        # then
+        self.assertIsNone(account)
+
+
+    def test_docker_should_return_none_when_missing_password(self):
+        # given
+        accountMocked = self.build_account("testName", "testUrl", "testLogin", None)
+
+        # when
+        account = docker(accountMocked)
+
+        # then
+        self.assertIsNone(account)
+
+
+    def build_account(self, name, endpoint_url, login, password):
+        account = {}
+        if name is not None: account["name"] = name
+        if endpoint_url is not None: account["endpointUrl"] = endpoint_url
+        if login is not None: account["login"] = login
+        if password is not None: account["password"] = password
+        return account
