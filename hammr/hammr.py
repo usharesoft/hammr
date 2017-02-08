@@ -123,7 +123,7 @@ class Hammr(Cmd):
                 compatible, serviceStatusVersion = checkUForgeCompatible(api)
                 if not compatible:
                     printer.out("Sorry but this version of Hammr (version = '"+str(constants.VERSION)+ "') is not compatible with the version of UForge (version = '"+str(serviceStatusVersion)+ "').", printer.ERROR)
-                    printer.out("Please go to documentation, 'Install compatibility' section, to know how to install a compatible version of Hammr.", printer.ERROR)
+                    printer.out("Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.", printer.ERROR)
                     sys.exit(2)
 
             except Exception as e:
