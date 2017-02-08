@@ -41,7 +41,7 @@ Installation
 Hammr is based on python, consequently it supports all major operating systems.  The easiest way to install hammr is using `pip`.
 
 ```
-$ sudo pip install hammr-3.6
+$ sudo pip install hammr
 ```
 
 Installing From Source
@@ -82,7 +82,7 @@ Upgrading
 =========
 If you have already installed hammr, and you with to upgrade to the latest version, use:
 ```
-$ sudo pip install --upgrade hammr-3.6
+$ sudo pip install --upgrade hammr
 ```
 
 
