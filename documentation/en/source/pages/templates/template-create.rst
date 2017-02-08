@@ -24,7 +24,7 @@ The following is an example of the minimum information needed in your configurat
 	  name: myTemplate
 	  version: '1.0'
 	  installation:
-	    internetSettings: dhcp
+	    internetSettings: basic
 	    diskSize: 12288
 	    swapSize: 512
 	  os:

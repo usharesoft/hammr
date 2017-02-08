@@ -5,7 +5,7 @@
 selinux
 =======
 
-The following is a list of all the accepted timezone values that can be used for the SELinux mode in an :ref:`stack-installation` sub-section of the stack.
+The following is a list of all the accepted values that can be used for the SELinux mode in an :ref:`stack-installation` sub-section of the stack.
 
 For example:
 
@@ -17,8 +17,8 @@ For example:
 	  }
 	}
 
-Available Keyboard Values
--------------------------
+Accepted Values
+---------------
 
 * ``disabled``
 * ``permissive``

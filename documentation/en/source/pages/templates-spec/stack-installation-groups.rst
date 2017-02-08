@@ -1,6 +1,6 @@
 .. Copyright (c) 2007-2016 UShareSoft, All rights reserved
 
-.. _stack-installation- groups:
+.. _stack-installation-groups:
 
 groups
 ======

@@ -27,7 +27,7 @@ The valid keys to use within an installation are:
 
 * ``diskSize`` (optional): an integer value (in MB) providing the disk size of the machine image. This value is ignored if an advanced partitioning table is provided (see :ref:`stack-installation-partitioning`)
 * ``displayLicense`` (optional): a boolean value to display any EULA during the first boot of a provisioned instance (includes operating system EULA and any license information provided in the :ref:`stack-bundles` section of the stack). If the value is ``false`` then no license information is displayed. If ``displayLicense`` is not used, then by default all license information is displayed during first boot.
-* ``internetSettings`` (optional): a string providing the network settings. Only two possible values ``dhcp`` or ``static``. If no value is provided, dhcp is set by default.
+* ``internetSettings`` (optional): a string providing the network settings. Possible values ``basic``, ``ask`` or ``configure``. If no value is provided, is set to ``basic`` by default. Refer to the :ref:`stack-installation-internet` sub-section for more information.
 * ``kernelParams`` (optional): an array of strings providing the kernel parameters to use. These parameters are used when provisioning an instance from the machine image. If no kernel parameters are provided, the ``rhbg`` and ``quiet`` parameters are set by default
 * ``keyboard`` (optional): a string providing the keyboard layout to use. If no keyboard setting is provided, then during first boot the keyboard setting is prompted. See :ref:`stack-installation-keyboard` for all available values for keyboard
 * ``partitioning`` (optional): an array of objects describing an advanced partitioning table. Refer to :ref:`stack-installation-partitioning` sub-section for more information.
@@ -49,6 +49,7 @@ The ``installation`` sub-sections are:
 
    stack-installation-keyboard
    stack-installation-groups
+   stack-installation-internet
    stack-installation-partitioning
    stack-installation-rootuser
    stack-installation-timezone
@@ -61,7 +62,7 @@ Example
 
 The following example sets the timezone, disk size, swap size, kernel parameters and automatically accepts all the licenses on the end-user’s behalf (license information not displayed on boot).
 
-.. note:: By default without any installation information specified, the internet settings is set to ``dhcp``; kernel parameters ``rhgb`` and ``quiet`` are set and display licenses is set to ``true``.
+.. note:: By default without any installation information specified, the internet settings is set to ``basic``; kernel parameters ``rhgb`` and ``quiet`` are set and display licenses is set to ``true``.
 
 If you are using YAML:
 
@@ -70,7 +71,7 @@ If you are using YAML:
 	---
 	installation:
 	  timezone: Europe/London
-	  internetSettings: dhcp
+	  internetSettings: basic
 	  kernelParams:
 	  - rhgb
 	  - quiet
@@ -85,7 +86,7 @@ If you are using JSON:
 	{
 	  "installation": {
 	    "timezone": "Europe/London",
-	    "internetSettings": "dhcp",
+	    "internetSettings": "basic",
 	    "kernelParams": [
 	      "rhgb",
 	      "quiet"
