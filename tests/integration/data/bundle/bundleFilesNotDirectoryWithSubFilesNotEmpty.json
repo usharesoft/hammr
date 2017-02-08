@@ -1,0 +1,32 @@
+{
+  "name": "Bundle",
+  "version": "6.0",
+  "destination": "/tmp/myBundle",
+  "files": [
+    {
+      "name": "file1of3.txt",
+      "source": "tests/integration/data/directoryTest/file1of3.txt",
+      "tag": "softwarefile",
+      "rights": "755",
+      "ownerGroup": "root:root",
+      "symlink": "/tmp/file1of3Link.txt",
+      "destination": "/usr/local/myBundle",
+      "files": [
+        {
+          "name": "file2of3.txt",
+          "source": "tests/integration/data/directoryTest/file2of3.txt",
+          "tag": "softwarefile",
+          "rights": "755",
+          "ownerGroup": "root:root",
+          "symlink": "t",
+          "destination": "/usr/local/myBundle",
+          "files": []
+        }
+      ]
+    }
+  ],
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}

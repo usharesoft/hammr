@@ -1,0 +1,9 @@
+{
+  "name": "Bundle",
+  "version": "6.0",
+  "destination": "/tmp/myBundle",
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}

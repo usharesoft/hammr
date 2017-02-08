@@ -18,8 +18,6 @@ import tarfile
 import os.path
 import ntpath
 import shutil
-import yaml
-import json
 import shlex
 from junit_xml import TestSuite, TestCase
 
@@ -33,6 +31,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
 from uforge.objects.uforge import *
 from ussclicore.utils import generics_utils, printer, progressbar_widget
 from hammr.utils.hammr_utils import *
+from hammr.utils.bundle_utils import *
 from hammr.utils import constants
 from hammr.utils import generate_utils
 from os.path import realpath
@@ -209,7 +208,7 @@ class Template(Cmd, CoreGlobal):
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
-            template= load_data(file)
+            template=validate(file)
             if template is None:
                 return 2
             print "OK : Syntax of template file [" + realpath(file) + "] is ok"
@@ -277,33 +276,7 @@ class Template(Cmd, CoreGlobal):
                     for bundle in template["stack"]["bundles"]:
                         if "files" in bundle:
                             for files in bundle["files"]:
-                                #if it's a directory
-                                if os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
-                                    #add the source path to the check list
-                                    checkList.append(ntpath.basename(files["source"]))
-                                    # creating an archive and add it to the file_tar_path
-                                    output_filename = files["name"] + ".tar.gz"
-                                    file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(output_filename)
-                                    source_dir = files["source"]
-                                    with tarfile.open(output_filename, "w:gz") as tar:
-                                        tar.add(source_dir, arcname=os.path.basename(source_dir))
-                                        tar.close
-                                    archive_files.append([file_tar_path,output_filename])
-                                    #changing the name of the file
-                                    files["name"] = output_filename
-                                    #changing source path to archive related source path
-                                    files["source"]=file_tar_path
-                                elif not os.path.isdir(files["source"]) and ntpath.basename(files["source"]) not in checkList:
-                                    #add the source path to the check list
-                                    checkList.append(ntpath.basename(files["source"]))
-                                    #add to list of file to tar
-                                    file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
-                                    archive_files.append([file_tar_path,files["source"]])
-                                    #changing source path to archive related source path
-                                    files["source"]=file_tar_path
-                                else:
-                                    printer.out("found two files with the same source path in the bundles section", printer.ERROR)
-                                    return 2
+                                checkList,archive_files = recursivelyAppendToArchive(bundle, files, "", checkList, archive_files)
                         else:
                             printer.out("No files section found for bundle", printer.ERROR)
                             return 2
@@ -313,6 +286,12 @@ class Template(Cmd, CoreGlobal):
                             archive_files.append([file_tar_path,bundle["license"]["source"]])
                             #changing source path to archive related source path
                             bundle["license"]["source"]=file_tar_path
+                        if "sourceLogo" in bundle:
+                            #add to list of file to tar
+                            file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(ntpath.basename(bundle["sourceLogo"]))
+                            archive_files.append([file_tar_path,bundle["sourceLogo"]])
+                            #changing source path to archive related source path
+                            bundle["sourceLogo"]=file_tar_path
             except KeyError as e:
                 printer.out("Error in bundle", printer.ERROR)
                 return 2
@@ -329,15 +308,13 @@ class Template(Cmd, CoreGlobal):
             os.mkdir(constants.TMP_WORKING_DIR)
 
             if isJsonFile:
-                file = open(constants.TMP_WORKING_DIR + os.sep + constants.TEMPLATE_JSON_NEW_FILE_NAME, "w")
-                json.dump(template, file, indent=4, separators=(',', ': '))
-                file.close()
-                archive_files.append([constants.TEMPLATE_JSON_FILE_NAME, constants.TMP_WORKING_DIR+ os.sep +constants.TEMPLATE_JSON_NEW_FILE_NAME])
+                fileName = constants.TEMPLATE_JSON_FILE_NAME
+                newFileName = constants.TEMPLATE_JSON_NEW_FILE_NAME
             else:
-                file = open(constants.TMP_WORKING_DIR + os.sep + constants.TEMPLATE_YAML_NEW_FILE_NAME, "w")
-                yaml.safe_dump(template, file, default_flow_style=False, indent=2, explicit_start='---')
-                file.close()
-                archive_files.append([constants.TEMPLATE_YAML_FILE_NAME, constants.TMP_WORKING_DIR+ os.sep +constants.TEMPLATE_YAML_NEW_FILE_NAME])
+                fileName = constants.TEMPLATE_YAML_FILE_NAME
+                newFileName = constants.TEMPLATE_YAML_NEW_FILE_NAME
+
+            archive_files = dump_data_in_file(template, archive_files, isJsonFile, fileName, newFileName)
 
             if doArgs.archive_path is not None:
                 tar_path = doArgs.archive_path
@@ -345,11 +322,14 @@ class Template(Cmd, CoreGlobal):
                 tar_path = constants.TMP_WORKING_DIR+os.sep+"archive.tar.gz"
             tar = tarfile.open(tar_path, "w|gz")
             for file_tar_path,file_global_path in archive_files:
-                file = generics_utils.get_file(file_global_path, constants.TMP_WORKING_DIR+os.sep+os.path.basename(file_global_path))
-                if file is None:
-                    printer.out("Downloaded bunlde file not found", printer.ERROR)
-                    return 2
-                tar.add(file, arcname=file_tar_path)
+                if not os.path.isdir(file_global_path):
+                    file = generics_utils.get_file(file_global_path, constants.TMP_WORKING_DIR+os.sep+os.path.basename(file_global_path))
+                    if file is None:
+                        printer.out("Downloaded bunlde file not found", printer.ERROR)
+                        return 2
+                    tar.add(file, arcname=file_tar_path)
+                else:
+                    tar.add(file_global_path, arcname=file_tar_path)
             tar.close()
 
             #arhive is created, doing import
@@ -397,7 +377,7 @@ class Template(Cmd, CoreGlobal):
                     return 2
 
             #--
-            template= validate(doArgs.file)
+            template=validate(doArgs.file)
             if template is None:
                 return 2
 
