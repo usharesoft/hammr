@@ -13,7 +13,7 @@ Once Python 2.7 is installed, run the command for the latest version of Hammr:
 
 	c:\Python27> .\Scripts\easy_install.exe hammr
 
-If you want to install a specific version of Hammr, see :ref:`install-compatibility` to know the compatibility with the version of UForge, replace the command above by this one (where HAMMR-VERSION is the version you want):
+If you want to install a specific version of Hammr, see :ref:`install-compatibility` to find the compatible version of UForge, and in the code above replace the '.\Scripts\easy_install.exe hammr' with:
 
 .. code-block:: shell
 

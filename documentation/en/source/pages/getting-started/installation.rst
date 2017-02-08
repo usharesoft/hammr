@@ -40,3 +40,4 @@ Please refer to the installation instructions depending upon your desktop type:
    install-windows
    install-source
    install-verify
+   install-compatibility

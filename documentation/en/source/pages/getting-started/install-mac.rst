@@ -19,7 +19,7 @@ Run the following command to install the latest version of Hammr:
 	$ sudo easy_install progressbar==2.3
 	$ sudo pip install hammr
 
-If you want to install a specific version of Hammr, see :ref:`install-compatibility` to know the compatibility with the version of UForge, replace the latest line above by this one (where HAMMR-VERSION is the version you want):
+If you want to install a specific version of Hammr, see :ref:`install-compatibility` to find the compatible version of UForge, and in the code above replace the 'sudo pip install hammr' with:
 
 .. code-block:: shell
 
