@@ -5,7 +5,7 @@
 Importing a Template
 ====================
 
-You can import a template based on a tar.gz archive file by using the command ``template import``. This will import the archive, which contains the .json and binaries of the template.
+You can import a template based on a tar.gz archive file by using the command ``template import``. This will import the archive, which contains the JSON or YAML file and binaries of the template.
 
 .. code-block:: shell
 

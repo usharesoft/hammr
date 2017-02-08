@@ -20,7 +20,7 @@ Sub Commands
 
 Creates a new cloud account. The options are:
 
-	* ``--file`` (mandatory): json file providing the cloud account parameters
+	* ``--file`` (mandatory): json or yaml file providing the cloud account parameters
 
 ``delete`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~

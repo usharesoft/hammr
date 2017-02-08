@@ -82,7 +82,7 @@ def check_mandatory_create_account(iterables, type):
                     file = get_file(iterable["account"]["file"])
                     if file is None:
                         return 2
-                    data = generics_utils.check_json_syntax(file)
+                    data = load_data(file)
                     if data is None:
                         return 2
                     if "accounts" in data:
@@ -96,31 +96,55 @@ def check_mandatory_create_account(iterables, type):
 
     return iterables
 
-def validate_json_file(file):
-    try:
+def check_extension_is_json(file):
+    fileExtension = os.path.splitext(file)[1]
+    if fileExtension == ".yml":
+        return False
+    elif fileExtension == ".json":
+        return True
+    else:
+        printer.out("please provide a json or yaml file \n", printer.ERROR)
+        raise Exception("File '" + file + "' is not allowed. Please provide a json or yaml file.")
+
+def load_data(file):
+    isJson = check_extension_is_json(file)
+    if isJson:
+        print "you provided a json file, checking the syntax..."
         data = generics_utils.check_json_syntax(file)
-        if data is None:
+    else:
+        print "you provided a yaml file, checking the syntax..."
+        data = generics_utils.check_yaml_syntax(file)
+    return data
+
+def validate(file):
+    isJson = check_extension_is_json(file)
+    if isJson:
+        print "you provided a json file, checking..."
+        template = validate_configurations_file(file, isJson=True)
+    else:
+        print "you provided a yaml file, checking..."
+        template = validate_configurations_file(file, isJson=False)
+    return template
+
+def validate_configurations_file(file, isJson):
+    if isJson:
+        data = generics_utils.check_json_syntax(file)
+    else:
+        data = generics_utils.check_yaml_syntax(file)
+    if data is None:
+        return
+    #check manadatory fields
+    if "stack" in data:
+        stack=check_mandatory_stack(data["stack"])
+        if stack is None:
             return
-        #check manadatory fields
-        if "stack" in data:
-            stack=check_mandatory_stack(data["stack"])
-            if stack is None:
-                return
-        #else:
-        #        print "No stack section find in the template file"
-        #        return
+    #else:
+    #        print "No stack section find in the template file"
+    #        return
 
-        if "builders" in data:
-            check_mandatory_builders(data["builders"])
-
-        return data
-    except ValueError as e:
-        printer.out("JSON parsing error: "+str(e), printer.ERROR)
-        printer.out("Syntax of template file ["+file+"]: FAILED")
-    except IOError as e:
-        printer.out("unknown error template json file", printer.ERROR)
-
-
+    if "builders" in data:
+        check_mandatory_builders(data["builders"])
+    return data
 
 #manage uforge exception
 def is_uforge_exception(e):

@@ -7,7 +7,15 @@ files
 
 Within a ``bundle``, the ``files`` sub-section describes the list of files, binaries, archives or native packages that are part of the bundle. Within the ``files`` you can also list a folder.
 
-The definition of a ``files`` section is:
+The definition of a ``files`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- # the list of files goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -37,6 +45,17 @@ The following example shows how to declare a set of files to uploaded as part of
 
 .. note:: If you declare the same file twice, the second file will overwrite the first one.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: wordpress.zip
+	  source: http://wordpress.org/wordpress-3.5.zip
+
+If you are using JSON:
+
 .. code-block:: json
 
 	{
@@ -55,6 +74,17 @@ The following example shows how to declare a folder to be uploaded as part of a 
 
 .. note:: You cannot upload the same source folder with two different names. In the end, the source folder and files will only be uploaded once.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: folder
+	  source: "/usr/local/folder"
+
+If you are using JSON:
+
 .. code-block:: json
 
       {
@@ -71,6 +101,18 @@ Overriding Bundle Destination
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The bundle via destination provides the global install path for all the files. This example shows how you can add a file to another directory in the filesystem, effectively overriding the default destination directory.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: wordpress.zip
+	  source: http://wordpress.org/wordpress-3.5.zip
+	  destination: "/usr/local/wordpress"
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -90,6 +132,19 @@ Extracting Archives
 
 The example uses the extract key to automatically extract the archive file:
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: wordpress.zip
+	  source: http://wordpress.org/wordpress-3.5.zip
+	  destination: "/usr/local/wordpress"
+	  extract: true
+
+If you are using JSON:
+
 .. code-block:: json
 
 	{
@@ -107,6 +162,19 @@ Installing or Placing Native Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The example declares a native package to be added to the bundle. The install key is used to tell the build process not to install the package, but to add it to the filesystem in the destination directory.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: mypackage.rpm
+	  source: "/home/joris/demo/mypackage-3.1.rpm"
+	  destination: "/usr/local/rpms"
+	  install: false
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -126,6 +194,18 @@ Using Parameters for Binaries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The example declares a binary file to be added to the bundle. The params key is used to provide a set of parameters that are used to execute the binary.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	files:
+	- name: mybinary.exe
+	  source: "/home/joris/demo/mybinary.exe"
+	  params: "--silent"
+
+If you are using JSON:
 
 .. code-block:: json
 

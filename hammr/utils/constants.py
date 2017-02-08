@@ -26,6 +26,9 @@ HTTP_TIMEOUT=30
 
 TEMPLATE_JSON_FILE_NAME="template.json"
 TEMPLATE_JSON_NEW_FILE_NAME="template.json"
+TEMPLATE_YAML_FILE_NAME="template.yml"
+TEMPLATE_YAML_NEW_FILE_NAME="template.yml"
+
 FOLDER_BUNDLES = "bundles";
 FOLDER_CONFIGS = "config";
 FOLDER_DEPLOYMENT_SCENARIO = "deploymentScenario";

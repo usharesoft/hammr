@@ -11,13 +11,13 @@ The parameters you need to enter will depend on the type of image you want to ge
 
 When you run the hammr command to generate the images, all image formats defined in the builders section will be built at the same time.
 
-Once the template is updated, build the images by running the command ``template build``:
+Once the template is updated, build the images by running the command ``template build``. The file specified in ``--file`` can either be a JSON or YAML file.
 
 .. code-block:: shell
 
-	$ hammr template build --file <path/filename>.json
-	Validating the template file [nginx-template.json] ...
-	OK: Syntax of template file [nginx-template.json] is ok
+	$ hammr template build --file <path/filename>.yml
+	Validating the template file [nginx-template.yml] ...
+	OK: Syntax of template file [nginx-template.yml] is ok
 	Generating 'ami' image (1/1)
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Done, created on ... |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Generation 'ami' ok

@@ -1,0 +1,42 @@
+{
+  "stack": {
+    "name": "test_parsing",
+    "version": "1.1",
+    "os": {
+      "name": "CentOS",
+      "version": "7",
+      "arch": "x86_64",
+      "profile": "Minimal",
+      "pkgs": [
+        {
+          "name": "nginx"
+        }
+      ]
+    },
+    "installation": {
+      "diskSize": 12288,
+	"rootUser": {
+    "password": "welcome-not-a-good-password",
+    "disablePasswordLogin": true
+  }
+    },
+    "bundles": [
+      {
+        "name": "my_bundle",
+        "version": "6.0",
+        "destination": "/tmp/myBundle",
+        "files": [
+        {
+        "name": "wordpress.zip",
+        "source": "http://wordpress.org/wordpress-3.5.zip",
+        "destination": "/usr/local/wordpress"
+        }
+        ],
+        "license": {
+          "name": "license.html",
+          "source": "http://wordpress.org/wordpress-3.5.zip"
+        }
+      }
+    ]
+  }
+}
