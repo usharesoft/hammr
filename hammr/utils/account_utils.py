@@ -20,7 +20,6 @@ from ussclicore.utils import generics_utils, printer
 from pyxb.utils import domutils
 
 
-
 def openstack(account):
     myCredAccount = CredAccountOpenStack()
     # doing field verification
@@ -158,6 +157,35 @@ def aws(account):
 
 
 def azure(account):
+    if not "publishsettings" in account:
+        printer.out("Azure Resource Manager account")
+        return azure_arm(account)
+    else:
+        printer.out("Azure classic account")
+        return azure_classic(account)
+
+
+def azure_arm(account):
+    myCredAccount = CredAccountAzureResourceManager()
+    # doing field verification
+    if not "name" in account:
+        printer.out("name for azure account not found", printer.ERROR)
+        return
+    if not "accountName" in account:
+        printer.out("Storgae account name not found", printer.ERROR)
+        return
+    if not "accountKey" in account:
+        printer.out("Storgae account key not found", printer.ERROR)
+        return
+
+    myCredAccount.name = account["name"]
+    myCredAccount.accountName = account["accountName"]
+    myCredAccount.accountKey = account["accountKey"]
+
+    return myCredAccount
+
+
+def azure_classic(account):
     myCredAccount = CredAccountAzure()
     # doing field verification
     if not "name" in account:
