@@ -3,6 +3,35 @@
 Changelog
 =========
 
+hammr 3.7.2-1 (2017-14-02)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp2-1 only
+* Add Azure Resource Manager publish support
+* Add Docker publish support
+* Modify documentation for multi-nics option
+* Align bundle specification with UForge
+
+Bug fixes:
+
+* Improve documentation for install compatibility between Hammr and UForge
+
+hammr 3.7-2 (2017-31-01)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7-2 only
+* Improve release process for Hammr
+* Add Fujitsu K5 publish support
+* Add release notes in documentation
+
+Bug fixes:
+
+* Fixes on documentation
+
 hammr-3.6 1.1 (2016-16-12)
 --------------------------
 
