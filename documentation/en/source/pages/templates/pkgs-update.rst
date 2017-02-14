@@ -10,15 +10,35 @@ A more complete example for adding CentOS is provided below. You will notice the
 * ``updateTo``: This is the date up until which the packages should be updated
 * ``profile``: The OS profile. The options are listed under os list
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  os:
+    name: CentOS
+    version: '6.4'
+    arch: x86_64
+    updateTo: 01-30-2014
+    profile: Minimal
+    pkgs:
+    - name: iotop
+    - name: httpd
+      version: 2.2.15
+      release: 28.el6.centos
+      arch: x86_64
+
+If you are using JSON:
+
 .. code-block:: json
 
   {
     "os" : {
-      "name" : "CentOS",   
+      "name" : "CentOS",
       "version" : "6.4",
       "arch" : "x86_64",
-      "updateTo" : "01-30-2014",  
-      "profile" : "Minimal", 
+      "updateTo" : "01-30-2014",
+      "profile" : "Minimal",
       "pkgs" : [ {
         "name" : "iotop"
       },

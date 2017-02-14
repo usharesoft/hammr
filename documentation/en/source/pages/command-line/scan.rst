@@ -21,7 +21,7 @@ Sub Commands
 Builds a machine image from a scan. The options are:
 
 	* ``--id`` (mandatory): the ID of the scan to generate the machine image from
-	* ``--file`` (mandatory): json file providing the builder parameters
+	* ``--file`` (mandatory): json or yaml file providing the builder parameters
 
 ``delete`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~

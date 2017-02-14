@@ -14,7 +14,16 @@ This builder type is the default name provided by UForge AppCenter.
 
 .. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
 
-The VMware vCenter builder section has the following definition:
+The VMware vCenter builder section has the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: VMware vCenter
+  # the rest of the definition goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -76,6 +85,35 @@ Example
 
 The following example shows an vCenter builder with all the information to build and publish a machine image to VMware vSphere vCenter.
 
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: VMware vCenter
+    account:
+      type: VMware vCenter
+      name: My VCenter account
+      login: mylogin
+      password: mypassword
+      hostname: myhostname
+      proxyHostname: myproxyHostname
+      proxyPort: '6354'
+      port: '443'
+    hardwareSettings:
+      memory: 1024
+      hwType: 7
+    installation:
+      diskSize: 10240
+    clusterName: cluster
+    datacenterName: datacentername
+    datastore: esx2esx_datastore
+    displayName: test_Hammr
+    network: VM_Network
+
+If you are using JSON:
+
 .. code-block:: json
 
   {
@@ -111,7 +149,22 @@ The following example shows an vCenter builder with all the information to build
 Referencing the Cloud Account
 -----------------------------
 
-To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a json file ``vcenter-account.json``.
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``vcenter-account.yml``.
+
+.. code-block:: yaml
+
+  ---
+  accounts:
+  - type: VMware vCenter
+    name: My VCenter account
+    login: mylogin
+    password: mypassword
+    hostname: myhostname
+    proxyHostname: myproxyHostname
+    proxyPort: '6354'
+    port: '443'
+
+If you are using JSON, create a JSON file ``vcenter-account.json``:
 
 .. code-block:: json
 
@@ -133,6 +186,28 @@ To help with security, the cloud account information can be referenced by the bu
 The builder section can either reference by using ``file`` or ``name``.
 
 Reference by file:
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: VMware vCenter
+    account:
+      file: "/home/joris/accounts/vcenter-account.yml"
+    hardwareSettings:
+      memory: 1024
+      hwType: 7
+    installation:
+      diskSize: 10240
+    clusterName: cluster
+    datacenterName: datacentername
+    datastore: esx2esx_datastore
+    displayName: test_Hammr
+    network: VM_Network
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -160,6 +235,28 @@ Reference by file:
   }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: VMware vCenter
+    account:
+      name: My vCenter Account
+    hardwareSettings:
+      memory: 1024
+      hwType: 7
+    installation:
+      diskSize: 10240
+    clusterName: cluster
+    datacenterName: datacentername
+    datastore: esx2esx_datastore
+    displayName: test_Hammr
+    network: VM_Network
+
+If you are using JSON:
 
 .. code-block:: json
 

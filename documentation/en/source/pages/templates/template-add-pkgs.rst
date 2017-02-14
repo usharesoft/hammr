@@ -10,7 +10,20 @@ When defining your machine image you set the OS and profile. UForge automaticall
 .. note:: If the packages you choose to add to your template have any dependencies, all the required packages will be added automatically.  You do not have to search and list all the dependencies in your template.
 
 
-The following is a basic example for a CentOS 6.4 32-bit template with package for ``iotop`` added.
+The following is a basic example for a CentOS 6.4 32-bit template with package for ``iotop`` added, when using YAML.
+
+.. code-block:: yaml
+
+	---
+	os:
+	  name: CentOS
+	  version: '6.4'
+	  arch: x86_64
+	  profile: Minimal
+	  pkgs:
+	  	name: iotop
+
+If you are using JSON:
 
 .. code-block:: json
 
