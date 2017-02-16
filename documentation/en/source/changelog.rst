@@ -3,6 +3,19 @@
 Changelog
 =========
 
+hammr 3.7-3 (2017-16-02)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7-3 only
+* Align bundle specification with UForge
+* Support YAML files as input
+
+Bug fixes:
+
+* Improve documentation for install compatibility between Hammr and UForge
+
 hammr 3.7.2-1 (2017-14-02)
 ------------------------
 
@@ -13,6 +26,7 @@ Evolutions:
 * Add Docker publish support
 * Modify documentation for multi-nics option
 * Align bundle specification with UForge
+* Support YAML files as input
 
 Bug fixes:
 
