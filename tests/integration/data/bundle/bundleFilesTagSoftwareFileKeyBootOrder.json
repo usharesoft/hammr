@@ -1,0 +1,18 @@
+{
+  "name": "Bundle",
+  "version": "6.0",
+  "destination": "/tmp/myBundle",
+  "files": [
+    {
+      "name": "directoryTest",
+      "source": "tests/integration/data/directoryTest",
+      "tag": "softwarefile",
+      "bootOrder": 1,
+      "destination": "/usr/local/myBundle"
+    }
+  ],
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}

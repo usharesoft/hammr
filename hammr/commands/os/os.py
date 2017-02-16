@@ -107,11 +107,11 @@ class Os(Cmd, CoreGlobal):
                 printer.out("No package found")
             else:
                 table = Texttable(800)
-                table.set_cols_dtype(["t","t","t","t","t","t"])
-                table.header(["Name", "Version", "Arch", "Release", "Build date", "Size"])
+                table.set_cols_dtype(["t","t","t","t","t","t","t"])
+                table.header(["Name", "Version", "Arch", "Release", "Build date", "Size", "FullName"])
                 pkgs = generics_utils.order_list_object_by(pkgs, "name")
                 for pkg in pkgs:
-                    table.add_row([pkg.name, pkg.version, pkg.arch, pkg.release, pkg.pkgBuildDate.strftime("%Y-%m-%d %H:%M:%S"), size(pkg.size)])
+                    table.add_row([pkg.name, pkg.version, pkg.arch, pkg.release, pkg.pkgBuildDate.strftime("%Y-%m-%d %H:%M:%S"), size(pkg.size), pkg.fullName])
                 print table.draw() + "\n"
                 printer.out("Found "+str(len(pkgs))+" packages")
         except ArgumentParserError as e:
