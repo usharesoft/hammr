@@ -15,7 +15,7 @@ The mandatory values when creating a template are:
 	
 For more details about the various parameters you can set in your template to define the machine image you want to create, refer to the :ref:`templates-spec` section.
 
-The following is an example of the minimum information needed in your configuration file to define a template. It includes the name, version, a few installation parameter and the OS. The following YAML example describes a CentOS 6.4 32-bit template. JSON can also be used.
+The following is an example of the minimum information needed in your configuration file to define a template. It includes the name, version, a few installation parameters and the OS. The following YAML example describes a CentOS 6.4 32-bit template. JSON can also be used.
 
 .. code-block:: yaml
 

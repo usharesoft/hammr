@@ -5,7 +5,7 @@
 Building and Publishing Machine Images
 ======================================
 
-Templates allow you to generate and publish identical machine images for phyiscal, virtual and cloud environments.  The rest of this section highlights how to build, publish and manage machine images with ``hammr``.
+Templates allow you to generate and publish identical machine images for physical, virtual and cloud environments.  The rest of this section highlights how to build, publish and manage machine images with ``hammr``.
 
 .. toctree::
    :titlesonly:

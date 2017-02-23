@@ -9,7 +9,7 @@ A configuration file, named the template, defines the contents of the machine im
 
 Lets create a template for the nginx machine image. Create a file ``nginx-template.yml`` with the following content.
 
-.. note:: JSON can aslo be used.
+.. note:: JSON can also be used.
 
 .. code-block:: yaml
 
@@ -52,12 +52,12 @@ If you are using JSON:
 
 
 
-A couple of things to point out at this stage. The ``stack`` section defines the content of the machine you want to build. There are many sub-sections (see the Stack glossary), the:
+A couple of things to point out at this stage. The ``stack`` section defines the content of the machine you want to build. There are many sub-sections (see the :ref:`template-stack` glossary), the:
 
 	* ``os``: defines the operating system you want to use (in this case Ubuntu 12.04 64bit); the profile type (minimal); and any specific packages to install (nginx)
 	* ``installation``: defines lower level installation parameters. In this example a disk size of 8GB
 
-Now lets create the template using hammr. First lets validate that the configuration file does not have any syntax errors or missing mandatory values, by using the command ``template validate`` and passing in our template file ``nginx-template.yml`` (or our .json file is we are using JSON).
+Now lets create the template using hammr. First lets validate that the configuration file does not have any syntax errors or missing mandatory values, by using the command ``template validate`` and passing in our template file ``nginx-template.yml`` (or .json file is you are using JSON).
 
 .. code-block:: shell
 

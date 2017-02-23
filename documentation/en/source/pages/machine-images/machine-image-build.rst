@@ -24,4 +24,4 @@ Once the template is updated, build the images by running the command ``template
 	Image URI: users/root/appliances/21/images/47
 	Image Id : 47
 
-.. note:: This may take some time. A progress report is be shown.
+.. note:: This may take some time. A progress report is shown.
