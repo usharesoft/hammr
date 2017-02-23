@@ -393,14 +393,14 @@ class Scan(Cmd, CoreGlobal):
         doParser.print_help()
 
     def arg_delete(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " delete", add_help=True, description="Deletes an existing scan")
+        doParser = ArgumentParser(prog=self.cmd_name + " delete", add_help=True, description="Deletes an existing instance or scan")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the scan to delete")
+        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the instance or scan to delete")
         optional = doParser.add_argument_group("optional arguments")
         optional.add_argument('--scantype', dest='scantype', required=False,
-                              help="the scan type, values in [instance|scan|all] (default is scan)")
+                              help="the scan type, values is [instance|scan|all] (default is scan)")
         optional.add_argument('--scansonly', dest='scansonly', required=False, action='store_true',
-                              help="if scan type is instance, remove only all scans not the instance itself")
+                              help="if scan type is instance, and this argument is used, will only remove the scans not the instance itself")
         return doParser
 
     def do_delete(self, args):
