@@ -29,7 +29,7 @@ Builds a machine image from a scan. The options are:
 Deletes an existing scan. The options are:
 
 	* ``--id`` (mandatory): the ID of the instance or scan to delete
-	* ``--scantype`` (mandatory): the type to be deleted. Can be one of: instance, scan, or all. When you set the type to ``instance``, the instance and all scans linked to it will be deleted unless using the ``scansonly`` flag. When you specify the type as ``scan`` only the scan with the ID to specify will be deleted.
+	* ``--scantype`` (mandatory): the type to be deleted. Can be one of: instance, scan, or all. When you set the type to ``instance``, the instance and all scans linked to it will be deleted unless using the ``scansonly`` flag. When you specify the type as ``scan`` only the scan with the ID to specify will be deleted. If you set the type to ``all``, all the instances and scans on your UForge will be deleted (regardeless of the ``id`` you set).
 	* ``--scansonly`` (optional): this flag can be used when the scan type is set to ``instance``. In this case, only the scans linked to the specified instance will be deleted (not the instance itself).
 
 ``import`` sub-command
