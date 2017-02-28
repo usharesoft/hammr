@@ -65,6 +65,7 @@ Container Targets
    :titlesonly:
 
    builders-docker
+   builders-lxc
 
 Physical Targets
 ----------------
