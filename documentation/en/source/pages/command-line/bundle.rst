@@ -14,6 +14,11 @@ Manages all the bundles that have been registered in UForge. A bundle is group o
 Sub Commands
 ------------
 
+``categories`` sub-command
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists all the categories available for bundles.
+
 ``clone`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -28,7 +33,7 @@ Clones the bundle. The clone is copying the meta-data of the bundle. The options
 
 Creates a new bundle and saves it to the UForge server. Hammr creates a tar.gz archive which includes the .json or .yml file and binaries and imports it to UForge. The options are:
 
-	* ``--file`` (mandatory): json or yaml file containing the bundle content
+	* ``--file`` (mandatory): json or yaml file containing the bundle content. See the :ref:`stack-bundle-files` sub-section for available keys.
 	* ``--archive-path`` (optional): path of where to store the archive (tar.gz) of the created bundle. If provided, hammr creates an archive of the created bundle, equivalent to running ``bundle export``
 
 ``delete`` sub-command
@@ -59,7 +64,9 @@ Creates a bundle from an archive. The archive file must be a tar.gz (which inclu
 
 Lists all the bundles that have been registered in the UForge server.
 
-``categories`` sub-command
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+``validate`` sub-command
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Lists all the categories available for bundles.
+Validates the syntax of a bundle configuration file. The options are:
+
+	* ``--file`` (mandatory): the json or yaml configuration file

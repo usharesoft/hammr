@@ -79,9 +79,9 @@ If you are using YAML:
 	  files:
 	  - # add files definition here (see :ref:`stack-bundle-files` sub-section)
 
- If you are using JSON:
+If you are using JSON:
 
- .. code-block:: json
+.. code-block:: javascript
 
 	{
 	  "bundles": [
@@ -129,7 +129,7 @@ If you are using YAML:
 
 If you are using JSON:
 
-.. code-block:: json
+.. code-block:: javascript
 
 	{
 	  "bundles": [
@@ -175,7 +175,7 @@ If you are using YAML:
 
 If you are using JSON:
 
-.. code-block:: json
+.. code-block:: javascript
 
 	{
 	  "bundles": [
@@ -237,7 +237,7 @@ If you are using YAML:
 
 If you are using JSON:
 
-.. code-block:: json
+.. code-block:: javascript
 
 	{
 	  "bundles": [
@@ -326,7 +326,7 @@ If you are using YAML:
 
 If you are using JSON:
 
-.. code-block:: json
+.. code-block:: javascript
 
 	{
 	  "bundles": [

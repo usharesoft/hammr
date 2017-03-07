@@ -17,7 +17,7 @@ Bug fixes:
 * Improve documentation for install compatibility between Hammr and UForge
 
 hammr 3.7.2-1 (2017-14-02)
-------------------------
+--------------------------
 
 Evolutions:
 
