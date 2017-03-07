@@ -37,6 +37,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
+    'rst2pdf.pdfbuilder',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -236,6 +237,17 @@ latex_documents = [
     (master_doc, 'HammrGuide.tex', u'Hammr Guide',
      u'UShareSoft', 'manual'),
 ]
+
+# PDF documentation information
+pdf_documents = [
+    ('index', u'HammrGuide', u'Hammr Guide', u'UShareSoft'),
+]
+
+# A comma-separated list of custom stylesheets.
+pdf_stylesheets = ['sphinx', 'kerning', 'a4', 'ja']
+
+# Language to be used for hyphenation support
+pdf_language = "ja"
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
