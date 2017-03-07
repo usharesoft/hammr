@@ -1,16 +1,14 @@
 {
   "builders": [
     {
-      "type": "azure",
+      "type": "Microsoft Azure",
       "account": {
-        "type": "azure",
-        "name": "My Azure Account",
-        "subscriptionId": "xxxbewssbewdsbew-sdsewjwdtg-ssatgh-xxxdft5f323",
-        "certKey": "/home/joris/accounts/azure/cert.pem",
-        "rsaPrivateKey": "/home/joris/accounts/azure/key.pem"
+        "type": "Microsoft Azure",
+        "name": "My Azure account",
+        "publishsettings": "/path/to/Pay-As-You-Go-4-25-2016-credentials.publishsettings"
       },
-      "storageAccount": "mystorageaccount",
-      "location": "West Europe"
+      "storageAccount":"mystorageaccount",
+      "region":"Central US"
     }
   ]
 }

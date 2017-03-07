@@ -9,9 +9,9 @@ You can only download images that have been compressed. You will need the image 
 
 .. code-block:: shell
 
-	$ hammr image download -c ~/.hammr/credentials-UFOL.json --id 17517 --file /tmp/test.tar,gz
+	$ hammr image download -c ~/.hammr/credentials-UFOL.yml --id 17517 --file /tmp/test.tar,gz
 	INFO: no username nor password provided on command line, trying credentials file
-	INFO: Using credentials file: /home/joris/.hammr/credentials-UFOL.json
+	INFO: Using credentials file: /home/joris/.hammr/credentials-UFOL.yml
 	INFO: Using url https://factory.usharesoft.com/api
 	Searching image with id [17517] ...
 	Status: 100% |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| Time: 0:01:11

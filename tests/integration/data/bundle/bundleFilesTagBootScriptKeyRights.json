@@ -1,0 +1,20 @@
+{
+  "name": "Bundle",
+  "version": "6.0",
+  "destination": "/tmp/myBundle",
+  "files": [
+    {
+      "name": "cleanup_tmp.sh",
+      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
+      "tag": "bootscript",
+      "bootOrder": 1,
+      "bootType": "firstboot",
+      "rights": "755",
+      "destination": "/usr/local/myBundle"
+    }
+  ],
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}

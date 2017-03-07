@@ -1,12 +1,14 @@
 {
   "accounts": [
     {
-        "type": "openstack",
-        "name": "My OpenStack Account",
-        "endpoint": "http://ow2-04.xsalto.net:9292/v1",
-        "keystoneEndpoint": "http://ow2-04.xsalto.net:5000/v2.0",
-        "username": "test",
-        "password": "password"
+      "type": "OpenStack",
+      "name": "My OpenStack Account",
+      "glanceUrl": "http://myglanceurl/v1/",
+      "keystoneUrl": "http://mykeystoneurl:9292/v1",
+      "keystoneVersion": "http://mykeystoneversion:5000/v2.0",
+      "login": "mylogin",
+      "password": "mypassword"
     }
   ]
 }
+

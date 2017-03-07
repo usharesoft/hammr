@@ -7,7 +7,15 @@ pkgs
 
 Within the :ref:`stack-os` section, the ``pkgs`` sub-section is an array of objects describing any extra packages that should be installed as part of the machine image build. Any package information provided in this section must exist in the corresponding operating system repository, otherwise this will result in a build failure.
 
-The definition of a pkgs section is:
+The definition of a ``pkgs`` section when using YAML is:
+
+.. code-block:: yaml
+
+  ---
+  pkgs:
+  - # the list of packages goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -18,7 +26,7 @@ The definition of a pkgs section is:
 The valid keys to use within the pkgs object are:
 
 * ``arch`` (optional): a string providing architecture to use
-* fullName (optional): a string providing the name, version, release and architecture information. If used, the mandatory name key is not required.
+* ``fullName`` (optional): a string providing the name, version, release and architecture information. If used, the mandatory name key is not required.
 * ``name`` (mandatory): a string providing the name of the package to use
 * ``release`` (optional): a string providing the release of the package to use
 * ``version`` (optional): a string providing the version of the package to use
@@ -34,6 +42,24 @@ Basic Example
 ~~~~~~~~~~~~~
 
 The following example uses CentOS 6.4 64 bit operating system for the template and adding the packages ``php``, ``php-cli``, ``php-common`` and ``php-mysql``. Note that only the name is provided. The final version and release of these packages is determined during the build of the machine image.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  os:
+    name: CentOS
+    version: '6.4'
+    arch: x86_64
+    profile: Minimal
+    pkgs:
+    - name: php
+    - name: php-cli
+    - name: php-common
+    - name: php-mysql
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -63,7 +89,31 @@ The following example uses CentOS 6.4 64 bit operating system for the template a
 Adding a Version and Release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By adding ``version``, ``release`` and ``arch`` or ``fullName`, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called making the package "sticky".
+By adding ``version``, ``release`` and ``arch`` or ``fullName``, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called making the package "sticky".
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  os:
+    name: CentOS
+    version: '6.4'
+    arch: x86_64
+    profile: Minimal
+    pkgs:
+    - name: php
+      version: 5.5.3
+      release: 23.el6_4
+      arch: i686
+    - name: php-cli
+      version: 5.5.3
+      release: 23.el6_4
+      arch: i686
+    - fullName: php-common-5.5.3-23.el6_4-i686.rpm
+    - fullName: php-mysql-5.5.3-23.el6_4-i686.rpm
+
+If you are using JSON:
 
 .. code-block:: json
 

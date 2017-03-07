@@ -29,13 +29,13 @@ To get the id of the machine image generated, use the command ``image list``
 	Found 3 images
 	No publication available
 
-Now use the command ``publish`` to start the registration process
+Now use the command ``publish`` to start the registration process. The following example assumes you are using YAML but you can also use JSON.
 
 .. code-block:: shell
 
-	$ hammr image publish --id <the id> --file nginx-template.json
-	Validating the template file [/tmp/centOS.json] ...
-	OK: Syntax of template file [/tmp/centOS.json] is ok
+	$ hammr image publish --id <the id> --file nginx-template.yml
+	Validating the template file [/tmp/centOS.yml] ...
+	OK: Syntax of template file [/tmp/centOS.yml] is ok
 	Publishing 'ami' image (1/1)
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Done, published o... |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Publication to 'amazon' is ok

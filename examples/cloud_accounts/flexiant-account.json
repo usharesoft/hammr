@@ -1,12 +1,11 @@
 {
   "accounts": [
     {
-      "type": "flexiant",
-      "name": "My Flexiant Account",
-      "username": "test.test@test.fr/hsefjuhseufhew",
-      "password": "myPassWD",
-      "customerUUID": "uhdeuwhedkjhfdwejkfhew-werewi4732hfdw-asnd",
-      "wsdlURL": "https://20.20.20.20:4442/?wsdl"
+      "type": "Flexiant",
+      "name": "My Flexiant account",
+      "apiUsername": "name@domain.com/mykey1111",
+      "password": "mypassword",
+      "wsdlUrl": "myWsdlurl"
     }
   ]
 }

@@ -7,7 +7,15 @@ users
 
 Within an :ref:`stack-installation` section, the ``users`` sub-section describes extra operating system users to create as part of the machine image build process.
 
-The definition of a users section is:
+The definition of a ``users`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	users:
+	- # the list of users goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 
@@ -33,7 +41,24 @@ Examples
 Basic Example
 ~~~~~~~~~~~~~~
 
-The following example provides the minimal information to create users during a build. As no userId is specified, the next available user Id numbers are used automatically during the build of the machine image. Furthermore, as no primary group is provided, the primary group will have the same name as the user name.
+The following example provides the minimal information to create users during a build. As no ``userId`` is specified, the next available user Id numbers are used automatically during the build of the machine image. Furthermore, as no primary group is provided, the primary group will have the same name as the user name.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	users:
+	- name: joris
+	  fullName: joris
+	  homeDir: "/home/joris"
+	  shell: "/bin/bash"
+	- name: yann
+	  fullName: yann dorcet
+	  homeDir: "/home/ydorcet"
+	  shell: "/bin/bash"
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -58,6 +83,30 @@ More Complex Example
 ~~~~~~~~~~~~~~~~~~~~
 
 This example shows how you can provide group information, set a user Id and make a user a system user.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+	---
+	users:
+	- name: joris
+	  fullName: joris
+	  userId: 2222
+	  primaryGroup: joris
+	  secondaryGroups: dev,france
+	  homeDir: "/home/joris"
+	  shell: "/bin/bash"
+	- name: yann
+	  fullName: yann dorcet
+	  systemUser: true
+	  userId: 400
+	  primaryGroup: yann
+	  secondaryGroups: admin,dev,france
+	  homeDir: "/home/ydorcet"
+	  shell: "/sbin/nologin"
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -85,4 +134,4 @@ This example shows how you can provide group information, set a user Id and make
 	  ]
 	}
 
-.. warning:: By setting ``/sbin/nologin`` the user will not be able to log via the machine's console.
+.. warning:: By setting ``/sbin/nologin`` the user will not be able to log in via the machine's console.

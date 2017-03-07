@@ -9,7 +9,15 @@ Within a :ref:`stack-installation-partitioning-disks` section, the ``partitions`
 
 .. warning:: A disk may have a maximum of 4 partitions.
 
-The definition of a partitions section is:
+The definition of a ``partitions`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	partitions:
+	- # the list of partitions goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 

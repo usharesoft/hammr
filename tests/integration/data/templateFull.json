@@ -72,12 +72,13 @@
       "name": "configure-mysql.sh",
       "source": "data/bootsrcripts/cleanup_tmp.sh",
       "type": "bootscript",
-      "frequency": "firstboot"
+      "frequency": "firstboot",
+      "order" : "1"
     }
     ],
     "os" : {
       "name" : "CentOS",
-      "version" : "6",
+      "version" : "7",
       "arch" : "x86_64",
       "updateTo" : "07-30-2014",
       "profile" : "Minimal",

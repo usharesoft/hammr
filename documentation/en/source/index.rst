@@ -15,14 +15,31 @@ Contents:
    pages/introduction
    pages/getting-started/overview
    pages/authentication/overview
-   
    pages/command-line/overview
-
    pages/account/overview
    pages/templates/overview
    pages/machine-images/overview
    pages/importing/overview
-
    pages/templates-spec/overview
-
    pages/migration/migrate-system.rst
+      
+   changelog
+   
+Trademarks
+==========
+
+UForge is a registered trademark of UShareSoft, a Fujitsu company.
+
+LINUX is a registered trademark of Linus Torvalds.
+
+Microsoft and Windows are either registered trademarks or trademarks of Microsoft Corporation in the United States and/or other countries.
+
+Oracle, GlassFish, Java, and all Java-based trademarks and logos are trademarks or registered trademarks of Oracle Corporation and/or its affiliates.
+
+Apache Ant, Ant, and Apache are trademarks of The Apache Software Foundation.
+
+UNIX is a registered trademark of the Open Group in the United States and in other countries.
+
+Other company names and product names are trademarks or registered trademarks of their respective owners.
+
+

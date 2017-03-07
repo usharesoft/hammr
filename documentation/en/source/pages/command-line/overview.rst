@@ -30,6 +30,7 @@ Below provides a list of the available ``commands``:
    account
    bundle
    format
+   platform
    image
    os
    quota

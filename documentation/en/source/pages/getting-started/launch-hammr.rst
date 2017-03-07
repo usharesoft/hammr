@@ -100,20 +100,35 @@ For example
 
 These parameters need to be passed each time you wish to use the command-line.
 
+.. _credential-file:
 
 Using a Credential File
 -----------------------
 
-Rather than passing the authentication information as part of the command-line, you can instead store this information in a credential file (``credentials.json``) that will be used every time hammr is launched.  Hammr searches for this file in a sub-directory named ``.hammr`` located in the home directory of the user launching hammr.
+Rather than passing the authentication information as part of the command-line, you can instead store this information in a credential file (``credentials.json`` or ``credentials.yml``) that will be used every time hammr is launched.  Hammr searches for this file in a sub-directory named ``.hammr`` located in the home directory of the user launching hammr.
 
-To use a credential file, go to the ``.hammr`` sub-directory and create the file ``credentials.json``.
+.. note:: If your AppCenter has a self-signed certificate, in order to use hammr with your AppCenter you must use a credentials file.
+
+To use a credential file, go to the ``.hammr`` sub-directory and create the file ``credentials.yml``.
+
+.. note:: You can also use JSON. In which case you need to create a file ``credentials.json``.
 
 .. code-block:: shell
 
 	$ cd ~/.hammr
-	$ vi credentials.json
+	$ vi credentials.yml
 
 Add the authentication and UForge URL endpoint to this file, using the following format:
+
+.. code-block:: yaml
+
+	---
+	user: root
+	password: password
+	url: http://10.1.2.24/ufws-3.3
+	acceptAutoSigned: false
+
+If you are using JSON:
 
 .. code-block:: json
 
@@ -129,8 +144,8 @@ As this file contains security information, it is recommended to change the perm
 
 .. code-block:: shell
 
-	$ chmod 600 credentials.json
+	$ chmod 600 credentials.yml
 
 Now every time hammr is launched, you no longer need to provide the authentication information as part of the command-line. Hammr will automatically use the information contained in this file.
 
-.. note:: The key ``acceptAutoSigned`` is to accept or not auto-signed SSL certificates. Default value is ``false``.
+.. note:: The key ``acceptAutoSigned`` is to accept or not self-signed SSL certificates. Default value is ``false``.

@@ -1,18 +1,18 @@
 {
   "builders": [
     {
-      "type": "openstack",
+      "type": "OpenStack QCOW2",
       "account": {
-        "type": "openstack",
+        "type": "OpenStack",
         "name": "My OpenStack Account",
-        "endpoint": "http://ow2-04.xsalto.net:9292/v1",
-        "keystoneEndpoint": "http://ow2-04.xsalto.net:5000/v2.0",
-        "username": "test",
-        "password": "password"
+        "glanceUrl": "http://myglanceurl/v1/",
+        "keystoneUrl": "http://mykeystoneurl:9292/v1",
+        "keystoneVersion": "http://mykeystoneversion:5000/v2.0",
+        "login": "mylogin",
+        "password": "mypassword"
       },
-      "tenant": "opencloudware",
-      "imageName": "joris-test",
-      "description": "CentOS Core template."
+      "displayName": "OpenStack_testHammr",
+      "tenantName": "mytenant"
     }
   ]
 }

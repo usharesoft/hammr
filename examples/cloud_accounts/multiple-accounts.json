@@ -1,21 +1,18 @@
 {
   "accounts": [
     {
-      "type": "ami",
-      "name": "My AWS Account",
-      "accountNumber": "111122223333",
-      "x509PrivateKey": "/home/joris/accounts/aws/pk509.pem",
-      "x509Cert": "/home/joris/accounts/aws/cert509.pem",
-      "accessKey": "789456123ajdiewjd",
-      "secretAccessKey": "ks30hPeH1xWqilJ04",
-      "keyPairPrivateKey": "/home/joris/accounts/aws/pk-mykeypair.pem"
+      "type": "Amazon",
+      "accountNumber": "11111-111111-1111",
+      "name": "My AWS account",
+      "accessKeyId": "myaccessKeyid",
+      "secretAccessKeyId": "mysecretaccesskeyid",
+      "x509Cert": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.cert.pem",
+      "x509PrivateKey": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/aws/aws.key.pem"
     },
     {
-      "type": "vcd",
-      "name": "My VCD Account",
-      "hostname": "10.1.1.2",
-      "username": "joris",
-      "password": "mypassword"
+      "type": "Microsoft Azure",
+      "name": "My Azure account",
+      "publishsettings": "/home/developer/UShareSoft/WKS/Hammr/tests/certs/azure/Pay-As-You-Go-4-25-2016-credentials.publishsettings"
     }
   ]
 }

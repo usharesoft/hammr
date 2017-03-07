@@ -9,7 +9,15 @@ Within a :ref:`stack-installation-partitioning` section, the ``volumeGroups`` su
 
 .. warning:: Only disks and partitions of type ``lvm`` and logical partitions can be added to a volume group.
 
-The definition of a volumeGroups section is:
+The definition of a ``volumeGroups`` section when using YAML is:
+
+.. code-block:: yaml
+
+	---
+	disks:
+	- # the list of volume groups goes here.
+
+If you are using JSON:
 
 .. code-block:: javascript
 

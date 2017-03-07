@@ -7,11 +7,17 @@ For Windows
 
 For Windows users, first install Python 2.7, which can be found `here <https://www.python.org/downloads/>`_. Download the ``msi`` file, and install ``Python 2.7`` by executing the msi file. In the instructions below, we assume that the installation path for Python 2.7 is ``C:\Python27``.
 
-Once Python 2.7 is installed, run the command:
+Once Python 2.7 is installed, run the command for the latest version of Hammr:
 
 .. code-block:: shell
 
 	c:\Python27> .\Scripts\easy_install.exe hammr
+
+If you want to install a specific version of Hammr, see :ref:`install-compatibility` to find the compatible version of UForge, and in the code above replace the '.\Scripts\easy_install.exe hammr' with:
+
+.. code-block:: shell
+
+	c:\Python27> .\Scripts\easy_install.exe hammr==HAMMR-VERSION
 
 If your Windows does not have a compilation environment, ``pycrypto`` installation may fail.
 You can install a ``pycrypto`` windows binary with this command (change your python version if needed):

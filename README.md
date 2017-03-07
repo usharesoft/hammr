@@ -1,4 +1,4 @@
-Hammr
+Hammr [![Build Status](https://travis-ci.org/usharesoft/hammr.svg?branch=master)](https://travis-ci.org/usharesoft/hammr)
 =====
 
 A command-line tool for building consistent and repeatable machine images for different platforms.
@@ -8,7 +8,9 @@ Hammr supports the following platforms and machine image formats:
 * Amazon EC2 (AMI) - EBS-backed and Ephemeral
 * VMware : Desktop (Workstation, Fusion, Player); vSphere vCenter; vCloud Director
 * Microsoft Azure
+* Docker
 * Google Compute Engine
+* Fujitsu K5
 * Flexiant
 * SuseCloud
 * CloudStack
@@ -39,7 +41,7 @@ Installation
 Hammr is based on python, consequently it supports all major operating systems.  The easiest way to install hammr is using `pip`.
 
 ```
-$ pip install hammr
+$ sudo pip install hammr
 ```
 
 Installing From Source
@@ -47,25 +49,25 @@ Installing From Source
 Hammr has a dependency to uforge_python_sdk. First, you need to install it:
 
 ```
-$ pip install uforge_python_sdk
+$ sudo pip install uforge_python_sdk
 ```
 
 or download sources from pypi: https://pypi.python.org/pypi/uforge_python_sdk
 
 Go to the source directory where the `setup.py` file is located.
 
-To compile and install, run (as sudo):
+To compile and install, run:
 
 ```
-$ sudo python setup.py build install
+$ python setup.py build && sudo python setup.py install
 ```
 
-Now clone the Hammr git repository to get all the source files.
+Now clone the hammr git repository to get all the source files.
 Next go to the source directory where the `setup.py` file is located.
-To compile and install, run (as sudo):
+To compile and install, run:
 
 ```
-$ sudo python setup.py build install
+$ python setup.py build && sudo python setup.py install
 ```
 
 This will automatically create the hammr executable and install it properly on your system.
@@ -73,14 +75,14 @@ This will automatically create the hammr executable and install it properly on y
 To check that this was successful, run:
 
 ```
-$ hammr —v 
+$ hammr -v
 ```
 
 Upgrading
 =========
 If you have already installed hammr, and you with to upgrade to the latest version, use:
 ```
-$ pip install —upgrade hammr
+$ sudo pip install --upgrade hammr
 ```
 
 

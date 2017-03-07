@@ -34,7 +34,7 @@ Deletes a machine image or publish information. The options are:
 
 Downloads a machine image to the local filesystem. The options are:
 
-	* ``--id`` (mandatory): the ID of the machine image to delete
+	* ``--id`` (mandatory): the ID of the machine image to download
 	* ``--file`` (mandatory): the pathname where to store the machine image
 
 ``list`` sub-command
@@ -47,4 +47,4 @@ Displays all the machine images built and publish information of those machine i
 
 Publish (upload and register) a built machine image to a target environment. The options are:
 
-	* ``--file`` (mandatory): json file providing the cloud account parameters required for upload and registration
+	* ``--file`` (mandatory): json or yaml file providing the cloud account parameters required for upload and registration
