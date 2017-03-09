@@ -23,6 +23,9 @@ Builds a machine image from a scan. The options are:
 	* ``--id`` (mandatory): the ID of the scan to generate the machine image from
 	* ``--file`` (mandatory): json or yaml file providing the builder parameters
 
+.. note:: When building from a scan, your yaml or json file must contain an ``installation`` and ``hardwareSettings`` section in ``builders``. Refer to :ref:`stack-installation` for installation details and :ref:`template-builders` for the hardware settings, which depend on the builder type.
+
+
 ``delete`` sub-command
 ~~~~~~~~~~~~~~~~~~~~~~
 

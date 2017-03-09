@@ -54,6 +54,8 @@ For building an image, the valid keys are:
 
 .. note:: You can get copies of the SSH keypairs for public base boxes `here <https://github.com/mitchellh/vagrant/tree/master/keys>`_.
 
+.. note:: When building from a scan, your yaml or json file must contain an ``installation`` section in ``builders``. This is mandatory when you create a new template, but might be missing when you build from a scan. Make sure it is present or your build will fail.
+
 Examples
 --------
 
