@@ -19,9 +19,9 @@ If you are using JSON:
 
 .. code-block:: javascript
 
-	"bundles": [
+	"bundles": {
 	    ...the list of bundles goes here.
-	]
+	}
 
 The valid keys to use within a bundle are:
 
@@ -71,13 +71,14 @@ If you are using YAML:
 	  destination: "/tmp/wordpress"
 	  maintainer: "wordpress"
 	  files:
-	  - # add files definition here (see :ref:`stack-bundle-files` sub-section)
+	  - # add files definition here  (see :ref:`stack-bundle-files` sub-section)
 	- name: "wordpress language pack"
 	  version: "3.5"
 	  destination: "/tmp/wordpress"
 	  maintainer: "wordpress"
 	  files:
-	  - # add files definition here (see :ref:`stack-bundle-files` sub-section)
+	  - # add files definition here  (see :ref:`stack-bundle-files` sub-section)
+
 
 If you are using JSON:
 
