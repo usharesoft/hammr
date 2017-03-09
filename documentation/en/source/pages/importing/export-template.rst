@@ -92,5 +92,5 @@ Now if you uncompress the archive, you will find a file ``template.yml``, which 
 If you open the ``template.yml`` file, then you will notice that there is additional information added, including:
 
 * ``pkgs``: this contains all the packages that are added by the os profile ``Minimal``
-* ``updateTo``: this is the date that the template initially created. This ensure that if you re-import this template (the creation date might be different) and build a machine image, the machine image will be identical to any machine image built from the original template
+* ``updateTo``: this is the date that the template initially created. This ensures that if you re-import this template (the creation date might be different) and build a machine image, the machine image will be identical to any machine image built from the original template
 * ``installation``: adds the default installation parameters.

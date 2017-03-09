@@ -14,9 +14,9 @@ In the world of virtualization and cloud computing, it is becoming imperative to
 Calculating Package Dependencies
 ================================
 
-Package dependency checking occurs when you build (or generating) a new machine image. During the first phase of generation, the backend UForge Server calculates automatically all the dependencies of each package in the os section (profile and pkgs list) as well as any packages contained elsewhere in your stack (native packages declared in one or more bundles).
+Package dependency checking occurs when you build (or generate) a new machine image. During the first phase of generation, the backend UForge Server calculates automatically all the dependencies of each package in the os section (profile and pkgs list) as well as any packages contained elsewhere in your stack (native packages declared in one or more bundles).
 
-All missing packages are automatically added. For each package added, this package’s dependencies are also checked. This process continues until all the dependencies have been met. The end result is a complete dependency tree of all the packages you require to run your application. All these packages are added to the machine image. Consequently don;t be surprised if the number of packages that are actually installed are larger than the packages lists in the stack section of the template.
+All missing packages are automatically added. For each package added, this package’s dependencies are also checked. This process continues until all the dependencies have been met. The end result is a complete dependency tree of all the packages you require to run your application. All these packages are added to the machine image. Consequently you should not be surprised if the number of packages that are actually installed are larger than the packages listed in the stack section of the template.
 
 Each package has meta-data on what the package requires (that is, what the package depends on) and what it provides in terms of functionality. This meta-data varies on the package type (RPM, DEB etc).
 

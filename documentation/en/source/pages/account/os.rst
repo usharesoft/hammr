@@ -5,7 +5,7 @@
 Operating Systems
 =================
 
-Hammr allows you to create machine images for a number of OSes. The type of OS you want to use needs to be defined in the os section of the configuration file, as described in.
+Hammr allows you to create machine images for a number of OSes. The type of OS you want to use needs to be defined in the ``os`` section of the configuration file, as described in.
 
 For a list of the OSes that can be added to your template, run ``os list``, for example
 

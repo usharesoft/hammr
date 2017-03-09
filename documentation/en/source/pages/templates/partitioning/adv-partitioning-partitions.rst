@@ -9,7 +9,7 @@ Each disk declared may be partitioned, i.e. the act of dividing the physical dis
 
 .. note:: A disk may have a maximum of 4 physical partitions.
 
-Each physical partition has a unique number: 1,2,3 and 4; declare a filesystem type and size. All filesystem types with the exception of ``lvm2``, ``extended`` and ``linux-swap`` require a mount point. LVM physical partitions are used in logical volumes (which will be covered later).
+Each physical partition has a unique number (1,2,3 and 4) and declare a filesystem type and size. All filesystem types with the exception of ``lvm2``, ``extended`` and ``linux-swap`` require a mount point. LVM physical partitions are used in logical volumes (which will be covered later).
 
 Example
 -------

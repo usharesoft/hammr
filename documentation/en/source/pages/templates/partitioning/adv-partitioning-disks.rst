@@ -5,7 +5,7 @@
 Disks
 =====
 
-The first thing a partitioning table needs is to declare one or more disks that will be used to partition. Each disk declared in the partitioning table has the name ``sd`` followed by a letter, starting at ``a``, namely: 1st disk ``sda``, 2nd disk ``sdb`` and so on. A disk may have one of two types, either ``MSDOS`` or ``LVM`` and provide a total disk size available. LVM disks cannot have any physical partitions, however can be used in logical volumes (we will touch on this subject later).
+The first thing a partitioning table needs is to declare one or more disks that will be used to partition. Each disk declared in the partitioning table has the name ``sd`` followed by a letter, starting at ``a``, namely: 1st disk ``sda``, 2nd disk ``sdb`` and so on. A disk is one of two types, either ``MSDOS`` or ``LVM``, and provides a total disk size available. LVM disks cannot have any physical partitions, however can be used in logical volumes (refer to :ref:`adv-partitioning-logical-grp-vol`).
 
 The example below describes 1 disk of 20GB when using YAML.
 

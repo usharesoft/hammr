@@ -7,7 +7,7 @@ Volume Groups and Logical Volumes
 
 Volume groups and logical volumes allows more creative and flexible partitioning schemas to be created than conventional partitioning schemas we have already discussed.
 
-A volume group allows us to gather disks, physical and logical partitions into a single logical pool of storage. This pool of storage can then be partitioned (like a disk) by using a logical volume.
+A volume group allows you to gather disks, physical and logical partitions into a single logical pool of storage. This pool of storage can then be partitioned (like a disk) by using a logical volume.
 
 Only disks that have the type ``lvm``, and physical partitions or logical partitions that have filesystem types ``lvm2`` can be grouped together in a volume group.
 

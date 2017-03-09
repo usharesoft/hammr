@@ -14,9 +14,9 @@ Partitioning is used frequently in production systems. Benefits include:
 * Having cache and log files separate from other files. These can change size dynamically and rapidly, potentially making a file system full.
 * Having a separate area for operating system virtual memory swapping/paging
 
-.. warning:: Some cloud platforms do not support all the features of partitioning, or limit the number of partitions you may have in your machine image. When building a machine image for a particular cloud platform, hammr will return an error if the partitioning table in the stack if the partitioning setup is not supported. This helps you save time and effort down the road when an instance of the machine image does not boot.
+.. warning:: Some cloud platforms do not support all the features of partitioning, or limit the number of partitions you may have in your machine image. When building a machine image for a particular cloud platform, hammr will return an error if the partitioning setup is not supported. This helps you save time and effort down the road when an instance of the machine image does not boot.
 
-The rest of this section, provides examples of:
+The rest of this section provides examples of:
 
 .. toctree::
    :titlesonly:
