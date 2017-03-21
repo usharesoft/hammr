@@ -3,6 +3,17 @@
 Changelog
 =========
 
+hammr 3.7.3 (2017-21-03)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp3-1 only
+
+Bug fixes:
+
+* Improve documentation for install compatibility between Hammr and UForge
+
 hammr 3.7-3 (2017-16-02)
 ------------------------
 
