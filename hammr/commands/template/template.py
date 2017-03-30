@@ -478,7 +478,7 @@ class Template(Cmd, CoreGlobal):
                                 test.elapsed_sec=time.time() - start_time
                                 #the downloadUri already contains downloadKey at the end
                                 if rImage.downloadUri is not None:
-                                    test.stdout=self.api._url+"/"+rImage.downloadUri
+                                    test.stdout=self.api.getUrl() +"/"+rImage.downloadUri
                         i+=1
                     except Exception as e:
                         if  is_uforge_exception(e):
