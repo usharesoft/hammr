@@ -99,7 +99,7 @@ class Scan(Cmd, CoreGlobal):
                     return 2
 
             # download scan binary
-            uri = generics_utils.get_uforge_url_from_ws_url(self.api._url)
+            uri = generics_utils.get_uforge_url_from_ws_url(self.api.getUrl())
             download_url = uri + constants.URI_SCAN_BINARY
 
             if os.path.isdir(constants.TMP_WORKING_DIR):
@@ -115,7 +115,7 @@ class Scan(Cmd, CoreGlobal):
                 return 2
 
             r_code = self.deploy_and_launch_agent(self.login, self.password, doArgs, local_uforge_scan_path,
-                                                  self.api._url)
+                                                  self.api.getUrl())
 
             if r_code != 0:
                 return
