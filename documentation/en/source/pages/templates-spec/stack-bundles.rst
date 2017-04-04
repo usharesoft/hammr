@@ -35,7 +35,7 @@ The valid keys to use within a bundle are:
 * ``category`` (optional): a string providing the category name for the bundle.
 * ``maintainer`` (optional): a string providing the maintainer for the bundle (if not provided, the user loginName will be used).
 * ``website`` (optional): a string providing the website URL for the bundle or maintainer.
-* ``oses`` (optional): a list of os for which the bundle is designed (please refer :ref:`stack-os` for more information, only name, version and arch is necessary).
+* ``restrictionRule`` (optional): a string providing the restriction rule of the bundle (For which distributions or target formats (e.g. builder's types, see :ref:`template-builders` section) the bundle is designed for or not).
 * ``sourceLogo`` (optional): a string providing the location of where to get the file. This can be a filesystem path (absolute or relative) or an URL.
 
 The destination string that describes where to add the files in the bundle is ignored for native packages that have the option to be installed during the build process.
@@ -205,10 +205,20 @@ To get the list of categories available, run command:
 
 	$ hammr bundle categories
 
-Adding oses
-~~~~~~~~~~~
+Adding restriction rule
+~~~~~~~~~~~~~~~~~~~~~~~
 
-The following example show how you can provide oses for which the bundle is designed.
+The following example show how you can provide restrictions.
+
+The restriction rule is represented by a "logical" expression.
+A simple term must match pattern "Object#field=value" or "Object#field!=value".
+   - object is "Distribution" or "TargetFormat"
+   - field is "family, pkgType, name, version or arch" for Distribution object (see :ref:`command-line-os` section and os list command to find values for field)
+   - field is "name or type" for TargetFormat object (see :ref:`template-builders` section to get values for name field. Values for type field are cloud, virtual, physical or container)
+   - value is the value you want to match with the fields (e.g. CentOS for Distribution name, linux for Distribution family, x86_64 for Distribution arch, VirtualBox for TargetFormat name, cloud for TargetFormat type...)
+   - logical operator is "||" for OR and "&&" for AND
+
+Here the bundle is designed for (CentOS 6 x86_64 or CentOS 7 x86_64) or (all distribution if image is generated for VirtualBox)
 
 If you are using YAML:
 
@@ -223,13 +233,7 @@ If you are using YAML:
 	  maintainer: "wordpress"
 	  website: "https://fr.wordpress.org/"
 	  category: "Blogging"
-	  oses:
-	  - name: "CentOS"
-        version: "7"
-        arch: "x86_64"
-	  - name: "CentOS"
-        version: "6"
-        arch: "x86_64"
+	  restrictionRule: "(Distribution#name=CentOS && Distribution#arch=x86_64 && (Distribution#version=7 || Distribution#version=6)) || TargetFormat#name=VirtualBox"
 	  files:
 	  - # add files definition here (see :ref:`stack-bundle-files` sub-section)
 	  license:
@@ -250,15 +254,7 @@ If you are using JSON:
 	      "maintainer": "wordpress",
 	      "website": "https://fr.wordpress.org/",
 	      "category": "Blogging",
-	      "oses" : [ {
-			"name" : "CentOS",
-			"version" : "7",
-			"arch" : "x86_64"
-		  }, {
-			"name" : "CentOS",
-			"version" : "6",
-			"arch" : "x86_64"
-		  } ],
+	      "restrictionRule" : "(Distribution#name=CentOS && Distribution#arch=x86_64 && (Distribution#version=7 || Distribution#version=6)) || TargetFormat#name=VirtualBox",
 	      "files": [
 	          ...add files definition here (see :ref:`stack-bundle-files` sub-section)
 	      ],
@@ -288,10 +284,7 @@ If you are using YAML:
 	  maintainer: "wordpress"
 	  website: "https://fr.wordpress.org/"
 	  category: "Blogging"
-	  oses:
-	  - name: "CentOS"
-        version: "7"
-        arch: "x86_64"
+	  restrictionRule: "Distribution#name=CentOS && Distribution#arch=x86_64 && Distribution#version=7"
 	  files:
 	  - name: "filename1.zip"
 	    ownerGroup: "root:root"
@@ -339,11 +332,7 @@ If you are using JSON:
 	      "maintainer": "wordpress",
 	      "website": "https://fr.wordpress.org/",
 	      "category": "Blogging",
-	      "oses" : [ {
-			"name" : "CentOS",
-			"version" : "7",
-			"arch" : "x86_64"
-		  } ],
+	      "restrictionRule" : "Distribution#name=CentOS && Distribution#arch=x86_64 && Distribution#version=7",
 	      "files": [{
 		  	"name": "filename1.zip",
 		  	"ownerGroup" : "root:root",

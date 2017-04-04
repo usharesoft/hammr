@@ -58,6 +58,7 @@
       "name": "wordpress26",
       "version": "3.5",
       "destination": "/tmp/wordpress",
+      "restrictionRule": "Distribution#name=CentOS && Distribution#version=7 && Distribution#arch=x86_64",
       "files": [
         {
         "name": "wordpress.zip",
