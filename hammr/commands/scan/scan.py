@@ -108,7 +108,7 @@ class Scan(Cmd, CoreGlobal):
             os.mkdir(constants.TMP_WORKING_DIR)
             local_uforge_scan_path = constants.TMP_WORKING_DIR + os.sep + constants.SCAN_BINARY_NAME
 
-            dlUtils = download_utils.Download(download_url, local_uforge_scan_path)
+            dlUtils = download_utils.Download(download_url, local_uforge_scan_path, not self.api.getDisableSslCertificateValidation())
             try:
                 dlUtils.start()
             except Exception, e:

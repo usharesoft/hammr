@@ -341,7 +341,7 @@ class Image(Cmd, CoreGlobal):
                         dlImage = image
                 if dlImage is not None and dlImage.status.complete and not dlImage.status.error and dlImage.compress:
                     download_url = self.api.getUrl() + "/" + dlImage.downloadUri
-                    dlUtils = download_utils.Download(download_url, doArgs.file)
+                    dlUtils = download_utils.Download(download_url, doArgs.file, not self.api.getDisableSslCertificateValidation())
                     try:
                         dlUtils.start()
                     except Exception, e:
