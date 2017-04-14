@@ -26,14 +26,18 @@ def scan_status(scan):
 
 def scan_table(scanInstances, scan = None):
     table = Texttable(800)
-    table.set_cols_dtype(["t","t","t","t"])
-    table.header(["Id", "Name", "Status", "Distribution"])
+    table.set_cols_dtype(["t", "t", "t", "t", "t"])
+    table.set_cols_align(["c", "l", "c", "c", "c"])
+    table.header(["Id", "Name", "Status", "Distribution", "With overlay"])
     if scan:
-        table.add_row([scan.dbId, "\t"+scan.name, scan_status(scan), "" ])
+        table.add_row([scan.dbId, "\t"+scan.name, scan_status(scan), "", ""])
         return table
     for myScannedInstance in scanInstances:
-        table.add_row([myScannedInstance.dbId, myScannedInstance.name, "", myScannedInstance.distribution.name + " "+ myScannedInstance.distribution.version + " " + myScannedInstance.distribution.arch])
+        withOverlayStr = ''
+        if myScannedInstance.overlayIncluded:
+            withOverlayStr = 'X'
+        table.add_row([myScannedInstance.dbId, myScannedInstance.name, "", myScannedInstance.distribution.name + " "+ myScannedInstance.distribution.version + " " + myScannedInstance.distribution.arch, withOverlayStr])
         scans = generics_utils.order_list_object_by(myScannedInstance.scans.scan, "name")
         for lscan in scans:
-            table.add_row([lscan.dbId, "\t"+lscan.name, scan_status(lscan), "" ])
+            table.add_row([lscan.dbId, "\t"+lscan.name, scan_status(lscan), "", ""])
     return table

@@ -86,6 +86,7 @@ class Scan(Cmd, CoreGlobal):
                               help="the directory where to install the uforge-scan.bin binary used to execute the deep scan")
         optional.add_argument('--exclude', dest='exclude', nargs='+', required=False,
                               help="a list of directories or files to exclude during the deep scan")
+        optional.add_argument('-o', '--overlay', dest='overlay', action='store_true', required=False, help="perform a scan with overlay into the given scanned instance")
         return doParser
 
     def do_run(self, args):
@@ -97,6 +98,9 @@ class Scan(Cmd, CoreGlobal):
             #if the help command is called, parse_args returns None object
             if not doArgs:
                     return 2
+
+            if not self.check_overlay_option_is_allowed(doArgs.name, doArgs.overlay):
+                return 2
 
             # download scan binary
             uri = generics_utils.get_uforge_url_from_ws_url(self.api.getUrl())
@@ -178,6 +182,22 @@ class Scan(Cmd, CoreGlobal):
     def help_run(self):
         doParser = self.arg_run()
         doParser.print_help()
+
+    def check_overlay_option_is_allowed(self, name, overlay):
+        myScannedInstance = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true", Name=name)
+        myScannedInstance = myScannedInstance.scannedInstances.scannedInstance
+        if myScannedInstance is not None and len(myScannedInstance) > 0:
+            myScannedInstance = myScannedInstance[0]
+            if ((overlay and not myScannedInstance.overlayIncluded) or (
+                not overlay and myScannedInstance.overlayIncluded)):
+                scanTypeString = 'regular scan'
+                if overlay:
+                    scanTypeString = 'scan with overlay'
+                printer.out(
+                    "Performing {0} into the scanned instance [{1}] is not allowed. Please retry with another one.".format(
+                        scanTypeString, name), printer.ERROR)
+                return False
+        return True
 
     def arg_build(self):
         doParser = ArgumentParser(prog=self.cmd_name + " build", add_help=True,
@@ -545,8 +565,11 @@ class Scan(Cmd, CoreGlobal):
             if args.exclude:
                 for ex in args.exclude:
                     exclude += "-e " + ex + " "
+            overlay = ""
+            if args.overlay:
+                overlay = "-o"
             client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n ' + args.name + ' ' + exclude + ' >/dev/null 2>&1 &')
+                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' ' + overlay + ' -n ' + args.name + ' ' + exclude + ' >/dev/null 2>&1 &')
             client.close()
 
         except paramiko.AuthenticationException as e:
