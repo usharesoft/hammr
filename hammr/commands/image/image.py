@@ -119,7 +119,6 @@ class Image(Cmd, CoreGlobal):
             if not doArgs:
                     return 2
 
-            # --
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
@@ -409,6 +408,7 @@ class Image(Cmd, CoreGlobal):
             mypImage.imageUri = comliantImage.uri
             mypImage.applianceUri = appliance.uri
             mypImage.credAccount = self.get_account_to_publish(builder)
+            account_name = mypImage.credAccount.name
 
             rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(
                 comliantImage.dbId).Pimages().Publish(body=mypImage, element_name="ns1:publishImage")
@@ -435,7 +435,7 @@ class Image(Cmd, CoreGlobal):
                 printer.out("\nPublication to '" + builder["account"][
                     "name"] + "' canceled: " + status.message.printer.WARNING)
             else:
-                printer.out("Publication to '" + builder["account"]["name"] + "' is ok", printer.OK)
+                printer.out("Publication to " + account_name + " is ok", printer.OK)
                 rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(comliantImage.dbId).Pimages(
                     rpImage.dbId).Get()
                 if rpImage.cloudId is not None and rpImage.cloudId != "":
@@ -524,7 +524,13 @@ class Image(Cmd, CoreGlobal):
             return 2
         else:
             for account in accounts:
-                if account.name == builder["account"]["name"]:
+
+                builder_name = self.get_account_name_for_publish(builder, account)
+                if builder_name == "":
+                    printer.out("No account name given", printer.ERROR)
+                    return 2
+
+                if account.name == builder_name:
                     # A hack to avoid a toDOM, toXML bug
                     account.targetPlatform.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
                     if hasattr(account, 'certificates'):
@@ -537,3 +543,32 @@ class Image(Cmd, CoreGlobal):
 
             printer.out("No accounts available with name " + builder["account"]["name"], printer.ERROR)
             return 2
+
+    # get the account name from field or from the credential file given in the builder
+    def get_account_name_for_publish(self, builder, account):
+        builder_name = ""
+        if builder["account"].has_key("name"):
+            builder_name = builder["account"]["name"]
+
+        elif builder["account"].has_key("file"):
+
+            file = generics_utils.get_file(builder["account"]["file"])
+            if file is None:
+                return ""
+            template = validate(file)
+            if template is None:
+                return ""
+
+            builder_name = self.get_account_name_from_template(template, builder)
+
+        return builder_name
+
+    def get_account_name_from_template(self, template, builder):
+        account_name = ""
+        if not template.has_key("accounts"):
+            return ""
+
+        for account in template["accounts"]:
+            if account.has_key("type") and account["type"] == builder["type"] and account.has_key("name"):
+                account_name = account["name"]
+        return account_name
