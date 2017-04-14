@@ -520,7 +520,7 @@ class Image(Cmd, CoreGlobal):
         accounts = self.api.Users(self.login).Accounts.Getall()
         accounts = accounts.credAccounts.credAccount
         if accounts is None or len(accounts) == 0:
-            printer.out("No accounts available on the plateform", printer.ERROR)
+            printer.out("No accounts available on the plateform.\n You can use the command 'hammr account create' to create an account.", printer.ERROR)
             return 2
         else:
             for account in accounts:
@@ -541,7 +541,7 @@ class Image(Cmd, CoreGlobal):
                     return account
                     break
 
-            printer.out("No accounts available with name " + builder["account"]["name"], printer.ERROR)
+            printer.out("No accounts available with name " + builder["account"]["name"] + ".\nYou can use the command 'hammr account create' to create an account.", printer.ERROR)
             return 2
 
     # get the account name from field or from the credential file given in the builder
