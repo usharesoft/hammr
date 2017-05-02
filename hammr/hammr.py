@@ -116,6 +116,23 @@ class Hammr(Cmd):
 
     def cmdloop(self, args):
         if len(args):
+            try:
+                compatible, serviceStatusVersion = checkUForgeCompatible(api)
+                # print compatible
+                # print serviceStatusVersion
+                if not compatible:
+                    printer.out("Sorry but this version of Hammr (version = '" + str(
+                        constants.VERSION) + "') is not compatible with the version of UForge (version = '" + str(
+                        serviceStatusVersion) + "').", printer.ERROR)
+                    printer.out(
+                        "Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.",
+                        printer.ERROR)
+                    sys.exit(2)
+
+            except Exception as e:
+                hammr_utils.print_uforge_exception(e)
+                sys.exit(2)
+
             code = self.run_commands_at_invocation([str.join(' ', args)])
             sys.exit(code)
         else:
