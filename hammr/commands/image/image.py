@@ -234,9 +234,23 @@ class Image(Cmd, CoreGlobal):
                     print table.draw() + "\n"
                     if generics_utils.query_yes_no(
                                     "Do you really want to delete image with id " + str(deleteImage.dbId)):
-                        self.api.Users(self.login).Appliances(
-                            generics_utils.extract_id(deleteImage.applianceUri)).Images(deleteImage.dbId).Delete()
-                        printer.out("Image deleted", printer.OK)
+                        # Check URI pour voir si Appliance ou scan
+                        # if Appliance
+                        if deleteImage.applianceUri.split('/')[2] == 'appliances':
+                            self.api.Users(self.login)\
+                                .Appliances(generics_utils.extract_id(deleteImage.applianceUri))\
+                                .Images(deleteImage.dbId)\
+                                .Delete()
+                            printer.out("Image deleted", printer.OK)
+                        # if ScanInstance
+                        elif deleteImage.applianceUri.split('/')[2] == 'scannedinstances':
+                            scan_group = deleteImage.applianceUri.split('/')[3]
+                            self.api.Users(self.login)\
+                                .Scannedinstances(scan_group)\
+                                .Scans(generics_utils.extract_id(deleteImage.applianceUri))\
+                                .Images(None,deleteImage.dbId)\
+                                .Delete()
+                            printer.out("Image deleted", printer.OK)
                 else:
                     printer.out("Image not found", printer.ERROR)
 
@@ -292,10 +306,22 @@ class Image(Cmd, CoreGlobal):
                 if cancelImage is not None:
                     if generics_utils.query_yes_no(
                                     "Do you really want to cancel image with id " + str(cancelImage.dbId)):
-                        self.api.Users(self.login).Appliances(
-                            generics_utils.extract_id(cancelImage.applianceUri)).Images(
-                            cancelImage.dbId).Status.Cancel()
-                        printer.out("Image Canceled", printer.OK)
+                        # Check URI pour voir si Appliance ou scan
+                        # if Appliance
+                        if cancelImage.applianceUri.split('/')[2] == 'appliances':
+                            self.api.Users(self.login).Appliances(
+                                generics_utils.extract_id(cancelImage.applianceUri)).Images(
+                                cancelImage.dbId).Status.Cancel()
+                            printer.out("Image Canceled", printer.OK)
+                        # If Scanned Instance
+                        elif cancelImage.applianceUri.split('/')[2] == 'scannedinstances':
+                            scan_group = cancelImage.applianceUri.split('/')[3]
+                            self.api.Users(self.login) \
+                                .Scannedinstances(scan_group) \
+                                .Scans(generics_utils.extract_id(cancelImage.applianceUri)) \
+                                .Images(None, cancelImage.dbId) \
+                                .Status.Cancel()
+                            printer.out("Image Canceled", printer.OK)
                 else:
                     printer.out("Image not found", printer.ERROR)
 
