@@ -66,7 +66,7 @@ class Image(Cmd, CoreGlobal):
                 for image in images:
                     imgStatus = self.get_image_status(image.status)
                     table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
+                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
                                    "X" if image.compress else "", imgStatus])
                 print table.draw() + "\n"
                 printer.out("Found " + str(len(images)) + " images")
