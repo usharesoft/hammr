@@ -218,6 +218,7 @@ The format of simple expression is:  ``Object#field=value`` or ``Object#field!=v
    - field is ``name`` or ``type`` for TargetFormat object (refer to :ref:`template-builders` section to get values for ``name`` field. Values for ``type`` field are cloud, virtual, physical or container)
    - value is the value you want to match with the fields (e.g. CentOS for Distribution name, linux for Distribution family, x86_64 for Distribution arch, VirtualBox for TargetFormat name, cloud for TargetFormat type...)
    - logical operator is ``||`` for OR and ``&&`` for AND
+   - carriage return is not authorized
 
 In the following example, the bundle is designed for (CentOS 6 x86_64 or CentOS 7 x86_64) or (all distribution if image is generated for VirtualBox)
 
