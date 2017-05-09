@@ -29,7 +29,6 @@ from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
 
-
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
 
@@ -76,12 +75,14 @@ class Image(Cmd, CoreGlobal):
             else:
                 printer.out("Publications:")
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t"])
-                table.header(["Template name", "Image ID", "Account name", "Format", "Cloud ID", "Status"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
+                table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
                 pimages = generics_utils.order_list_object_by(pimages, "name")
                 for pimage in pimages:
                     pubStatus = self.get_publish_status(pimage.status)
-                    table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri),
+                    table.add_row([pimage.name,
+                                   generics_utils.extract_id(pimage.imageUri),
+                                   pimage.dbId,
                                    pimage.credAccount.name if pimage.credAccount is not None else "-",
                                    pimage.credAccount.targetPlatform.name,
                                    pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
@@ -195,6 +196,80 @@ class Image(Cmd, CoreGlobal):
 
     def help_publish(self):
         doParser = self.arg_publish()
+        doParser.print_help()
+
+    def arg_launch(self):
+        doParser = ArgumentParser(prog=self.cmd_name + " launch", add_help=True,
+                                  description="Deploy and launch a machine instance of a published image on the targeted cloud.")
+        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--id', dest='pid', required=True,
+                               help="publish id of image to launch")
+        mandatory.add_argument('-n', '--name', dest='launch_name', required=True,
+                               help="name of the image to launch")
+
+        optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--vcpu', dest='vcpu', required=False,
+                              help="minimal number of cores for the image to launch")
+        optional.add_argument('-m', '--memory', dest='memory', required=False,
+                              help="minimal RAM for the image to launch")
+        return doParser
+
+    def do_launch(self, args):
+        try:
+            # add arguments
+            doParser = self.arg_launch()
+            doArgs = doParser.parse_args(shlex.split(args))
+
+            # if the help command is called, parse_args returns None object
+            if not doArgs:
+                return 2
+
+            try:
+                if doArgs.pid:
+
+                    pimage = self.get_pimage_from_id(doArgs.pid)
+                    if pimage == 2:
+                            return
+
+                    target_platform = pimage.credAccount.targetPlatform.name
+                    if target_platform != "Amazon":
+                        printer.out("Launch is not available for this cloud", printer.ERROR)
+                        return 2
+
+                    image_id = generics_utils.extract_id(pimage.imageUri)
+                    if image_id is None or image_id == "":
+                        printer.out("Image not found", printer.ERROR)
+                        return 2
+
+                    appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+                    if appliance is None or not hasattr(appliance, 'dbId'):
+                        printer.out("No template found for image", printer.ERROR)
+                        return
+
+                    if not self.is_pimage_ready_to_launch(pimage):
+                        printer.out("Published image with name '" + pimage.name + " can not be launched", printer.ERROR)
+                        return 2
+
+                    deployment = self.get_deployment_from_args_for_launch(doArgs)
+
+                    print(deployment)
+
+                    # rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                    #      pimage.dbId).Deploys.Launch(body=deployment, element_name="ns1:deployment")
+                    print("Image launched.")
+
+            #TODO change exception
+            except KeyError as e:
+                printer.out("unknown error template file, key: " + str(e), printer.ERROR)
+
+        except ArgumentParserError as e:
+            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            self.help_launch()
+
+        return 0
+
+    def help_launch(self):
+        doParser = self.arg_launch()
         doParser.print_help()
 
     def arg_delete(self):
@@ -474,6 +549,13 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
+    def is_pimage_ready_to_launch(self, pimage):
+        if not pimage.status.complete or pimage.status.error or pimage.status.cancelled:
+            return False
+
+        return True
+
+
     def find_builder(self, image, template):
         for builder in template["builders"]:
             if image.targetFormat.name == builder["type"]:
@@ -572,3 +654,42 @@ class Image(Cmd, CoreGlobal):
             if account.has_key("type") and account["type"] == builder["type"] and account.has_key("name"):
                 account_name = account["name"]
         return account_name
+
+    def get_pimage_from_id(self, id):
+        pimages = self.api.Users(self.login).Pimages.Getall()
+        pimages = pimages.publishImages.publishImage
+        pimage = None
+        if pimages is None or len(pimages) == 0:
+            printer.out("No published images available")
+        else:
+            for piimage in pimages:
+                if str(piimage.dbId) == str(id):
+                    pimage = piimage
+        if pimage is None:
+            printer.out("published image not found", printer.ERROR)
+            return 2
+        return pimage
+
+    def get_deployment_from_args_for_launch(self, args):
+        deployment = Deployment()
+        myinstance = Instance()
+
+        if args.name:
+            deployment.name = args.name
+        else:
+            printer.out("No name given for the deployment", printer.ERROR)
+            return ""
+        if args.vcpu:
+            myinstance.cores = str(args.vcpu)
+        else:
+            myinstance.cores = "1"
+        if args.memory:
+            myinstance.memory = str(args.memory)
+        else:
+            myinstance.memory = "1024"
+
+        deployment.instances = pyxb.BIND()
+        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+        deployment.instances.append(myinstance)
+
+        return deployment
