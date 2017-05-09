@@ -39,8 +39,9 @@ class Scan(Cmd, CoreGlobal):
 
     cmd_name = "scan"
 
-    def __init__(self):
+    def __init__(self, force):
         super(Scan, self).__init__()
+        self.force = force
 
     def arg_list(self):
         doParser = ArgumentParser(prog=self.cmd_name + " list", add_help=True,
@@ -49,6 +50,7 @@ class Scan(Cmd, CoreGlobal):
 
     def do_list(self, args):
         try:
+            print  self.force
             # call UForge API
             printer.out("Getting scans for [" + self.login + "] ...")
             myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")

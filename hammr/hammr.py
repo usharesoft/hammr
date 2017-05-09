@@ -28,7 +28,7 @@ import getpass
 import os
 import sys
 import shlex
-
+import pip
 
 from ussclicore.cmd import Cmd, CmdUtils
 from ussclicore.argumentParser import CoreArgumentParser, ArgumentParser, ArgumentParserError
@@ -44,6 +44,8 @@ class CmdBuilder(object):
         # Create subCmds if not exist
         if not hasattr(class_, 'subCmds'):
             class_.subCmds = {}
+        if not hasattr(class_, 'force'):
+            class_.force = False
             # Add commands
         user = commands.user.User()
         class_.subCmds[user.cmd_name] = user
@@ -59,7 +61,7 @@ class CmdBuilder(object):
         class_.subCmds[account.cmd_name] = account
         bundle = commands.bundle.Bundle()
         class_.subCmds[bundle.cmd_name] = bundle
-        scan = commands.scan.Scan()
+        scan = commands.scan.Scan(class_.force)
         class_.subCmds[scan.cmd_name] = scan
         quota = commands.quota.Quota()
         class_.subCmds[quota.cmd_name] = quota
@@ -73,6 +75,7 @@ class Hammr(Cmd):
     #    }
     def __init__(self):
         super(Hammr, self).__init__()
+        self.force = False
         self.prompt = 'hammr> '
 
     def do_exit(self, args):
@@ -121,9 +124,21 @@ class Hammr(Cmd):
                 printer.out("Sorry but this version of Hammr (version = '" + str(
                     constants.VERSION) + "') is not compatible with the version of UForge (version = '" + str(
                     serviceStatusVersion) + "').", printer.ERROR)
-                printer.out(
-                    "Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.",
-                    printer.ERROR)
+
+                # Do you want to automatically install the version corresponding to your uForge version ?
+                # YES - FORCE
+                if self.force:
+                    pip.main(["install", "hammr==" + serviceStatusVersion + ""])
+                    sys.exit(2)
+                # YES
+                if generics_utils.query_yes_no("Do you to automatically install the correct version of Hammr ?"):
+                    pip.main(["install", "hammr=="+serviceStatusVersion+""])
+                # NO
+                else:
+                    printer.out(
+                        "Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.",
+                        printer.ERROR)
+
                 sys.exit(2)
 
         except Exception as e:
@@ -191,10 +206,15 @@ mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user na
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.yml or ~/.hammr/credentials.json)', required = False)
 mainParser.add_argument('-v', action='version', help='displays the current version of the hammr tool', version="%(prog)s version '"+constants.VERSION+"'")
+mainParser.add_argument('-f', '--force', help='force interaction', required=False)
 mainParser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit', required = False)
 mainParser.set_defaults(help=False)
 mainParser.add_argument('cmds', nargs='*', help='Hammr cmds')
 mainArgs, unknown = mainParser.parse_known_args()
+
+if mainArgs.force == "true":
+    app.force = True
+    Hammr.force = True
 
 if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()
