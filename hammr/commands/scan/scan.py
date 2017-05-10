@@ -32,6 +32,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget, downlo
 from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from ussclicore.argumentParser import CoreArgumentParser, ArgumentParser, ArgumentParserError
 
 
 class Scan(Cmd, CoreGlobal):
@@ -41,7 +42,16 @@ class Scan(Cmd, CoreGlobal):
 
     def __init__(self, force):
         super(Scan, self).__init__()
-        self.force = force
+        self.force = False
+
+        # Args parsing
+        mainParser = CoreArgumentParser(add_help=False)
+        mainParser.add_argument('-f', '--force', dest='force', type=str, help='force interaction', required=False,
+                                default='false')
+        mainArgs, unknown = mainParser.parse_known_args()
+
+        if mainArgs.force == "true":
+            self.force = True
 
     def arg_list(self):
         doParser = ArgumentParser(prog=self.cmd_name + " list", add_help=True,
@@ -50,7 +60,6 @@ class Scan(Cmd, CoreGlobal):
 
     def do_list(self, args):
         try:
-            print  self.force
             # call UForge API
             printer.out("Getting scans for [" + self.login + "] ...")
             myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true")
@@ -487,7 +496,11 @@ class Scan(Cmd, CoreGlobal):
                     for scan in myScannedInstance.scans.scan:
                         if str(scan.dbId) == doArgs.id:
                             print scan_utils.scan_table([myScannedInstance], scan).draw() + "\n"
-                            if generics_utils.query_yes_no(
+                            if self.force:
+                                self.api.Users(self.login).Scannedinstances(myScannedInstance.dbId).Scans(
+                                    doArgs.id).Delete()
+                                printer.out("Scan deleted", printer.OK)
+                            elif generics_utils.query_yes_no(
                                             "Do you really want to delete scan with id " + str(doArgs.id)):
                                 printer.out("Please wait...")
                                 self.api.Users(self.login).Scannedinstances(myScannedInstance.dbId).Scans(

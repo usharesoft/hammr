@@ -131,7 +131,7 @@ class Hammr(Cmd):
                     pip.main(["install", "hammr==" + serviceStatusVersion + ""])
                     sys.exit(2)
                 # YES
-                if generics_utils.query_yes_no("Do you to automatically install the correct version of Hammr ?"):
+                if generics_utils.query_yes_no("Do you want to install the correct version of Hammr now ?"):
                     pip.main(["install", "hammr=="+serviceStatusVersion+""])
                 # NO
                 else:
@@ -206,7 +206,7 @@ mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user na
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.yml or ~/.hammr/credentials.json)', required = False)
 mainParser.add_argument('-v', action='version', help='displays the current version of the hammr tool', version="%(prog)s version '"+constants.VERSION+"'")
-mainParser.add_argument('-f', '--force', help='force interaction', required=False)
+mainParser.add_argument('-f', '--force', dest='force', type=str, help='force interaction', required=False, default='true')
 mainParser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit', required = False)
 mainParser.set_defaults(help=False)
 mainParser.add_argument('cmds', nargs='*', help='Hammr cmds')
@@ -214,7 +214,6 @@ mainArgs, unknown = mainParser.parse_known_args()
 
 if mainArgs.force == "true":
     app.force = True
-    Hammr.force = True
 
 if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()

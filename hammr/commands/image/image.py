@@ -28,6 +28,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget, downlo
 from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from ussclicore.argumentParser import CoreArgumentParser, ArgumentParser, ArgumentParserError
 
 
 class Image(Cmd, CoreGlobal):
@@ -38,6 +39,16 @@ class Image(Cmd, CoreGlobal):
 
     def __init__(self):
         super(Image, self).__init__()
+        self.force = False
+
+        # Args parsing
+        mainParser = CoreArgumentParser(add_help=False)
+        mainParser.add_argument('-f', '--force', dest='force', type=str, help='force interaction', required=False,
+                                default='false')
+        mainArgs, unknown = mainParser.parse_known_args()
+
+        if mainArgs.force == "true":
+            self.force = True
 
     def arg_list(self):
         doParser = ArgumentParser(prog=self.cmd_name + " list", add_help=True,
@@ -232,7 +243,11 @@ class Image(Cmd, CoreGlobal):
                         deleteImage = image
                 if deleteImage is not None:
                     print table.draw() + "\n"
-                    if generics_utils.query_yes_no(
+                    if self.force:
+                        self.api.Users(self.login).Appliances(
+                            generics_utils.extract_id(deleteImage.applianceUri)).Images(deleteImage.dbId).Delete()
+                        printer.out("Image deleted", printer.OK)
+                    elif generics_utils.query_yes_no(
                                     "Do you really want to delete image with id " + str(deleteImage.dbId)):
                         self.api.Users(self.login).Appliances(
                             generics_utils.extract_id(deleteImage.applianceUri)).Images(deleteImage.dbId).Delete()
