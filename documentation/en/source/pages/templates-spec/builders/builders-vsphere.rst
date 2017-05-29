@@ -57,11 +57,10 @@ To publish an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for VMware vCenter: ``VMware vCenter``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the VMware vSphere vCenter cloud account information required to publish the built machine image.
-* ``clusterName`` (mandatory): a string providing the name of the cluster to register the machine image.
-* ``datacenterName`` (mandatory): a string providing the name of the datacenter to register the machine image.
-* ``datastore`` (mandatory): a string providing the name of the datastore where to store the machine image.
 * ``displayName`` (mandatory): a string providing the name of the machine image to display in VMware vSphere vCenter.
+* ``esxHost`` (mandatory): a string providing the esxHost name or ip address.
 * ``network`` (optional): a string providing the virtual network name.
+* ``datastore`` (optional): a string providing the name of the datastore where to store the machine image.
 
 vSphere vCenter Cloud Account
 -----------------------------
@@ -108,8 +107,7 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    clusterName: cluster
-    datacenterName: datacentername
+    esxHost: myesxHost
     datastore: esx2esx_datastore
     displayName: test_Hammr
     network: VM_Network
@@ -139,8 +137,7 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "clusterName": "cluster",
-        "datacenterName": "datacentername",
+        "esxHost": "myesxHost",
         "datastore": "esx2esx_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"
@@ -203,8 +200,7 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    clusterName: cluster
-    datacenterName: datacentername
+    esxHost: myesxHost
     datastore: esx2esx_datastore
     displayName: test_Hammr
     network: VM_Network
@@ -227,8 +223,7 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "clusterName": "cluster",
-        "datacenterName": "datacentername",
+        "esxHost": "myesxHost",
         "datastore": "esx2esx_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"
@@ -252,8 +247,7 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    clusterName: cluster
-    datacenterName: datacentername
+    esxHost: myesxHost
     datastore: esx2esx_datastore
     displayName: test_Hammr
     network: VM_Network
@@ -276,8 +270,7 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "clusterName": "cluster",
-        "datacenterName": "datacentername",
+        "esxHost": "myesxHost",
         "datastore": "esx2esx_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"

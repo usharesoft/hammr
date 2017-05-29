@@ -3,6 +3,20 @@
 Changelog
 =========
 
+hammr 3.7.4 (2017-28-04)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp4-1 only
+* Add overlay argument to scan run command to run a scan with overlay
+
+Bug fixes:
+
+* Flag acceptAutoSigned not working for image download
+* Name for the builder account can now be read from an external file
+* Fixes on documentation
+
 hammr 3.7.3 (2017-21-03)
 --------------------------
 

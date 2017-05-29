@@ -15,6 +15,8 @@ Optionally, at step #2, you can import the scan report to create a template. Thi
 
 First, scan the system you wish to migrate by running ``scan run``. This "deep scans" the live system, reporting back the meta-data of every file and package that makes up the running workload. The following is an example of a scan of a live system:
 
+.. note:: The following example shows a simple scan (without overlay). If you would like the overlay, add ``--overlay`` argument to the command.
+
 .. code-block:: shell
 
 	$ hammr scan run --ip 192.0.2.0 --scan-login LOGIN --name scan-name
@@ -39,17 +41,19 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 
 Once you have run the scan of your system, a scan report is saved to your account. You can list your scans by running ``scan list``. The output will be similar to the following. As you can see below, the “scanExample” is the group name. The actual scan appears below it with “Scan #1“ added to the name. If you run the scan on the same machine again, the scan number will increase. This allows you to compare scans.
 
+.. note:: In this example, “scanExample“ is a simple scan. If it was a scan with overlay an “X“ will appear in the column “With overlay“ for the group name.
+
 .. code-block:: shell
 
 	$ hammr scan list
 	Getting scans for [root] ...
-	+-----+-----------------------------+--------+-----------------+
-	| Id  |            Name             | Status |  Distribution   |
-	+=====+=============================+========+=================+
-	| 133 | scanExample                 |        | Debian 6 x86_64 |
-	+-----+-----------------------------+--------+-----------------+
-	| 149 |         scanExample Scan #1 | Done   |                 |
-	+-----+-----------------------------+--------+-----------------+
+	+-----+-----------------------------+--------+-----------------+--------------+
+	| Id  |            Name             | Status |  Distribution   | With overlay |
+	+=====+=============================+========+=================+==============+
+	| 133 | scanExample                 |        | Debian 6 x86_64 |              |
+	+-----+-----------------------------+--------+-----------------+--------------+
+	| 149 |         scanExample Scan #1 | Done   |                 |              |
+	+-----+-----------------------------+--------+-----------------+--------------+
 	Found 1 scans
 
 If you are simply moving your system from one cloud provider to another, you can then simply build a machine image from this scan by running ``scan build``. The following is an example which builds a machine image from a scan:

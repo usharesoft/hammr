@@ -60,3 +60,4 @@ Executes a deep scan of a running system.
 	* ``--scan-password`` (optional): the root password to authenticate to the running system
 	* ``--dir`` (optional): the directory where to install the uforge-scan.bin binary used to execute the deep scan
 	* ``--exclude`` (optional): a list of directories or files to exclude during the deep scan
+	* ``--overlay`` (optional): include overlay (extra files) for the given scan
