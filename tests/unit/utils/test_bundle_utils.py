@@ -81,16 +81,6 @@ class TestFiles(unittest.TestCase):
         mock_method.assert_called_with("There is the attribute [ownerGroup], [rights] or [symlink] for file 'cleanup_tmp.sh' but is not tagged as 'softwarefile'", "ERROR")
 
     @patch("ussclicore.utils.printer.out")
-    def test_check_bundle_should_failed_when_tag_ospkg_and_two_oses(self, mock_method):
-        #Given
-        jsonPath = "tests/integration/data/bundle/bundleFilesTagOSPkgWithTwoOses.json"
-        #When
-        bundle = generics_utils.check_json_syntax(jsonPath)
-        bundle_utils.check_bundle(bundle)
-        #Then
-        mock_method.assert_called_with("The file 'iotop-0.6-2.el7.noarch.rpm' is tagged 'ospkg' but there is more than one os in [oses] attribute", "ERROR")
-
-    @patch("ussclicore.utils.printer.out")
     def test_check_bundle_should_failed_when_tag_ospkg_in_directory(self, mock_method):
         #Given
         jsonPath = "tests/integration/data/bundle/bundleFilesTagOSPkgInDirectory.json"
@@ -99,6 +89,24 @@ class TestFiles(unittest.TestCase):
         bundle_utils.check_bundle(bundle)
         #Then
         mock_method.assert_called_with("The file 'iotop-0.6-2.el7.noarch.rpm, with tag 'ospkg' must be in the first level files section", "ERROR")
+
+    def test_check_bundle_should_succeed_when_no_restrictionRule(self):
+        # Given
+        jsonPath = "tests/integration/data/bundle/bundleWithoutRestrictionRule.json"
+        # When
+        bundle = generics_utils.check_json_syntax(jsonPath)
+        bundle_utils.check_bundle(bundle)
+        # Then
+        self.assertIsNotNone(bundle)
+
+    def test_check_bundle_should_succeed_when_empty_restrictionRule(self):
+        # Given
+        jsonPath = "tests/integration/data/bundle/bundleWithEmptyRestrictionRule.json"
+        # When
+        bundle = generics_utils.check_json_syntax(jsonPath)
+        bundle_utils.check_bundle(bundle)
+        # Then
+        self.assertIsNotNone(bundle)
 
     def test_check_bundle_should_succeed(self):
         #Given
