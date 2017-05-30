@@ -569,7 +569,7 @@ class Scan(Cmd, CoreGlobal):
             if args.overlay:
                 overlay = "-o"
             client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' ' + overlay + ' -n ' + args.name + ' ' + exclude + ' >/dev/null 2>&1 &')
+                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &')
             client.close()
 
         except paramiko.AuthenticationException as e:
