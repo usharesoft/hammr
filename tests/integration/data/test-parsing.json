@@ -25,6 +25,7 @@
         "name": "my_bundle",
         "version": "6.0",
         "destination": "/tmp/myBundle",
+        "restrictionRule": "Distribution#name=CentOS && Distribution#version=7 && Distribution#arch=x86_64",
         "files": [
         {
         "name": "wordpress.zip",

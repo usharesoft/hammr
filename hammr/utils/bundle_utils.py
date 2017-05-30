@@ -46,14 +46,9 @@ def check_files(bundle, file, level):
         printer.out("There is no attribute [source] for a [file]", printer.ERROR)
         return
 
-    if level > 0:
-        if "tag" in file and (file["tag"] == "ospkg" or file["tag"] == "bootscript"):
-            printer.out("The file '" + file["name"] + ", with tag '" + file["tag"] + "' must be in the first level files section", printer.ERROR)
-            return
-    elif "tag" in file and file["tag"] == "ospkg" and "oses" in bundle and len(bundle["oses"]) > 1:
-        printer.out("The file '" + file["name"] + "' is tagged 'ospkg' but there is more than one os in [oses] attribute", printer.ERROR)
+    if level > 0 and "tag" in file and (file["tag"] == "ospkg" or file["tag"] == "bootscript"):
+        printer.out("The file '" + file["name"] + ", with tag '" + file["tag"] + "' must be in the first level files section", printer.ERROR)
         return
-
     if ("bootOrder" in file or "bootType" in file) and (not "tag" in file or file["tag"] != "bootscript"):
         printer.out("There is the attribute [bootOrder] or [bootType] for file '" + file["name"] + "' but is not tagged as 'bootscript'", printer.ERROR)
         return
