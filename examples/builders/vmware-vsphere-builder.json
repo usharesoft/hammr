@@ -19,9 +19,8 @@
       "installation": {
         "diskSize": 10240
       },
-      "clusterName": "cluster",
-      "datacenterName": "datacentername",
-      "datastore": "esx2esx_datastore",
+      "esxHost": "esx1dev.host.com",
+      "datastore": "my_datastore",
       "displayName": "test_Hammr",
       "network": "VM_Network"
     }
