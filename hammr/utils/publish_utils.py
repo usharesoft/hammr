@@ -48,14 +48,16 @@ def publish_vcenter(builder):
         printer.out("esxHost in vcenter builder not found", printer.ERROR)
         return
 
-    if "datastore" in builder:
-        pimage.datastore = builder["datastore"]
+    if not "datastore" in builder:
+        printer.out("datastore in vcenter builder not found", printer.ERROR)
+        return
 
     if "network" in builder:
         pimage.network = builder["network"]
 
     pimage.displayName = builder["displayName"]
     pimage.esxHost = builder["esxHost"]
+    pimage.datastore = builder["datastore"]
     return pimage
 
 

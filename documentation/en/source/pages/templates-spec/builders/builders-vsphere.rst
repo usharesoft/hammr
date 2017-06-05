@@ -59,8 +59,8 @@ To publish an image, the valid keys are:
 * ``account`` (mandatory): an object providing the VMware vSphere vCenter cloud account information required to publish the built machine image.
 * ``displayName`` (mandatory): a string providing the name of the machine image to display in VMware vSphere vCenter.
 * ``esxHost`` (mandatory): a string providing the esxHost name or ip address.
+* ``datastore`` (mandatory): a string providing the name of the datastore where to store the machine image.
 * ``network`` (optional): a string providing the virtual network name.
-* ``datastore`` (optional): a string providing the name of the datastore where to store the machine image.
 
 vSphere vCenter Cloud Account
 -----------------------------
@@ -107,8 +107,8 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    esxHost: myesxHost
-    datastore: esx2esx_datastore
+    esxHost: my_esx_host
+    datastore: my_datastore
     displayName: test_Hammr
     network: VM_Network
 
@@ -137,8 +137,8 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "esxHost": "myesxHost",
-        "datastore": "esx2esx_datastore",
+        "esxHost": "my_esx_host",
+        "datastore": "my_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"
       }
@@ -200,8 +200,8 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    esxHost: myesxHost
-    datastore: esx2esx_datastore
+    esxHost: my_esx_host
+    datastore: my_datastore
     displayName: test_Hammr
     network: VM_Network
 
@@ -223,8 +223,8 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "esxHost": "myesxHost",
-        "datastore": "esx2esx_datastore",
+        "esxHost": "my_esx_host",
+        "datastore": "my_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"
       }
@@ -247,8 +247,8 @@ If you are using YAML:
       hwType: 7
     installation:
       diskSize: 10240
-    esxHost: myesxHost
-    datastore: esx2esx_datastore
+    esxHost: my_esx_host
+    datastore: my_datastore
     displayName: test_Hammr
     network: VM_Network
 
@@ -270,8 +270,8 @@ If you are using JSON:
         "installation": {
           "diskSize": 10240
         },
-        "esxHost": "myesxHost",
-        "datastore": "esx2esx_datastore",
+        "esxHost": "my_esx_host",
+        "datastore": "my_datastore",
         "displayName": "test_Hammr",
         "network": "VM_Network"
       }
