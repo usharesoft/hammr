@@ -13,7 +13,7 @@ Evolutions:
 
 Bug fixes:
 
-* Version Check when using hammr commands inline
+* Version check when using hammr commands without interactive mode
 * A scan name including a space cannot be specified with hammr scan run
 * hammr image list displays 0B for images generated from a scan
 
