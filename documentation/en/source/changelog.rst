@@ -3,6 +3,22 @@
 Changelog
 =========
 
+hammr 3.7.5 (2017-06-12)
+--------------------------
+
+Evolutions:
+
+* Modification of VMware VCenter image publication
+* Support restrictions on Software Bundle
+
+Bug fixes:
+
+* Version check when using hammr commands without interactive mode
+* A scan name including a space cannot be specified with hammr scan run
+* hammr image list displays 0B for images generated from a scan
+
+Compatibility with UForge AppCenter 3.7.fp5-1 only
+
 hammr 3.7.4 (2017-28-04)
 --------------------------
 
