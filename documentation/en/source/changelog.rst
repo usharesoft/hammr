@@ -3,12 +3,12 @@
 Changelog
 =========
 
-hammr 3.7-3 (2017-16-02)
+hammr 3.7.0.5 (2017-19-06)
 ------------------------
 
 Evolutions:
 
-* Compatibility with UForge AppCenter 3.7-3 only
+* Compatibility with UForge AppCenter 3.7-5 only
 * Align bundle specification with UForge
 * Support YAML files as input
 
