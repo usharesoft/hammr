@@ -198,26 +198,26 @@ class Image(Cmd, CoreGlobal):
         doParser = self.arg_publish()
         doParser.print_help()
 
-    def arg_launch(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " launch", add_help=True,
-                                  description="Deploy and launch a machine instance of a published image on the targeted cloud.")
+    def arg_deploy(self):
+        doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
+                                  description="Deploy a machine instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='pid', required=True,
-                               help="publish id of image to launch")
-        mandatory.add_argument('-n', '--name', dest='launch_name', required=True,
-                               help="name of the image to launch")
+                               help="publish id of image to deploy")
+        mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
+                               help="name of the image to deploy")
 
         optional = doParser.add_argument_group("optional arguments")
         optional.add_argument('--vcpu', dest='vcpu', required=False,
-                              help="minimal number of cores for the image to launch")
+                              help="minimal number of cores for the image to deploy")
         optional.add_argument('-m', '--memory', dest='memory', required=False,
-                              help="minimal RAM for the image to launch")
+                              help="minimal RAM for the image to deploy")
         return doParser
 
-    def do_launch(self, args):
+    def do_deploy(self, args):
         try:
             # add arguments
-            doParser = self.arg_launch()
+            doParser = self.arg_deploy()
             doArgs = doParser.parse_args(shlex.split(args))
 
             # if the help command is called, parse_args returns None object
@@ -225,7 +225,7 @@ class Image(Cmd, CoreGlobal):
                 return 2
 
             try:
-                if doArgs.pid:
+                if doArgs.pid and doArgs.deploy_name:
 
                     pimage = self.get_pimage_from_id(doArgs.pid)
                     if pimage == 2:
@@ -233,7 +233,7 @@ class Image(Cmd, CoreGlobal):
 
                     target_platform = pimage.credAccount.targetPlatform.name
                     if target_platform != "Amazon":
-                        printer.out("Launch is not available for this cloud", printer.ERROR)
+                        printer.out("Deploy is not available for this cloud", printer.ERROR)
                         return 2
 
                     image_id = generics_utils.extract_id(pimage.imageUri)
@@ -246,17 +246,17 @@ class Image(Cmd, CoreGlobal):
                         printer.out("No template found for image", printer.ERROR)
                         return
 
-                    if not self.is_pimage_ready_to_launch(pimage):
-                        printer.out("Published image with name '" + pimage.name + " can not be launched", printer.ERROR)
+                    if not self.is_pimage_ready_to_deploy(pimage):
+                        printer.out("Published image with name '" + pimage.name + " can not be deployed", printer.ERROR)
                         return 2
 
-                    deployment = self.get_deployment_from_args_for_launch(doArgs)
+                    deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
                     print(deployment)
 
-                    # rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                    #      pimage.dbId).Deploys.Launch(body=deployment, element_name="ns1:deployment")
-                    print("Image launched.")
+                    rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                          pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+                    print("Image deployed.")
 
             #TODO change exception
             except KeyError as e:
@@ -264,12 +264,12 @@ class Image(Cmd, CoreGlobal):
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
-            self.help_launch()
+            self.help_deploy()
 
         return 0
 
-    def help_launch(self):
-        doParser = self.arg_launch()
+    def help_deploy(self):
+        doParser = self.arg_deploy()
         doParser.print_help()
 
     def arg_delete(self):
@@ -549,7 +549,7 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
-    def is_pimage_ready_to_launch(self, pimage):
+    def is_pimage_ready_to_deploy(self, pimage):
         if not pimage.status.complete or pimage.status.error or pimage.status.cancelled:
             return False
 
@@ -670,12 +670,12 @@ class Image(Cmd, CoreGlobal):
             return 2
         return pimage
 
-    def get_deployment_from_args_for_launch(self, args):
+    def get_deployment_from_args_for_deploy(self, args):
         deployment = Deployment()
         myinstance = Instance()
 
-        if args.name:
-            deployment.name = args.name
+        if args.deploy_name:
+            deployment.name = args.deploy_name
         else:
             printer.out("No name given for the deployment", printer.ERROR)
             return ""
