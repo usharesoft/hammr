@@ -247,18 +247,33 @@ class Image(Cmd, CoreGlobal):
                         return
 
                     if not self.is_pimage_ready_to_deploy(pimage):
-                        printer.out("Published image with name '" + pimage.name + " can not be deployed", printer.ERROR)
+                        printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                         return 2
 
                     deployment = self.get_deployment_from_args_for_deploy(doArgs)
+                    # deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                    #     pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+                    deployed_instance_id = deployment.applicationId
 
-                    print(deployment)
+                    status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                    while not (status.message == "running" or status.message == "on-fire"):
+                        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                        print(status.message)
+                        time.sleep(2)
 
-                    rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                          pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-                    print("Image deployed.")
+                    if status.message == "on-fire":
+                        printer.out("Deployment failed\n", printer.ERROR)
+                        if status.detailedError:
+                            printer.out(status.detailedErrorMsg)
+                    else:
+                        printer.out("Deployment is successful", printer.OK)
 
+                    return 0
+
+            #TODO rename arguments
+            #TODO unit tests
             #TODO change exception
+            #TODO cancel ?
             except KeyError as e:
                 printer.out("unknown error template file, key: " + str(e), printer.ERROR)
 
@@ -687,7 +702,6 @@ class Image(Cmd, CoreGlobal):
             myinstance.memory = str(args.memory)
         else:
             myinstance.memory = "1024"
-
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
         deployment.instances.append(myinstance)
