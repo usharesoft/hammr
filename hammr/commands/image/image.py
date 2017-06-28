@@ -251,14 +251,14 @@ class Image(Cmd, CoreGlobal):
                         return 2
 
                     deployment = self.get_deployment_from_args_for_deploy(doArgs)
-                    # deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                    #     pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-                    deployed_instance_id = deployment.applicationId
+                    deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                        pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+                    deployed_instance_id = deployed_instance.applicationId
 
+                    print("Deployment is starting")
                     status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
                     while not (status.message == "running" or status.message == "on-fire"):
                         status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                        print(status.message)
                         time.sleep(2)
 
                     if status.message == "on-fire":
