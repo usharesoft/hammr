@@ -224,64 +224,61 @@ class Image(Cmd, CoreGlobal):
             if not doArgs:
                 return 2
 
-            try:
-                if doArgs.pid and doArgs.deploy_name:
+            if doArgs.pid and doArgs.deploy_name:
 
-                    pimage = self.get_pimage_from_id(doArgs.pid)
-                    if pimage == 2:
-                            return
+                pimage = self.get_pimage_from_id(doArgs.pid)
+                if pimage == 2:
+                    return
 
-                    target_platform = pimage.credAccount.targetPlatform.name
-                    if target_platform != "Amazon":
-                        printer.out("Deploy is not available for this cloud", printer.ERROR)
-                        return 2
+                target_platform = pimage.credAccount.targetPlatform.name
+                if target_platform != "Amazon":
+                    printer.out("Deploy is not available for this cloud", printer.ERROR)
+                    return 2
 
-                    image_id = generics_utils.extract_id(pimage.imageUri)
-                    if image_id is None or image_id == "":
-                        printer.out("Image not found", printer.ERROR)
-                        return 2
+                image_id = generics_utils.extract_id(pimage.imageUri)
+                if image_id is None or image_id == "":
+                    printer.out("Image not found", printer.ERROR)
+                    return 2
 
-                    appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
-                    if appliance is None or not hasattr(appliance, 'dbId'):
-                        printer.out("No template found for image", printer.ERROR)
-                        return
+                appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+                if appliance is None or not hasattr(appliance, 'dbId'):
+                    printer.out("No template found for this image", printer.ERROR)
+                    return
 
-                    if not self.is_pimage_ready_to_deploy(pimage):
-                        printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
-                        return 2
+                if not self.is_pimage_ready_to_deploy(pimage):
+                    printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
+                    return 2
 
-                    deployment = self.get_deployment_from_args_for_deploy(doArgs)
-                    deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                        pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-                    deployed_instance_id = deployed_instance.applicationId
+                deployment = self.get_deployment_from_args_for_deploy(doArgs)
+                deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                    pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+                deployed_instance_id = deployed_instance.applicationId
 
-                    print("Deployment is starting")
+                print("Deployment is starting")
+                status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                while not (status.message == "running" or status.message == "on-fire"):
                     status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                    while not (status.message == "running" or status.message == "on-fire"):
-                        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                        time.sleep(2)
+                    time.sleep(2)
 
-                    if status.message == "on-fire":
-                        printer.out("Deployment failed\n", printer.ERROR)
-                        if status.detailedError:
-                            printer.out(status.detailedErrorMsg)
-                    else:
-                        printer.out("Deployment is successful", printer.OK)
+                if status.message == "on-fire":
+                    printer.out("Deployment failed\n", printer.ERROR)
+                    if status.detailedError:
+                        printer.out(status.detailedErrorMsg)
+                else:
+                    printer.out("Deployment is successful", printer.OK)
 
-                    return 0
+                return 0
 
-            #TODO rename arguments
             #TODO unit tests
-            #TODO change exception
-            #TODO cancel ?
-            except KeyError as e:
-                printer.out("unknown error template file, key: " + str(e), printer.ERROR)
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_deploy()
-
-        return 0
+        except KeyboardInterrupt:
+            printer.out("Impossible to cancel the deployment", printer.WARNING)
+            pass
+        except Exception as e:
+            return handle_uforge_exception(e)
 
     def help_deploy(self):
         doParser = self.arg_deploy()
