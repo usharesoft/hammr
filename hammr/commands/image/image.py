@@ -230,11 +230,6 @@ class Image(Cmd, CoreGlobal):
                 if pimage == 2:
                     return
 
-                target_platform = pimage.credAccount.targetPlatform.name
-                if target_platform != "Amazon":
-                    printer.out("Deploy is not available for this cloud", printer.ERROR)
-                    return 2
-
                 image_id = generics_utils.extract_id(pimage.imageUri)
                 if image_id is None or image_id == "":
                     printer.out("Image not found", printer.ERROR)
@@ -254,22 +249,26 @@ class Image(Cmd, CoreGlobal):
                     pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
                 deployed_instance_id = deployed_instance.applicationId
 
-                print("Deployment is starting")
+                print("Deployment in progress")
                 status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
                 while not (status.message == "running" or status.message == "on-fire"):
                     status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
                     time.sleep(2)
 
                 if status.message == "on-fire":
-                    printer.out("Deployment failed\n", printer.ERROR)
+                    printer.out("Deployment failed", printer.ERROR)
                     if status.detailedError:
-                        printer.out(status.detailedErrorMsg)
+                        printer.out(status.detailedErrorMsg, printer.ERROR)
                 else:
                     printer.out("Deployment is successful", printer.OK)
+                    print("Deployment id: " + deployed_instance_id)
+                    deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
+                    instances = deployment.instances.instance
+                    instance = instances[-1]
+                    print("Region: " + instance.location.provider)
+                    print("IP address: " + instance.hostname)
 
                 return 0
-
-            #TODO unit tests
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
