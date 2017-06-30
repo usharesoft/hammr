@@ -23,7 +23,7 @@ from ussclicore.cmd import Cmd, CoreGlobal
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer
+    SimpleProgress, Timer, UnknownLength
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
 from uforge.objects.uforge import *
@@ -250,10 +250,17 @@ class Image(Cmd, CoreGlobal):
                 deployed_instance_id = deployed_instance.applicationId
 
                 print("Deployment in progress")
+
                 status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
+                bar.start()
+                i = 1
                 while not (status.message == "running" or status.message == "on-fire"):
                     status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                    time.sleep(2)
+                    time.sleep(1)
+                    bar.update(i)
+                    i += 2
+                bar.finish()
 
                 if status.message == "on-fire":
                     printer.out("Deployment failed", printer.ERROR)
