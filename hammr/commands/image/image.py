@@ -261,12 +261,12 @@ class Image(Cmd, CoreGlobal):
                         printer.out(status.detailedErrorMsg, printer.ERROR)
                 else:
                     printer.out("Deployment is successful", printer.OK)
-                    print("Deployment id: " + deployed_instance_id)
+                    printer.out("Deployment id: [" + deployed_instance_id + "]")
                     deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
                     instances = deployment.instances.instance
                     instance = instances[-1]
-                    print("Region: " + instance.location.provider)
-                    print("IP address: " + instance.hostname)
+                    printer.out("Region: " + instance.location.provider)
+                    printer.out("IP address: " + instance.hostname)
 
                 return 0
 
