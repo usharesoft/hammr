@@ -280,7 +280,7 @@ class Image(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_deploy()
         except KeyboardInterrupt:
-            printer.out("Impossible to cancel the deployment", printer.WARNING)
+            printer.out("You have exited the command-line, however the deployment may still be in progress.  Please go to the cloud's console for more information", printer.WARNING)
             pass
         except Exception as e:
             return handle_uforge_exception(e)
