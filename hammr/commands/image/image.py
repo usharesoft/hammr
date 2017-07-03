@@ -266,6 +266,7 @@ class Image(Cmd, CoreGlobal):
                     printer.out("Deployment failed", printer.ERROR)
                     if status.detailedError:
                         printer.out(status.detailedErrorMsg, printer.ERROR)
+                    return 1
                 else:
                     printer.out("Deployment is successful", printer.OK)
                     printer.out("Deployment id: [" + deployed_instance_id + "]")
