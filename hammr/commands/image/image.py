@@ -200,12 +200,12 @@ class Image(Cmd, CoreGlobal):
 
     def arg_deploy(self):
         doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
-                                  description="Deploy a machine instance of a published image on the targeted cloud.")
+                                  description="Deploy an instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='pid', required=True,
-                               help="publish id of the image to deploy")
+                               help="the ID of the published image to deploy")
         mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
-                               help="name of the image to deploy")
+                               help="the name of the image to deploy")
 
         optional = doParser.add_argument_group("optional arguments")
         optional.add_argument('--vcpu', dest='vcpu', required=False,
