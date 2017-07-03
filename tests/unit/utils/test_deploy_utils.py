@@ -50,14 +50,11 @@ class TestDeploy(TestCase):
     def test_do_deploy_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status, mock_api_pimg_getall):
         # given
         i = self.prepare_image()
+        args = self.prepare_image_deploy_command(1234)
 
         self.prepare_mock_deploy(mock_get_deployment, mock_api_deploy)
         self.prepare_mock_app_get(mock_app_get)
-
-        new_pimages = self.prepare_pimages()
-        mock_api_pimg_getall.return_value = new_pimages
-
-        args = self.prepare_image_deploy_command(1234)
+        self.prepare_mock_api_pimg_getall(mock_api_pimg_getall)
         self.prepare_mock_deploy_status(mock_get_deploy_status)
 
         # when
@@ -65,6 +62,7 @@ class TestDeploy(TestCase):
 
         # then
         self.assertEquals(deploy_return, 0)
+
 
     def get_deployment(self):
         deployment = Deployment()
@@ -137,3 +135,7 @@ class TestDeploy(TestCase):
     def prepare_mock_app_get(self, mock_app_get):
         newAppliance = Appliance()
         mock_app_get.return_value = newAppliance
+
+    def prepare_mock_api_pimg_getall(self, mock_api_pimg_getall):
+        new_pimages = self.prepare_pimages()
+        mock_api_pimg_getall.return_value = new_pimages
