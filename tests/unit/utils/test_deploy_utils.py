@@ -18,7 +18,6 @@ from unittest import TestCase
 import pyxb
 from mock import patch
 from uforge.application import Api
-from ussclicore.utils import generics_utils
 import hammr.commands.image
 from hammr.utils import constants
 from uforge.objects.uforge import *
@@ -31,7 +30,6 @@ class TestDeploy(TestCase):
     def test_do_deploy_return_2_when_imageId_is_None(self, mock_api_deploy):
         # given
         i = self.prepare_image()
-
         deployment = self.get_deployment()
         mock_api_deploy.return_value = deployment
         args = self.prepare_image_deploy_command(None)
@@ -47,7 +45,8 @@ class TestDeploy(TestCase):
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     @patch('uforge.application.Api._Users._Appliances.Get')
     @patch('uforge.application.Api._Users._Deployments.Get')
-    def test_do_deploy_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status, mock_api_pimg_getall):
+    def test_do_deploy_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy,
+                                                        mock_get_deploy_status, mock_api_pimg_getall):
         # given
         i = self.prepare_image()
         args = self.prepare_image_deploy_command(1234)
@@ -55,13 +54,35 @@ class TestDeploy(TestCase):
         self.prepare_mock_deploy(mock_get_deployment, mock_api_deploy)
         self.prepare_mock_app_get(mock_app_get)
         self.prepare_mock_api_pimg_getall(mock_api_pimg_getall)
-        self.prepare_mock_deploy_status(mock_get_deploy_status)
+        self.prepare_mock_deploy_status_running(mock_get_deploy_status)
 
         # when
         deploy_return = i.do_deploy(args)
 
         # then
         self.assertEquals(deploy_return, 0)
+
+    @patch('uforge.application.Api._Users._Pimages.Getall')
+    @patch('uforge.application.Api._Users._Deployments._Status.Getdeploystatus')
+    @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
+    @patch('uforge.application.Api._Users._Appliances.Get')
+    @patch('uforge.application.Api._Users._Deployments.Get')
+    def test_do_deploy_return_1_when_status_is_onfire(self, mock_get_deployment, mock_app_get, mock_api_deploy,
+                                                        mock_get_deploy_status, mock_api_pimg_getall):
+        # given
+        i = self.prepare_image()
+        args = self.prepare_image_deploy_command(1234)
+
+        self.prepare_mock_deploy(mock_get_deployment, mock_api_deploy)
+        self.prepare_mock_app_get(mock_app_get)
+        self.prepare_mock_api_pimg_getall(mock_api_pimg_getall)
+        self.prepare_mock_deploy_status_onfire(mock_get_deploy_status)
+
+        # when
+        deploy_return = i.do_deploy(args)
+
+        # then
+        self.assertEquals(deploy_return, 1)
 
 
     def get_deployment(self):
@@ -119,12 +140,20 @@ class TestDeploy(TestCase):
 
         return new_pimages
 
-    def prepare_mock_deploy_status(self, mock_get_deploy_status):
+    def prepare_mock_deploy_status_running(self, mock_get_deploy_status):
         # The mock will return statusStarting on first and second calls, and statusRunning on third call
         statusStarting = OpStatus()
         statusStarting.message = "starting"
         statusRunning = OpStatus()
         statusRunning.message = "running"
+        mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
+
+    def prepare_mock_deploy_status_onfire(self, mock_get_deploy_status):
+        # The mock will return statusStarting on first and second calls, and statusRunning on third call
+        statusStarting = OpStatus()
+        statusStarting.message = "starting"
+        statusRunning = OpStatus()
+        statusRunning.message = "on-fire"
         mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
 
     def prepare_mock_deploy(self, mock_get_deployment, mock_api_deploy):
