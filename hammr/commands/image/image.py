@@ -209,9 +209,9 @@ class Image(Cmd, CoreGlobal):
 
         optional = doParser.add_argument_group("optional arguments")
         optional.add_argument('--vcpu', dest='vcpu', required=False,
-                              help="minimal number of cores for the image to deploy")
+                              help="minimal number of cores for the image to deploy. Number is 1 by default.")
         optional.add_argument('-m', '--memory', dest='memory', required=False,
-                              help="minimal RAM for the image to deploy")
+                              help="minimal RAM for the image to deploy. RAM is 1024M by default.")
         return doParser
 
     def do_deploy(self, args):
@@ -224,59 +224,57 @@ class Image(Cmd, CoreGlobal):
             if not doArgs:
                 return 2
 
-            if doArgs.pid and doArgs.deploy_name:
+            pimage = self.get_pimage_from_id(doArgs.pid)
+            if pimage == 2:
+                return 2
 
-                pimage = self.get_pimage_from_id(doArgs.pid)
-                if pimage == 2:
-                    return
+            image_id = generics_utils.extract_id(pimage.imageUri)
+            if image_id is None or image_id == "":
+                printer.out("Image not found", printer.ERROR)
+                return 2
 
-                image_id = generics_utils.extract_id(pimage.imageUri)
-                if image_id is None or image_id == "":
-                    printer.out("Image not found", printer.ERROR)
-                    return 2
+            appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+            if appliance is None or not hasattr(appliance, 'dbId'):
+                printer.out("No template found for this image", printer.ERROR)
+                return 2
 
-                appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
-                if appliance is None or not hasattr(appliance, 'dbId'):
-                    printer.out("No template found for this image", printer.ERROR)
-                    return
+            if not self.is_pimage_ready_to_deploy(pimage):
+                printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
+                return 2
 
-                if not self.is_pimage_ready_to_deploy(pimage):
-                    printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
-                    return 2
+            deployment = self.get_deployment_from_args_for_deploy(doArgs)
+            deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
+                pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+            deployed_instance_id = deployed_instance.applicationId
 
-                deployment = self.get_deployment_from_args_for_deploy(doArgs)
-                deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                    pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-                deployed_instance_id = deployed_instance.applicationId
+            print("Deployment in progress")
 
-                print("Deployment in progress")
-
+            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+            bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
+            bar.start()
+            i = 1
+            while not (status.message == "running" or status.message == "on-fire"):
                 status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
-                bar.start()
-                i = 1
-                while not (status.message == "running" or status.message == "on-fire"):
-                    status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                    time.sleep(1)
-                    bar.update(i)
-                    i += 2
-                bar.finish()
+                time.sleep(1)
+                bar.update(i)
+                i += 2
+            bar.finish()
 
-                if status.message == "on-fire":
-                    printer.out("Deployment failed", printer.ERROR)
-                    if status.detailedError:
-                        printer.out(status.detailedErrorMsg, printer.ERROR)
-                    return 1
-                else:
-                    printer.out("Deployment is successful", printer.OK)
-                    printer.out("Deployment id: [" + deployed_instance_id + "]")
-                    deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
-                    instances = deployment.instances.instance
-                    instance = instances[-1]
-                    printer.out("Region: " + instance.location.provider)
-                    printer.out("IP address: " + instance.hostname)
+            if status.message == "on-fire":
+                printer.out("Deployment failed", printer.ERROR)
+                if status.detailedError:
+                    printer.out(status.detailedErrorMsg, printer.ERROR)
+                return 1
+            else:
+                printer.out("Deployment is successful", printer.OK)
+                printer.out("Deployment id: [" + deployed_instance_id + "]")
+                deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
+                instances = deployment.instances.instance
+                instance = instances[-1]
+                printer.out("Region: " + instance.location.provider)
+                printer.out("IP address: " + instance.hostname)
 
-                return 0
+            return 0
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
