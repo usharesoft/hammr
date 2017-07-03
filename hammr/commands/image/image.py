@@ -203,7 +203,7 @@ class Image(Cmd, CoreGlobal):
                                   description="Deploy a machine instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='pid', required=True,
-                               help="publish id of image to deploy")
+                               help="publish id of the image to deploy")
         mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
                                help="name of the image to deploy")
 
