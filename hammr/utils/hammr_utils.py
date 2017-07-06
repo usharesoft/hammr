@@ -242,28 +242,28 @@ def create_user_ssh_key(api, login, sshKey):
     return key
 
 def is_uri_based_on_appliance(uri):
-    match = re.match( r'users/.+/appliances/*', uri)
+    match = re.match( r'users/[^/]+/appliances/[0-9]+($|/)', uri)
     if match:
         return True
     else:
         return False
 
 def is_uri_based_on_scan(uri):
-    match = re.match( r'users/.+/scannedinstances/[0-9]+/scans/*', uri)
+    match = re.match( r'users/[^/]+/scannedinstances/[0-9]+/scans/[0-9]+($|/)', uri)
     if match:
         return True
     else:
         return False
 
 def extract_scannedinstance_id(image_uri):
-    match = re.match( r'users/.+/scannedinstances/([0-9]+)/.+', image_uri)
+    match = re.match( r'users/[^/]+/scannedinstances/([0-9]+)($|/)', image_uri)
     if match:
         return int(match.group(1))
     else:
         return None
 
 def extract_scan_id(image_uri):
-    match = re.match( r'users/.+/scannedinstances/[0-9]+/scans/([0-9]+)/.+', image_uri)
+    match = re.match( r'users/[^/]+/scannedinstances/[0-9]+/scans/([0-9]+)($|/)', image_uri)
     if match:
         return int(match.group(1))
     else:
