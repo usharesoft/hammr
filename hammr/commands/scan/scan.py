@@ -365,8 +365,8 @@ class Scan(Cmd, CoreGlobal):
 
             if myScan is not None and myScan.status.complete and not myScan.status.error and not myScan.status.cancelled:
                 myScanImport = scanImport()
-                myScanImport.applianceName = doArgs.name
-                myScanImport.applianceVersion = doArgs.version
+                myScanImport.importedObjectName = doArgs.name
+                myScanImport.importedObjectVersion = doArgs.version
                 myScanImport.orgUri = (self.api.Users(self.login).Orgs().Getall()).orgs.org[0].uri
                 rScanImport = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
                     myScan.dbId).Imports().Import(myScanImport)
