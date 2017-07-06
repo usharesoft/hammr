@@ -240,3 +240,31 @@ def create_user_ssh_key(api, login, sshKey):
         printer.out("Impossible to create sshKey ["+mySshKey.name+"]", printer.ERROR)
         return 2
     return key
+
+def is_appliance_uri(image_uri):
+    match = re.match( r'users/.+/appliances/[0-9]+/.+', image_uri)
+    if match:
+        return True
+    else:
+        return False
+
+def is_scan_uri(image_uri):
+    match = re.match( r'users/.+/scannedinstances/[0-9]+/scans/[0-9]+/.+', image_uri)
+    if match:
+        return True
+    else:
+        return False
+
+def extract_scannedinstance_id(image_uri):
+    match = re.match( r'users/.+/scannedinstances/([0-9]+)/.+', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
+
+def extract_scan_id(image_uri):
+    match = re.match( r'users/.+/scannedinstances/[0-9]+/scans/([0-9]+)/.+', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None

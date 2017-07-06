@@ -233,18 +233,34 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Image not found", printer.ERROR)
                 return 2
 
-            appliance = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
-            if appliance is None or not hasattr(appliance, 'dbId'):
-                printer.out("No template found for this image", printer.ERROR)
-                return 2
-
             if not self.is_pimage_ready_to_deploy(pimage):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
             deployment = self.get_deployment_from_args_for_deploy(doArgs)
-            deployed_instance = self.api.Users(self.login).Appliances(appliance.dbId).Images(image_id).Pimages(
-                pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+            if is_appliance_uri(pimage.imageUri):
+                source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+                if source is None or not hasattr(source, 'dbId'):
+                    printer.out("No template found for this image", printer.ERROR)
+                    return 2
+                deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
+                    pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+            elif is_scan_uri(pimage.imageUri):
+                ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
+                ScanId = extract_scan_id(pimage.imageUri)
+                source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
+                if source is None or not hasattr(source, 'dbId'):
+                    printer.out("No scan found for this image", printer.ERROR)
+                    return 2
+                deployed_instance = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Images(
+                    image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+            else:
+                printer.out("No source found for this image", printer.ERROR)
+                return 2
+
             deployed_instance_id = deployed_instance.applicationId
 
             print("Deployment in progress")
@@ -280,7 +296,7 @@ class Image(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_deploy()
         except KeyboardInterrupt:
-            printer.out("You have exited the command-line, however the deployment may still be in progress.  Please go to the cloud's console for more information", printer.WARNING)
+            printer.out("You have exited the command-line, however the deployment may still be in progress. Please go to the cloud's console for more information", printer.WARNING)
             pass
         except Exception as e:
             return handle_uforge_exception(e)
