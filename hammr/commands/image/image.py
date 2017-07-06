@@ -239,7 +239,7 @@ class Image(Cmd, CoreGlobal):
 
             deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
-            if is_appliance_uri(pimage.imageUri):
+            if is_uri_based_on_appliance(pimage.imageUri):
                 source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
                 if source is None or not hasattr(source, 'dbId'):
                     printer.out("No template found for this image", printer.ERROR)
@@ -247,7 +247,7 @@ class Image(Cmd, CoreGlobal):
                 deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
                     pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
 
-            elif is_scan_uri(pimage.imageUri):
+            elif is_uri_based_on_scan(pimage.imageUri):
                 ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
                 ScanId = extract_scan_id(pimage.imageUri)
                 source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
