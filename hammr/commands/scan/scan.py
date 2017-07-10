@@ -332,7 +332,7 @@ class Scan(Cmd, CoreGlobal):
                                   description="Imports (or transforms) the scan to a template")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True, help="the ID of the scan to import")
-        mandatory.add_argument('--name', dest='name', required=True,
+        mandatory.add_argument('--name', dest='name', required=True, nargs='+',
                                help="the name to use for the template created from the scan")
         mandatory.add_argument('--version', dest='version', required=True,
                                help="the version to use for the template created from the scan")
@@ -344,6 +344,7 @@ class Scan(Cmd, CoreGlobal):
             doParser = self.arg_import()
             try:
                 doArgs = doParser.parse_args(shlex.split(args))
+                doArgs.name = " ".join(doArgs.name)
             except SystemExit as e:
                 return
 
