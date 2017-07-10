@@ -3,6 +3,36 @@
 Changelog
 =========
 
+hammr 3.7.5 (2017-06-12)
+--------------------------
+
+Evolutions:
+
+* Modification of VMware VCenter image publication
+* Support restrictions on Software Bundle
+
+Bug fixes:
+
+* Version check when using hammr commands without interactive mode
+* A scan name including a space cannot be specified with hammr scan run
+* hammr image list displays 0B for images generated from a scan
+
+Compatibility with UForge AppCenter 3.7.fp5-1 only
+
+hammr 3.7.4 (2017-28-04)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp4-1 only
+* Add overlay argument to scan run command to run a scan with overlay
+
+Bug fixes:
+
+* Flag acceptAutoSigned not working for image download
+* Name for the builder account can now be read from an external file
+* Fixes on documentation
+
 hammr 3.7.3 (2017-21-03)
 --------------------------
 
