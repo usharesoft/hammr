@@ -332,7 +332,7 @@ class Scan(Cmd, CoreGlobal):
                                   description="Imports (or transforms) the scan to a template")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True, help="the ID of the scan to import")
-        mandatory.add_argument('--name', dest='name', required=True,
+        mandatory.add_argument('--name', dest='name', required=True, nargs='+',
                                help="the name to use for the template created from the scan")
         mandatory.add_argument('--version', dest='version', required=True,
                                help="the version to use for the template created from the scan")
@@ -344,6 +344,7 @@ class Scan(Cmd, CoreGlobal):
             doParser = self.arg_import()
             try:
                 doArgs = doParser.parse_args(shlex.split(args))
+                doArgs.name = " ".join(doArgs.name)
             except SystemExit as e:
                 return
 
@@ -365,8 +366,8 @@ class Scan(Cmd, CoreGlobal):
 
             if myScan is not None and myScan.status.complete and not myScan.status.error and not myScan.status.cancelled:
                 myScanImport = scanImport()
-                myScanImport.applianceName = doArgs.name
-                myScanImport.applianceVersion = doArgs.version
+                myScanImport.importedObjectName = doArgs.name
+                myScanImport.importedObjectVersion = doArgs.version
                 myScanImport.orgUri = (self.api.Users(self.login).Orgs().Getall()).orgs.org[0].uri
                 rScanImport = self.api.Users(self.login).Scannedinstances(myRScannedInstance.dbId).Scans(
                     myScan.dbId).Imports().Import(myScanImport)
