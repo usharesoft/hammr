@@ -157,12 +157,12 @@ def aws(account):
 
 
 def azure(account):
-    if not "publishsettings" in account:
-        printer.out("Azure Resource Manager account")
-        return azure_arm(account)
-    else:
+    if "publishsettings" in account:
         printer.out("Azure classic account")
         return azure_classic(account)
+    else:
+        printer.out("Azure Resource Manager account")
+        return azure_arm(account)
 
 
 def azure_arm(account):
@@ -171,16 +171,20 @@ def azure_arm(account):
     if not "name" in account:
         printer.out("name for azure account not found", printer.ERROR)
         return
-    if not "accountName" in account:
-        printer.out("Storgae account name not found", printer.ERROR)
+    if not "tenantId" in account:
+        printer.out("no tenant id found", printer.ERROR)
         return
-    if not "accountKey" in account:
-        printer.out("Storgae account key not found", printer.ERROR)
+    if not "applicationId" in account:
+        printer.out("no application id found", printer.ERROR)
+        return
+    if not "applicationPassword" in account:
+        printer.out("no application password found", printer.ERROR)
         return
 
     myCredAccount.name = account["name"]
-    myCredAccount.accountName = account["accountName"]
-    myCredAccount.accountKey = account["accountKey"]
+    myCredAccount.tenantId = account["tenantId"]
+    myCredAccount.applicationId = account["applicationId"]
+    myCredAccount.applicationPassword = account["applicationPassword"]
 
     return myCredAccount
 

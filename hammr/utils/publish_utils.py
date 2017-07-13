@@ -169,7 +169,7 @@ def publish_aws(builder):
 
 
 def publish_azure(builder):
-    if not "storageAccount" in builder:
+    if "blob" in builder or "container" in builder:
         printer.out("Azure Resource Manager publish")
         return publish_azure_arm(builder)
     else:
@@ -197,16 +197,26 @@ def publish_azure_classic(builder):
 def publish_azure_arm(builder):
     pimage = PublishImageAzureResourceManager()
 
-    # doing field verification
+    if not "storageAccount" in builder:
+        printer.out("storageAccount not found", printer.ERROR)
+        return
     if not "container" in builder:
-        printer.out("container in Microsoft Azure not found", printer.ERROR)
+        printer.out("container not found", printer.ERROR)
         return
     if not "blob" in builder:
-        printer.out("blob in Microsoft Azure not found", printer.ERROR)
+        printer.out("blob not found", printer.ERROR)
+        return
+    if not "displayName" in builder:
+        printer.out("displayName not found", printer.ERROR)
         return
 
+    if "resourceGroup" in builder:
+        pimage.resourceGroup = builder["resourceGroup"]
+
+    pimage.storageAccount = builder["storageAccount"]
     pimage.container = builder["container"]
     pimage.blob = builder["blob"]
+    pimage.displayName = builder["displayName"]
 
     return pimage
 
