@@ -77,7 +77,7 @@ The Azure Resource Manager cloud account has the following valid keys:
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
 * ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See azure documentation to retrieves yours: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id
 * ``applicationId`` (mandatory): The application ID that will be used by UForge. See azure documentation to create one application: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key
-* ``applicationPassword`` (mandatory): The application authentication key associated to the application ID.
+* ``applicationKey`` (mandatory): The application authentication key associated to the application ID.
 
 .. note:: In the case where name or file is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
 
@@ -98,7 +98,7 @@ If you are using YAML:
       name: My Azure Resource Manager account
       tenantId: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee
       applicationId: 0000000-1111-2222-3333-4444444444444
-      applicationPassword: myApplicationPassword
+      applicationKey: myApplicationKey
     storageAccount: mystorageaccount
     container: mycontainer
     resourceGroup: myResourceGroup
@@ -118,7 +118,7 @@ If you are using JSON:
           "name": "My Azure Resource Manager account",
           "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee",
           "applicationId": "0000000-1111-2222-3333-4444444444444",
-          "applicationPassword": "myApplicationPassword"
+          "applicationKey": "myApplicationKey"
         },
         "storageAccount":"mystorageaccount",
         "container":"mycontainer",
@@ -142,7 +142,7 @@ To help with security, the cloud account information can be referenced by the bu
     name: My Azure Resource Manager account
     tenantId: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee
     applicationId: 0000000-1111-2222-3333-4444444444444
-    applicationPassword: myApplicationPassword
+    applicationKey: myApplicationKey
 
 
 If you are using JSON, create a JSON file ``azure-app-account.json``:
@@ -156,7 +156,7 @@ If you are using JSON, create a JSON file ``azure-app-account.json``:
         "name": "My Azure Resource Manager account",
         "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee",
         "applicationId": "0000000-1111-2222-3333-4444444444444",
-        "applicationPassword": "myApplicationPassword"
+        "applicationKey": "myApplicationKey"
       }
     ]
   }

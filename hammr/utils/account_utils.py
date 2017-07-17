@@ -177,14 +177,14 @@ def azure_arm(account):
     if not "applicationId" in account:
         printer.out("no application id found", printer.ERROR)
         return
-    if not "applicationPassword" in account:
-        printer.out("no application password found", printer.ERROR)
+    if not "applicationKey" in account:
+        printer.out("no application key found", printer.ERROR)
         return
 
     myCredAccount.name = account["name"]
     myCredAccount.tenantId = account["tenantId"]
     myCredAccount.applicationId = account["applicationId"]
-    myCredAccount.applicationPassword = account["applicationPassword"]
+    myCredAccount.applicationKey = account["applicationKey"]
 
     return myCredAccount
 
