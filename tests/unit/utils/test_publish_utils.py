@@ -139,7 +139,7 @@ class TestPublishDocker(TestCase):
 
 class TestPublishAzure(TestCase):
 
-    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_witResourceGroup(self):
+    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_withResourceGroup(self):
         # given
         builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
 
