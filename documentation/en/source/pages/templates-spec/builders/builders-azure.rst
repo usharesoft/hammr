@@ -58,10 +58,10 @@ To publish an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Azure: ``Microsoft Azure``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
-* ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
-* ``container`` (mandatory): the container that will contains the blob file in Azure Cloud. If the names provides doesn't already exist it will be created.
-* ``blob`` (mandatory): the name of the vhd blob that will contains the machine image data. It must ends with ".vhd". If it already exists it will be overrride.
-* ``displayName`` (mandatory): a string providing the name of the machine image to display in Azure cloud. If it already exists it will be overrride.
+* ``storageAccount`` (mandatory): a string providing the storage account name to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services. It must exist in your Microsoft account.
+* ``container`` (mandatory): the container that will contains the blob file in Azure Cloud. If the name provides doesn't already exist it will be created.
+* ``blob`` (mandatory): the name of the vhd blob that will contains the machine image data. It must ends with ".vhd". If it already exists it will overwrite the existing one.
+* ``displayName`` (mandatory): a string providing the name of the machine image to display in Azure cloud. If an image with this name already exists it will be overwritten.
 * ``resourceGroup`` (optional): an existing resource group available in your clound accound. By default the resource group of your storage account will be used.
 
 
@@ -238,8 +238,8 @@ If you are using JSON:
   }
 
 
-Publishing a Machine Image with Azure Classic Connector (deprecated)
---------------------------------------------------------------------
+Publishing a Machine Image with Azure Classic Connector
+-------------------------------------------------------
 
 To publish an image, the valid keys are:
 
@@ -259,8 +259,8 @@ Valid Azure Regions
 * ``West Europe``
 * ``East Asia``
 
-Azure Classic Cloud Account (deprecated)
-----------------------------------------
+Azure Classic Cloud Account
+---------------------------
 
 Key: ``account``
 
@@ -312,8 +312,8 @@ If you are using JSON:
     ]
   }
 
-Referencing the Azure Classic Cloud Account (deprecated)
---------------------------------------------------------
+Referencing the Azure Classic Cloud Account
+-------------------------------------------
 
 To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``azure-account.yml``.
 
