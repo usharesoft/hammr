@@ -18,11 +18,11 @@ from unittest import TestCase
 import pyxb
 from mock import patch
 from uforge.application import Api
-import hammr.commands.image
 from hammr.utils import constants
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 import datetime
+from hammr.commands.image import image
 
 class TestDeploy(TestCase):
 
@@ -134,7 +134,7 @@ class TestDeploy(TestCase):
          return args
 
     def prepare_image(self):
-        i = hammr.commands.image.Image()
+        i = image.Image()
         i.api = Api("url", username="username", password="password", headers=None,
                     disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
         i.login = "login"
