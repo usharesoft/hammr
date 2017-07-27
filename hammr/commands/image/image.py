@@ -731,7 +731,8 @@ class Image(Cmd, CoreGlobal):
         return deployment
 
     def is_targeted_cloud_amazon(self, pimage):
-        if pimage.credAccount:
-            target_platform = pimage.credAccount.targetPlatform.name
-            return target_platform == "Amazon"
+        if pimage.targetFormat:
+            target_platform = pimage.targetFormat.name
+            print(target_platform)
+            return target_platform == "Amazon AWS"
         return False

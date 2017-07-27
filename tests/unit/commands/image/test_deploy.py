@@ -152,7 +152,7 @@ class TestDeploy(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "test"
+        newImage.targetFormat.name = "Amazon AWS"
 
         new_pimages.publishImages.append(newImage)
 
@@ -168,7 +168,7 @@ class TestDeploy(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "test"
+        newImage.targetFormat.name = "Amazon AWS"
 
         new_pimages.publishImages.append(newImage)
 
