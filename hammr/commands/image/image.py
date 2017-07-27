@@ -237,6 +237,10 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
+            if self.is_targeted_cloud_openstack(pimage):
+                printer.out("Deployments for this cloud are not supported by hammr yet.", printer.ERROR)
+                return 2
+
             deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
             if is_uri_based_on_appliance(pimage.imageUri):
@@ -725,3 +729,9 @@ class Image(Cmd, CoreGlobal):
         deployment.instances.append(myinstance)
 
         return deployment
+
+    def is_targeted_cloud_openstack(self, pimage):
+        if pimage.credAccount:
+            target_platform = pimage.credAccount.targetPlatform.name
+            return target_platform == "OpenStack"
+        return False
