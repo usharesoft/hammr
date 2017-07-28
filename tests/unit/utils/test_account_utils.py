@@ -145,7 +145,7 @@ class TestAzureManager(TestCase):
 
     def test_azure_should_return_cred_account_when_valid_arm_entries(self):
         # given
-        account_given = self.build_arm_account("MyAccount", "MyTenantId", "MyApplicationId", "MyApplicationKey")
+        account_given = self.build_arm_account("MyAccount", "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
         # when
         account = azure(account_given)
@@ -154,12 +154,13 @@ class TestAzureManager(TestCase):
         self.assertNotEqual(account, None)
         self.assertEqual(account.name, account_given["name"])
         self.assertEqual(account.tenantId, account_given["tenantId"])
+        self.assertEqual(account.subscriptionId, account_given["subscriptionId"])
         self.assertEqual(account.applicationId, account_given["applicationId"])
         self.assertEqual(account.applicationKey, account_given["applicationKey"])
 
     def test_azure_should_return_none_when_missing_arm_name(self):
         # given
-        accountMocked = self.build_arm_account(None, "MyTenantId", "MyApplicationId", "MyApplicationKey")
+        accountMocked = self.build_arm_account(None, "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
         # when
         account = azure(accountMocked)
@@ -169,7 +170,17 @@ class TestAzureManager(TestCase):
 
     def test_azure_should_return_none_when_missing_arm_tenantId(self):
         # given
-        accountMocked = self.build_arm_account("MyAccount", None, "MyApplicationId", "MyApplicationKey")
+        accountMocked = self.build_arm_account("MyAccount", None, "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
+
+        # when
+        account = azure(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def test_azure_should_return_none_when_missing_arm_subscriptionId(self):
+        # given
+        accountMocked = self.build_arm_account("MyAccount", "MyTenantId", None, "MyApplicationId", "MyApplicationKey")
 
         # when
         account = azure(accountMocked)
@@ -179,7 +190,7 @@ class TestAzureManager(TestCase):
 
     def test_azure_should_return_none_when_missing_arm_applicationId(self):
         # given
-        accountMocked = self.build_arm_account("MyAccount", "MyTenantId", None, "MyApplicationKey")
+        accountMocked = self.build_arm_account("MyAccount", "MyTenantId", "MySubscriptionId", None, "MyApplicationKey")
 
         # when
         account = azure(accountMocked)
@@ -189,7 +200,7 @@ class TestAzureManager(TestCase):
 
     def test_azure_should_return_none_when_missing_arm_applicationKey(self):
         # given
-        accountMocked = self.build_arm_account("MyAccount", "MyTenantId", "MyApplicationId", None)
+        accountMocked = self.build_arm_account("MyAccount", "MyTenantId", "MySubscriptionId",  "MyApplicationId", None)
 
         # when
         account = azure(accountMocked)
@@ -197,10 +208,11 @@ class TestAzureManager(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def build_arm_account(self, name, tenantId, applicationID, applicationKey):
+    def build_arm_account(self, name, tenantId, subscriptionId, applicationID, applicationKey):
         account = {}
         if name is not None: account["name"] = name
         if tenantId is not None: account["tenantId"] = tenantId
+        if subscriptionId is not None: account["subscriptionId"] = subscriptionId
         if applicationID is not None: account["applicationId"] = applicationID
         if applicationKey is not None: account["applicationKey"] = applicationKey
         return account

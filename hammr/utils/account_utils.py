@@ -174,6 +174,9 @@ def azure_arm(account):
     if not "tenantId" in account:
         printer.out("no tenant id found", printer.ERROR)
         return
+    if not "subscriptionId" in account:
+        printer.out("no subscription id found", printer.ERROR)
+        return
     if not "applicationId" in account:
         printer.out("no application id found", printer.ERROR)
         return
@@ -183,6 +186,7 @@ def azure_arm(account):
 
     myCredAccount.name = account["name"]
     myCredAccount.tenantId = account["tenantId"]
+    myCredAccount.subscriptionId = account["subscriptionId"]
     myCredAccount.applicationId = account["applicationId"]
     myCredAccount.applicationKey = account["applicationKey"]
 
