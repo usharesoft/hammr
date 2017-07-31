@@ -13,4 +13,5 @@ Templates allow you to generate and publish identical machine images for physica
    machine-image-build
    machine-image-list
    machine-image-publish
+   machine-image-deploy
    machine-image-download

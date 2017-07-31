@@ -23,12 +23,11 @@ from ussclicore.cmd import Cmd, CoreGlobal
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer
+    SimpleProgress, Timer, UnknownLength
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
-
 
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
@@ -76,12 +75,14 @@ class Image(Cmd, CoreGlobal):
             else:
                 printer.out("Publications:")
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t"])
-                table.header(["Template name", "Image ID", "Account name", "Format", "Cloud ID", "Status"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
+                table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
                 pimages = generics_utils.order_list_object_by(pimages, "name")
                 for pimage in pimages:
                     pubStatus = self.get_publish_status(pimage.status)
-                    table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri),
+                    table.add_row([pimage.name,
+                                   generics_utils.extract_id(pimage.imageUri),
+                                   pimage.dbId,
                                    pimage.credAccount.name if pimage.credAccount is not None else "-",
                                    pimage.credAccount.targetPlatform.name,
                                    pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
@@ -195,6 +196,113 @@ class Image(Cmd, CoreGlobal):
 
     def help_publish(self):
         doParser = self.arg_publish()
+        doParser.print_help()
+
+    def arg_deploy(self):
+        doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
+                                  description="Deploy an instance of a published image on the targeted cloud.")
+        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--id', dest='pid', required=True,
+                               help="the ID of the published image to deploy")
+        mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
+                               help="the name of the image to deploy")
+
+        optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--vcpu', dest='vcpu', required=False,
+                              help="minimal number of cores for the image to deploy. Number is 1 by default.")
+        optional.add_argument('-m', '--memory', dest='memory', required=False,
+                              help="minimal RAM for the image to deploy. RAM is 1024M by default.")
+        return doParser
+
+    def do_deploy(self, args):
+        try:
+            # add arguments
+            doParser = self.arg_deploy()
+            doArgs = doParser.parse_args(shlex.split(args))
+
+            # if the help command is called, parse_args returns None object
+            if not doArgs:
+                return 2
+
+            pimage = self.get_pimage_from_id(doArgs.pid)
+            if pimage == 2:
+                return 2
+
+            image_id = generics_utils.extract_id(pimage.imageUri)
+            if image_id is None or image_id == "":
+                printer.out("Image not found", printer.ERROR)
+                return 2
+
+            if not self.is_pimage_ready_to_deploy(pimage):
+                printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
+                return 2
+
+            deployment = self.get_deployment_from_args_for_deploy(doArgs)
+
+            if is_uri_based_on_appliance(pimage.imageUri):
+                source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+                if source is None or not hasattr(source, 'dbId'):
+                    printer.out("No template found for this image", printer.ERROR)
+                    return 2
+                deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
+                    pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+            elif is_uri_based_on_scan(pimage.imageUri):
+                ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
+                ScanId = extract_scan_id(pimage.imageUri)
+                source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
+                if source is None or not hasattr(source, 'dbId'):
+                    printer.out("No scan found for this image", printer.ERROR)
+                    return 2
+                deployed_instance = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Images(
+                    image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+            else:
+                printer.out("No source found for this image", printer.ERROR)
+                return 2
+
+            deployed_instance_id = deployed_instance.applicationId
+
+            print("Deployment in progress")
+
+            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+            bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
+            bar.start()
+            i = 1
+            while not (status.message == "running" or status.message == "on-fire"):
+                status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                time.sleep(1)
+                bar.update(i)
+                i += 2
+            bar.finish()
+
+            if status.message == "on-fire":
+                printer.out("Deployment failed", printer.ERROR)
+                if status.detailedError:
+                    printer.out(status.detailedErrorMsg, printer.ERROR)
+                return 1
+            else:
+                printer.out("Deployment is successful", printer.OK)
+                printer.out("Deployment id: [" + deployed_instance_id + "]")
+                deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
+                instances = deployment.instances.instance
+                instance = instances[-1]
+                printer.out("Region: " + instance.location.provider)
+                printer.out("IP address: " + instance.hostname)
+
+            return 0
+
+        except ArgumentParserError as e:
+            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            self.help_deploy()
+        except KeyboardInterrupt:
+            printer.out("You have exited the command-line, however the deployment may still be in progress. Please go to the cloud's console for more information", printer.WARNING)
+            pass
+        except Exception as e:
+            return handle_uforge_exception(e)
+
+    def help_deploy(self):
+        doParser = self.arg_deploy()
         doParser.print_help()
 
     def arg_delete(self):
@@ -474,6 +582,13 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
+    def is_pimage_ready_to_deploy(self, pimage):
+        if not pimage.status.complete or pimage.status.error or pimage.status.cancelled:
+            return False
+
+        return True
+
+
     def find_builder(self, image, template):
         for builder in template["builders"]:
             if image.targetFormat.name == builder["type"]:
@@ -572,3 +687,41 @@ class Image(Cmd, CoreGlobal):
             if account.has_key("type") and account["type"] == builder["type"] and account.has_key("name"):
                 account_name = account["name"]
         return account_name
+
+    def get_pimage_from_id(self, id):
+        pimages = self.api.Users(self.login).Pimages.Getall()
+        pimages = pimages.publishImages.publishImage
+        pimage = None
+        if pimages is None or len(pimages) == 0:
+            printer.out("No published images available")
+        else:
+            for piimage in pimages:
+                if str(piimage.dbId) == str(id):
+                    pimage = piimage
+        if pimage is None:
+            printer.out("published image not found", printer.ERROR)
+            return 2
+        return pimage
+
+    def get_deployment_from_args_for_deploy(self, args):
+        deployment = Deployment()
+        myinstance = Instance()
+
+        if args.deploy_name:
+            deployment.name = args.deploy_name
+        else:
+            printer.out("No name given for the deployment", printer.ERROR)
+            return ""
+        if args.vcpu:
+            myinstance.cores = str(args.vcpu)
+        else:
+            myinstance.cores = "1"
+        if args.memory:
+            myinstance.memory = str(args.memory)
+        else:
+            myinstance.memory = "1024"
+        deployment.instances = pyxb.BIND()
+        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+        deployment.instances.append(myinstance)
+
+        return deployment
