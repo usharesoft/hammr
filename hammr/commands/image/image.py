@@ -237,6 +237,10 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
+            if not self.is_targeted_cloud_amazon(pimage):
+                printer.out("Hammr only supports deployments for Amazon AWS.", printer.ERROR)
+                return 2
+
             deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
             if is_uri_based_on_appliance(pimage.imageUri):
@@ -725,3 +729,10 @@ class Image(Cmd, CoreGlobal):
         deployment.instances.append(myinstance)
 
         return deployment
+
+    def is_targeted_cloud_amazon(self, pimage):
+        if pimage.targetFormat:
+            target_platform = pimage.targetFormat.name
+            print(target_platform)
+            return target_platform == "Amazon AWS"
+        return False
