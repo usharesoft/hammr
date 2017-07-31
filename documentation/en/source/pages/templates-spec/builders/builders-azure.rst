@@ -59,8 +59,8 @@ To publish an image, the valid keys are:
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Azure: ``Microsoft Azure``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
 * ``storageAccount`` (mandatory): a string providing the storage account name to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services. It must exist in your Microsoft account.
-* ``container`` (mandatory): the container that will contains the blob file in Azure Cloud. If the name provides doesn't already exist it will be created.
-* ``blob`` (mandatory): the name of the vhd blob that will contains the machine image data. It must ends with ".vhd". If it already exists it will overwrite the existing one.
+* ``container`` (mandatory): the container that will contain the blob file in Azure Cloud. If the name provided does not already exist it will be created.
+* ``blob`` (mandatory): the name of the vhd blob that will contain the machine image data. It must end with ".vhd". If it already exists it will be overwritten with the new blob info.
 * ``displayName`` (mandatory): a string providing the name of the machine image to display in Azure cloud. If an image with this name already exists it will be overwritten.
 * ``resourceGroup`` (optional): an existing resource group available in your clound accound. By default the resource group of your storage account will be used.
 
@@ -75,9 +75,9 @@ The Azure Resource Manager cloud account has the following valid keys:
 
 * ``type`` (mandatory): a string providing the cloud account type. Default platform type for Microsoft Azure: ``Microsoft Azure``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
-* ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See azure documentation to retrieve yours: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id
+* ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See Microsoft Azure documentation to retrieve yours: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id
 * ``subscriptionId`` (mandatory): The subscription ID that will be used by UForge.
-* ``applicationId`` (mandatory): The application ID that will be used by UForge. See azure documentation to create one application: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key
+* ``applicationId`` (mandatory): The application ID that will be used by UForge. See Microsoft Azure documentation to create one application: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key
 * ``applicationKey`` (mandatory): The application authentication key associated to the application ID.
 
 .. note:: In the case where name or file is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
@@ -166,7 +166,7 @@ If you are using JSON, create a JSON file ``azure-app-account.json``:
     ]
   }
 
-The builder section can either reference by using ``file`` or ``name``.
+The builder section can either be referenced by using ``file`` or ``name``.
 
 Reference by file:
 
@@ -345,7 +345,7 @@ If you are using JSON, create a JSON file ``azure-account.json``:
     ]
   }
 
-The builder section can either reference by using ``file`` or ``name``.
+The builder section can either be referenced by using ``file`` or ``name``.
 
 Reference by file:
 
