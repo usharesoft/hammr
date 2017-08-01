@@ -733,6 +733,5 @@ class Image(Cmd, CoreGlobal):
     def is_targeted_cloud_amazon(self, pimage):
         if pimage.targetFormat:
             target_platform = pimage.targetFormat.name
-            print(target_platform)
             return target_platform == "Amazon AWS"
         return False
