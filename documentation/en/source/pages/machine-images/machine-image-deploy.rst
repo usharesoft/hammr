@@ -9,7 +9,7 @@ You can deploy an instance of a published machine image by running ``image deplo
 
 .. code-block:: shell
 
-	$ hammr image deploy --id <the id> --name <your-deployment-name>
+	$ hammr image deploy --publish-id <the publish id> --name <your-deployment-name>
         Deployment in progress
         |##################################################################################################################|
         OK: Deployment is successful
