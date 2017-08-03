@@ -202,7 +202,7 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
                                   description="Deploy an instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='pid', required=True,
+        mandatory.add_argument('-p', '--publish-id', dest='pid', required=True,
                                help="the ID of the published image to deploy")
         mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
                                help="the name of the image to deploy")

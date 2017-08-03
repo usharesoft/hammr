@@ -34,7 +34,7 @@ Deletes a machine image or publish information. The options are:
 
 Deploy an instance of a published image on the targeted cloud. The options are:
 
-        * ``--id`` (mandatory): the ID of the published image to deploy
+        * ``--publish-id`` (mandatory): the ID of the published image to deploy
         * ``--name`` (mandatory): the name of the image to deploy
 
 

@@ -130,7 +130,7 @@ class TestDeploy(TestCase):
 
 
     def prepare_image_deploy_command(self, id):
-         args = "--id %s --name DeploymentName" % (id)
+         args = "--publish-id %s --name DeploymentName" % (id)
          return args
 
     def prepare_image(self):
