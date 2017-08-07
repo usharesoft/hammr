@@ -202,16 +202,10 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
                                   description="Deploy an instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('-p', '--publish-id', dest='pid', required=True,
+        mandatory.add_argument('--file', dest='file', required=True,
+                               help="yaml/json file providing the instance parameters required for deployment on targeted cloud")
+        mandatory.add_argument('--publish-id', dest='pid', required=True,
                                help="the ID of the published image to deploy")
-        mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
-                               help="the name of the image to deploy")
-
-        optional = doParser.add_argument_group("optional arguments")
-        optional.add_argument('--vcpu', dest='vcpu', required=False,
-                              help="minimal number of cores for the image to deploy. Number is 1 by default.")
-        optional.add_argument('-m', '--memory', dest='memory', required=False,
-                              help="minimal RAM for the image to deploy. RAM is 1024M by default.")
         return doParser
 
     def do_deploy(self, args):
@@ -228,6 +222,14 @@ class Image(Cmd, CoreGlobal):
             if pimage == 2:
                 return 2
 
+            target_platform = ""
+            if pimage.targetFormat:
+                target_platform = pimage.targetFormat.name
+
+            if not self.is_targeted_cloud_amazon(pimage):
+                printer.out("Hammr only supports deployments for Amazon AWS.", printer.ERROR)
+                return 2
+
             image_id = generics_utils.extract_id(pimage.imageUri)
             if image_id is None or image_id == "":
                 printer.out("Image not found", printer.ERROR)
@@ -237,11 +239,15 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
-            if not self.is_targeted_cloud_amazon(pimage):
-                printer.out("Hammr only supports deployments for Amazon AWS.", printer.ERROR)
+            file = generics_utils.get_file(doArgs.file)
+            if file is None:
                 return 2
 
-            deployment = self.get_deployment_from_args_for_deploy(doArgs)
+            deployment = validate_deployment(file, target_platform)
+            if deployment is None:
+                return
+
+            #deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
             if is_uri_based_on_appliance(pimage.imageUri):
                 source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()

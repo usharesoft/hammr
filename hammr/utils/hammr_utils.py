@@ -27,6 +27,7 @@ import ussclicore.utils.download_utils
 from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
 from hammr.utils.bundle_utils import *
+from hammr.utils.deployment_utils import *
 from hammr.utils import constants
 
 
@@ -173,6 +174,30 @@ def validate_bundle(file):
         printer.out("Syntax of bundle file ["+file+"]: FAILED")
     except IOError as e:
         printer.out("unknown error bundle json file", printer.ERROR)
+
+def validate_deployment(file, target_platform):
+    try:
+        isJson = check_extension_is_json(file)
+        if isJson:
+            print "you provided a json file, checking..."
+            data = generics_utils.check_json_syntax(file)
+        else:
+            print "you provided a yaml file, checking..."
+            data = generics_utils.check_yaml_syntax(file)
+
+        if data is None:
+            return
+        data = check_deployment(data, target_platform)
+
+        if data is None:
+            return
+        return data
+
+    except ValueError as e:
+        printer.out("JSON parsing error: "+str(e), printer.ERROR)
+        printer.out("Syntax of deployment file ["+file+"]: FAILED")
+    except IOError as e:
+        printer.out("unknown error deployment json file", printer.ERROR)
     
 def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
     file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")
