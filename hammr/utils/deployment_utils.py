@@ -20,8 +20,6 @@ from ussclicore.utils import generics_utils, printer
 from hammr.utils import constants
 from uforge.objects.uforge import *
 
-
-#TODO Return values
 def check_deployment(file, target_platform):
     if target_platform == "Amazon AWS":
         return build_deployment_amazon(file)

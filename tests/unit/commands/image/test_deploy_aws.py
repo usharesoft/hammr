@@ -24,7 +24,7 @@ from uforge.objects import uforge
 import datetime
 from hammr.commands.image import image
 
-class TestDeploy(TestCase):
+class TestDeployAWS(TestCase):
 
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     def test_do_deploy_return_2_when_imageId_is_None(self, mock_api_deploy):
@@ -128,9 +128,8 @@ class TestDeploy(TestCase):
 
         return deployment
 
-
     def prepare_image_deploy_command(self, id):
-         args = "--publish-id %s --name DeploymentName" % (id)
+         args = "--file deploy_aws.yml --publish-id %s" % (id)
          return args
 
     def prepare_image(self):
