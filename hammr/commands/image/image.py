@@ -226,8 +226,8 @@ class Image(Cmd, CoreGlobal):
             if pimage.targetFormat:
                 target_platform = pimage.targetFormat.name
 
-            if not self.is_targeted_cloud_amazon(pimage):
-                printer.out("Hammr only supports deployments for Amazon AWS.", printer.ERROR)
+            if not self.is_targeted_cloud_compatible(pimage):
+                printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
                 return 2
 
             image_id = generics_utils.extract_id(pimage.imageUri)
@@ -246,8 +246,6 @@ class Image(Cmd, CoreGlobal):
             deployment = validate_deployment(file, target_platform)
             if deployment is None:
                 return
-
-            #deployment = self.get_deployment_from_args_for_deploy(doArgs)
 
             if is_uri_based_on_appliance(pimage.imageUri):
                 source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
@@ -713,31 +711,9 @@ class Image(Cmd, CoreGlobal):
             return 2
         return pimage
 
-    def get_deployment_from_args_for_deploy(self, args):
-        deployment = Deployment()
-        myinstance = Instance()
-
-        if args.deploy_name:
-            deployment.name = args.deploy_name
-        else:
-            printer.out("No name given for the deployment", printer.ERROR)
-            return ""
-        if args.vcpu:
-            myinstance.cores = str(args.vcpu)
-        else:
-            myinstance.cores = "1"
-        if args.memory:
-            myinstance.memory = str(args.memory)
-        else:
-            myinstance.memory = "1024"
-        deployment.instances = pyxb.BIND()
-        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
-
-        return deployment
-
-    def is_targeted_cloud_amazon(self, pimage):
+    def is_targeted_cloud_compatible(self, pimage):
         if pimage.targetFormat:
             target_platform = pimage.targetFormat.name
-            return target_platform == "Amazon AWS"
+            if target_platform == "Amazon AWS" or "OpenStack" in target_platform:
+                return True
         return False

@@ -23,11 +23,13 @@ from uforge.objects.uforge import *
 def check_deployment(file, target_platform):
     if target_platform == "Amazon AWS":
         return build_deployment_amazon(file)
+    if "OpenStack" in target_platform:
+        return build_deployment_openstack(file)
     return None
 
 def build_deployment_amazon(file):
     deployment = Deployment()
-    myinstance = Instance()
+    myinstance = InstanceAmazon()
 
     if not "name" in file:
         printer.out("There is no attribute [name] for a [file]", printer.ERROR)
@@ -43,6 +45,36 @@ def build_deployment_amazon(file):
         myinstance.memory = "1024"
     else:
         myinstance.memory = file["memory"]
+
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+
+    return deployment
+
+def build_deployment_openstack(file):
+    deployment = Deployment()
+    myinstance = InstanceOpenStack()
+
+    if not "name" in file:
+        printer.out("There is no attribute [name] for a [file]", printer.ERROR)
+        return None
+    deployment.name = file["name"]
+
+    if not "region" in file:
+        printer.out("There is no attribute [region] for a [file]", printer.ERROR)
+        return None
+    myinstance.region = file["region"]
+
+    if not "network" in file:
+        printer.out("There is no attribute [network] for a [file]", printer.ERROR)
+        return None
+    myinstance.networkId = file["network"]
+
+    if not "flavor" in file:
+        printer.out("There is no attribute [flavor] for a [file]", printer.ERROR)
+        return None
+    myinstance.flavorId = file["flavor"]
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
