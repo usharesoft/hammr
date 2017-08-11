@@ -26,8 +26,9 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     SimpleProgress, Timer, UnknownLength
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
-from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from uforge.objects.uforge import *
+import pyxb.binding.content as pyxb_content
 
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
@@ -243,7 +244,12 @@ class Image(Cmd, CoreGlobal):
             if file is None:
                 return 2
 
-            deployment = validate_deployment(file, target_platform)
+            if "Amazon" in target_platform:
+                deployment = self.build_deployment_amazon(file)
+
+            if "OpenStack" in target_platform:
+                deployment = self.build_deployment_openstack(file, pimage, doArgs.pid)
+
             if deployment is None:
                 return
 
@@ -430,7 +436,7 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " download", add_help=True,
                                   description="Downloads a machine image to the local filesystem")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to delete")
+        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to download")
         mandatory.add_argument('--file', dest='file', required=True,
                                help="the pathname where to store the machine image")
         return doParser
@@ -717,3 +723,155 @@ class Image(Cmd, CoreGlobal):
             if target_platform == "Amazon AWS" or "OpenStack" in target_platform:
                 return True
         return False
+
+    def retrieve_credaccount(self, pimageId, pimage):
+        # Increases the limit for non determinist content: the xml used for openstack retrieval has a lot of
+        # non determinist content that raises an exception if limit is low.
+        # See https://stackoverflow.com/questions/1952931/how-to-rewrite-this-nondeterministic-xml-schema-to-deterministic
+        pyxb_content.AutomatonConfiguration.PermittedNondeterminism = 10000
+        if is_uri_based_on_appliance(pimage.uri):
+            return self.retrieve_credaccount_from_app(pimageId, pimage)
+        else:
+            return self.retrieve_credaccount_from_scan(pimageId, pimage)
+
+    def retrieve_credaccount_from_app(self, pimageId, pimage):
+        image_id = generics_utils.extract_id(pimage.imageUri)
+        source_id = generics_utils.extract_id(pimage.applianceUri)
+        account_id = pimage.credAccount.dbId
+        return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
+            Resources.Getaccountresources()
+
+    #TODO
+    def retrieve_credaccount_from_scan(self, pimageId, pimage):
+        image_id = generics_utils.extract_id(pimage.imageUri)
+        source_id = generics_utils.extract_id(pimage.applianceUri)
+        account_id = pimage.credAccount.dbId
+        return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
+            Resources.Getaccountresources()
+
+    def validate_deployment(self, file):
+        try:
+            isJson = check_extension_is_json(file)
+            if isJson:
+                print "you provided a json file, checking..."
+                data = generics_utils.check_json_syntax(file)
+            else:
+                print "you provided a yaml file, checking..."
+                data = generics_utils.check_yaml_syntax(file)
+
+            if data is None:
+                return
+            # data = check_deployment(data)
+            #
+            # if data is None:
+            #     return
+            return data
+
+        except ValueError as e:
+            printer.out("JSON parsing error: " + str(e), printer.ERROR)
+            printer.out("Syntax of deployment file [" + file + "]: FAILED")
+        except IOError as e:
+            printer.out("unknown error deployment json file", printer.ERROR)
+
+    #
+    # def check_deployment(file):
+    #     if target_platform == "Amazon AWS":
+    #         return build_deployment_amazon(file)
+    #     if "OpenStack" in target_platform:
+    #         return build_deployment_openstack(file, pimage, login)
+    #     return None
+
+    def build_deployment_amazon(self, file):
+        file = self.validate_deployment(file)
+        deployment = Deployment()
+        myinstance = InstanceAmazon()
+
+        if not "name" in file:
+            printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+            return None
+        deployment.name = file["name"]
+
+        if not "cores" in file:
+            myinstance.cores = "1"
+        else:
+            myinstance.cores = file["cores"]
+        if not "memory" in file:
+            myinstance.memory = "1024"
+        else:
+            myinstance.memory = file["memory"]
+
+        deployment.instances = pyxb.BIND()
+        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+        deployment.instances.append(myinstance)
+
+        return deployment
+
+    # TODO handle scan case
+    def build_deployment_openstack(self, file, pimage, pimageId):
+        file = self.validate_deployment(file)
+        deployment = Deployment()
+        myinstance = InstanceOpenStack()
+
+        if not "name" in file:
+            printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+            return None
+        deployment.name = file["name"]
+
+        if not "region" in file:
+            printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
+            return None
+        myinstance.region = file["region"]
+
+        if not "network" in file:
+            printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
+            return None
+        network_name = file["network"]
+
+        if not "flavor" in file:
+            printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
+            return None
+        flavor_name = file["flavor"]
+
+        myinstance.networkId, myinstance.flavorId = self.retrieve_openstack_resources(myinstance.region, network_name,
+                                                                                      flavor_name, pimage, pimageId)
+
+        deployment.instances = pyxb.BIND()
+        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+        deployment.instances.append(myinstance)
+
+        return deployment
+
+    def retrieve_openstack_resources(self, region_name, network_name, flavor_name, pimage, pimageId):
+        flavor_id = None
+        network_id = None
+
+        cred_account_ressources = self.retrieve_credaccount(pimageId, pimage)
+
+        tenants = cred_account_ressources.cloudResources.tenants.tenant
+        tenant_name = pimage.tenantName
+        for tenant in tenants:
+            if tenant.name == tenant_name:
+                break;
+
+        region_retrieved = None
+        # TODO handle when region not found
+        regionsEntities = tenant.regionsEntities
+        for regionEntities in regionsEntities:
+            regions = regionEntities.regionEntities
+            for region in regions:
+                if region.regionName == region_name:
+                    break;
+
+        flavors = region.flavors.flavor
+        for flavor in flavors:
+            if flavor.name == flavor_name:
+                flavor_id = flavor.id
+                break;
+
+        networks = region.networks.network
+        for network in networks:
+            if network.name == network_name:
+                network_id = network.id
+                break;
+
+        return network_id[0].encode('ascii', 'ignore'), flavor_id.encode('ascii', 'ignore')
