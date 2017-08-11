@@ -754,40 +754,8 @@ class Image(Cmd, CoreGlobal):
         return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
             Resources.Getaccountresources()
 
-    def validate_deployment(self, file):
-        try:
-            isJson = check_extension_is_json(file)
-            if isJson:
-                print "you provided a json file, checking..."
-                data = generics_utils.check_json_syntax(file)
-            else:
-                print "you provided a yaml file, checking..."
-                data = generics_utils.check_yaml_syntax(file)
-
-            if data is None:
-                return
-            # data = check_deployment(data)
-            #
-            # if data is None:
-            #     return
-            return data
-
-        except ValueError as e:
-            printer.out("JSON parsing error: " + str(e), printer.ERROR)
-            printer.out("Syntax of deployment file [" + file + "]: FAILED")
-        except IOError as e:
-            printer.out("unknown error deployment json file", printer.ERROR)
-
-    #
-    # def check_deployment(file):
-    #     if target_platform == "Amazon AWS":
-    #         return build_deployment_amazon(file)
-    #     if "OpenStack" in target_platform:
-    #         return build_deployment_openstack(file, pimage, login)
-    #     return None
-
     def build_deployment_amazon(self, file):
-        file = self.validate_deployment(file)
+        file = validate_deployment(file)
         deployment = Deployment()
         myinstance = InstanceAmazon()
 
@@ -813,7 +781,7 @@ class Image(Cmd, CoreGlobal):
 
     # TODO handle scan case
     def build_deployment_openstack(self, file, pimage, pimageId):
-        file = self.validate_deployment(file)
+        file = validate_deployment(file)
         deployment = Deployment()
         myinstance = InstanceOpenStack()
 

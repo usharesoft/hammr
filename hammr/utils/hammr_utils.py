@@ -172,7 +172,28 @@ def validate_bundle(file):
         printer.out("Syntax of bundle file ["+file+"]: FAILED")
     except IOError as e:
         printer.out("unknown error bundle json file", printer.ERROR)
-    
+
+#TODO: key word provisioner in the builder file for deployment
+def validate_deployment(file):
+    try:
+        isJson = check_extension_is_json(file)
+        if isJson:
+            print "you provided a json file, checking..."
+            data = generics_utils.check_json_syntax(file)
+        else:
+            print "you provided a yaml file, checking..."
+            data = generics_utils.check_yaml_syntax(file)
+
+        if data is None:
+            return
+        return data
+
+    except ValueError as e:
+        printer.out("JSON parsing error: " + str(e), printer.ERROR)
+        printer.out("Syntax of deployment file [" + file + "]: FAILED")
+    except IOError as e:
+        printer.out("unknown error deployment json file", printer.ERROR)
+
 def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
     file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")
 
