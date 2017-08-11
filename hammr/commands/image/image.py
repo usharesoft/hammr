@@ -30,6 +30,11 @@ from hammr.utils.hammr_utils import *
 from uforge.objects.uforge import *
 import pyxb.binding.content as pyxb_content
 
+#This import and configuration avoid pyxb warnings about xmls
+import logging
+logging.basicConfig()
+logging.getLogger("pyxb").setLevel(logging.ERROR)
+
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
 
