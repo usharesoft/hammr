@@ -21,6 +21,7 @@ import traceback
 from os.path import expanduser
 import os
 import urllib
+import pyxb
 
 from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
@@ -193,6 +194,98 @@ def validate_deployment(file):
         printer.out("Syntax of deployment file [" + file + "]: FAILED")
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
+
+# TODO handle scan case
+def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
+    file = validate_deployment(file)
+    deployment = Deployment()
+    myinstance = InstanceOpenStack()
+
+    if not "name" in file:
+        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+        return None
+    deployment.name = file["name"]
+
+    if not "region" in file:
+        printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
+        return None
+    myinstance.region = file["region"]
+
+    if not "network" in file:
+        printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
+        return None
+    network_name = file["network"]
+
+    if not "flavor" in file:
+        printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
+        return None
+    flavor_name = file["flavor"]
+
+    myinstance.networkId, myinstance.flavorId = retrieve_openstack_resources(myinstance.region, network_name,
+                                                                flavor_name, pimage, pimageId, cred_account_ressources)
+
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+
+    return deployment
+
+def retrieve_openstack_resources(region_name, network_name, flavor_name, pimage, pimageId, cred_account_ressources):
+    flavor_id = None
+    network_id = None
+    tenants = cred_account_ressources.cloudResources.tenants.tenant
+    tenant_name = pimage.tenantName
+    for tenant in tenants:
+        if tenant.name == tenant_name:
+            break;
+
+    region_retrieved = None
+    # TODO handle when region not found
+    regionsEntities = tenant.regionsEntities
+    for regionEntities in regionsEntities:
+        regions = regionEntities.regionEntities
+        for region in regions:
+            if region.regionName == region_name:
+                break;
+
+    flavors = region.flavors.flavor
+    for flavor in flavors:
+        if flavor.name == flavor_name:
+            flavor_id = flavor.id
+            break;
+
+    networks = region.networks.network
+    for network in networks:
+        if network.name == network_name:
+            network_id = network.id
+            break;
+
+    return network_id[0].encode('ascii', 'ignore'), flavor_id.encode('ascii', 'ignore')
+
+def build_deployment_amazon(file):
+    file = validate_deployment(file)
+    deployment = Deployment()
+    myinstance = InstanceAmazon()
+
+    if not "name" in file:
+        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+        return None
+    deployment.name = file["name"]
+
+    if not "cores" in file:
+        myinstance.cores = "1"
+    else:
+        myinstance.cores = file["cores"]
+    if not "memory" in file:
+        myinstance.memory = "1024"
+    else:
+        myinstance.memory = file["memory"]
+
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+
+    return deployment
 
 def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
     file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")

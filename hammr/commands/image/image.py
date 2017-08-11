@@ -250,10 +250,10 @@ class Image(Cmd, CoreGlobal):
                 return 2
 
             if "Amazon" in target_platform:
-                deployment = self.build_deployment_amazon(file)
+                deployment = build_deployment_amazon(file)
 
             if "OpenStack" in target_platform:
-                deployment = self.build_deployment_openstack(file, pimage, doArgs.pid)
+                deployment = build_deployment_openstack(file, pimage, doArgs.pid, self.retrieve_credaccount(doArgs.pid, pimage))
 
             if deployment is None:
                 return
@@ -753,98 +753,3 @@ class Image(Cmd, CoreGlobal):
         account_id = pimage.credAccount.dbId
         return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
             Resources.Getaccountresources()
-
-    def build_deployment_amazon(self, file):
-        file = validate_deployment(file)
-        deployment = Deployment()
-        myinstance = InstanceAmazon()
-
-        if not "name" in file:
-            printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-            return None
-        deployment.name = file["name"]
-
-        if not "cores" in file:
-            myinstance.cores = "1"
-        else:
-            myinstance.cores = file["cores"]
-        if not "memory" in file:
-            myinstance.memory = "1024"
-        else:
-            myinstance.memory = file["memory"]
-
-        deployment.instances = pyxb.BIND()
-        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
-
-        return deployment
-
-    # TODO handle scan case
-    def build_deployment_openstack(self, file, pimage, pimageId):
-        file = validate_deployment(file)
-        deployment = Deployment()
-        myinstance = InstanceOpenStack()
-
-        if not "name" in file:
-            printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-            return None
-        deployment.name = file["name"]
-
-        if not "region" in file:
-            printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
-            return None
-        myinstance.region = file["region"]
-
-        if not "network" in file:
-            printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
-            return None
-        network_name = file["network"]
-
-        if not "flavor" in file:
-            printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
-            return None
-        flavor_name = file["flavor"]
-
-        myinstance.networkId, myinstance.flavorId = self.retrieve_openstack_resources(myinstance.region, network_name,
-                                                                                      flavor_name, pimage, pimageId)
-
-        deployment.instances = pyxb.BIND()
-        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
-
-        return deployment
-
-    def retrieve_openstack_resources(self, region_name, network_name, flavor_name, pimage, pimageId):
-        flavor_id = None
-        network_id = None
-
-        cred_account_ressources = self.retrieve_credaccount(pimageId, pimage)
-
-        tenants = cred_account_ressources.cloudResources.tenants.tenant
-        tenant_name = pimage.tenantName
-        for tenant in tenants:
-            if tenant.name == tenant_name:
-                break;
-
-        region_retrieved = None
-        # TODO handle when region not found
-        regionsEntities = tenant.regionsEntities
-        for regionEntities in regionsEntities:
-            regions = regionEntities.regionEntities
-            for region in regions:
-                if region.regionName == region_name:
-                    break;
-
-        flavors = region.flavors.flavor
-        for flavor in flavors:
-            if flavor.name == flavor_name:
-                flavor_id = flavor.id
-                break;
-
-        networks = region.networks.network
-        for network in networks:
-            if network.name == network_name:
-                network_id = network.id
-                break;
-
-        return network_id[0].encode('ascii', 'ignore'), flavor_id.encode('ascii', 'ignore')
