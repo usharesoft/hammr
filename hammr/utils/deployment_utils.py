@@ -56,7 +56,6 @@ def is_targeted_cloud_compatible(pimage):
             return True
     return False
 
-#TODO: key word provisioner in the builder file for deployment
 def validate_deployment(file):
     try:
         isJson = check_extension_is_json(file)
@@ -67,7 +66,9 @@ def validate_deployment(file):
 
         if data is None:
             return
-        return data
+        if "provisioner" not in data:
+            printer.out("There is no provisioner in the file", printer.ERROR)
+        return data["provisioner"]
 
     except ValueError as e:
         printer.out("JSON parsing error: " + str(e), printer.ERROR)
@@ -75,7 +76,6 @@ def validate_deployment(file):
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
 
-# TODO: key word provisioner in the builder file for deployment
 def build_deployment_amazon(file):
     file = validate_deployment(file)
     deployment = Deployment()
@@ -97,7 +97,6 @@ def build_deployment_amazon(file):
     deployment.instances.append(myinstance)
     return deployment
 
-#TODO: key word provisioner in the builder file for deployment
 def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
     file = validate_deployment(file)
     deployment = Deployment()
