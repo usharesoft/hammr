@@ -27,6 +27,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
 from hammr.utils.hammr_utils import *
+from hammr.utils.deployment_utils import *
 from uforge.objects.uforge import *
 import pyxb.binding.content as pyxb_content
 
@@ -708,21 +709,13 @@ class Image(Cmd, CoreGlobal):
             return
 
         deployed_instance = self.call_deploy(pimage, deployment, image_id)
+        if deployed_instance == 2:
+            return 2
         deployed_instance_id = deployed_instance.applicationId
 
         print("Deployment in progress")
 
-        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-        bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
-        bar.start()
-        i = 1
-        while not (status.message == "running" or status.message == "on-fire"):
-            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-            time.sleep(1)
-            bar.update(i)
-            i += 2
-        bar.finish()
-
+        status = self.show_deploy_progress_aws(deployed_instance_id)
         self.print_deploy_info(status, deployed_instance_id)
         return 0
 
@@ -730,23 +723,18 @@ class Image(Cmd, CoreGlobal):
         image_id = generics_utils.extract_id(pimage.imageUri)
         pid = pimage.dbId
         bar_status = OpStatus()
-        bar_status.message = "Retrieving information from OpenStack"
-        bar_status.percentage = 0
-        statusWidget = progressbar_widget.Status()
-        statusWidget.status = bar_status
-        widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
-        progress = ProgressBar(widgets=widgets, maxval=100).start()
-        progress.start()
-
-        deployment = build_deployment_openstack(file, pimage, pid,
-                                                self.retrieve_credaccount(pid, pimage))
+        progress = create_progress_bar_openstack(bar_status)
+        deployment = build_deployment_openstack(file, pimage, pid, self.retrieve_credaccount(pid, pimage))
         if deployment is None:
             return
+
         bar_status.percentage = 50
         bar_status.message = "Deploying instance"
         progress.update(bar_status.percentage)
 
         deployed_instance = self.call_deploy(pimage, deployment, image_id)
+        if deployed_instance == 2:
+            return 2
         deployed_instance_id = deployed_instance.applicationId
 
         status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
@@ -801,3 +789,16 @@ class Image(Cmd, CoreGlobal):
             instance = instances[-1]
             printer.out("Region: " + instance.location.provider)
             printer.out("IP address: " + instance.hostname)
+
+    def show_deploy_progress_aws(self, deployed_instance_id):
+        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+        bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
+        bar.start()
+        i = 1
+        while not (status.message == "running" or status.message == "on-fire"):
+            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+            time.sleep(1)
+            bar.update(i)
+            i += 2
+        bar.finish()
+        return status
