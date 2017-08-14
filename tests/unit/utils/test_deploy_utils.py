@@ -29,7 +29,7 @@ class TestDeployUtils(TestCase):
 
     def test_build_deployment_openstack_returns_None_when_file_incomplete(self):
         # Given
-        file = "./deploy_openstack.yml"
+        file = "tests/integration/data/deploy_openstack.yml"
 
         # When
         return_value = build_deployment_openstack(file, None, None, None)
@@ -39,7 +39,7 @@ class TestDeployUtils(TestCase):
 
     def testbuild_deployment_amazon_returns_None_when_file_incomplete(self):
         # Given
-        file = "./deploy_openstack.yml"
+        file = "tests/integration/data/deploy_openstack.yml"
 
         # When
         return_value = build_deployment_amazon(file)
