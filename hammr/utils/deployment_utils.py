@@ -13,25 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
-
 import time
-import yaml
-import sys
-import re
-import traceback
-from os.path import expanduser
-import os
-import urllib
 import pyxb
-
 from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
 from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
-from hammr.utils.bundle_utils import *
 from hammr_utils import *
-from hammr.utils import constants
 from progressbar import Bar, ProgressBar, ReverseBar, UnknownLength, BouncingBar
 from ussclicore.utils import progressbar_widget
 import pyxb.binding.content as pyxb_content
@@ -53,13 +41,13 @@ def retrieve_credaccount_from_app(image_object, pimageId, pimage):
     return image_object.api.Users(image_object.login).Appliances(source_id).Images(image_id).Pimages(pimageId).\
         Accounts(account_id).Resources.Getaccountresources()
 
-#TODO
 def retrieve_credaccount_from_scan(image_object, pimageId, pimage):
     image_id = generics_utils.extract_id(pimage.imageUri)
-    source_id = generics_utils.extract_id(pimage.applianceUri)
+    scannedinstance_id = extract_scannedinstance_id(pimage.imageUri)
+    scan_id = extract_scan_id(pimage.imageUri)
     account_id = pimage.credAccount.dbId
-    return image_object.api.Users(image_object.login).Appliances(source_id).Images(image_id).Pimages(pimageId).\
-        Accounts(account_id).Resources.Getaccountresources()
+    return image_object.api.Users(image_object.login).Scannedinstances(scannedinstance_id).Scans(scan_id).\
+        Images(image_id).Pimages(pimageId).Accounts(account_id).Resources.Getaccountresources()
 
 def is_targeted_cloud_compatible(pimage):
     if pimage.targetFormat:
@@ -87,7 +75,29 @@ def validate_deployment(file):
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
 
-# TODO handle scan case
+# TODO: key word provisioner in the builder file for deployment
+def build_deployment_amazon(file):
+    file = validate_deployment(file)
+    deployment = Deployment()
+    myinstance = InstanceAmazon()
+    if not "name" in file:
+        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+        return None
+    deployment.name = file["name"]
+    if not "cores" in file:
+        myinstance.cores = "1"
+    else:
+        myinstance.cores = file["cores"]
+    if not "memory" in file:
+        myinstance.memory = "1024"
+    else:
+        myinstance.memory = file["memory"]
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+    return deployment
+
+#TODO: key word provisioner in the builder file for deployment
 def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
     file = validate_deployment(file)
     deployment = Deployment()
@@ -153,31 +163,6 @@ def retrieve_openstack_resources(region_name, network_name, flavor_name, pimage,
             break;
 
     return network_id[0].encode('ascii', 'ignore'), flavor_id.encode('ascii', 'ignore')
-
-def build_deployment_amazon(file):
-    file = validate_deployment(file)
-    deployment = Deployment()
-    myinstance = InstanceAmazon()
-
-    if not "name" in file:
-        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-        return None
-    deployment.name = file["name"]
-
-    if not "cores" in file:
-        myinstance.cores = "1"
-    else:
-        myinstance.cores = file["cores"]
-    if not "memory" in file:
-        myinstance.memory = "1024"
-    else:
-        myinstance.memory = file["memory"]
-
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myinstance)
-
-    return deployment
 
 def create_progress_bar_openstack(bar_status):
     bar_status.message = "Retrieving information from OpenStack"
