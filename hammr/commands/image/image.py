@@ -29,7 +29,6 @@ from hammr.utils import *
 from hammr.utils.hammr_utils import *
 from hammr.utils.deployment_utils import *
 from uforge.objects.uforge import *
-import pyxb.binding.content as pyxb_content
 
 #This import and configuration avoid pyxb warnings about xmls
 import logging
@@ -233,7 +232,7 @@ class Image(Cmd, CoreGlobal):
             if pimage.targetFormat:
                 target_platform = pimage.targetFormat.name
 
-            if not self.is_targeted_cloud_compatible(pimage):
+            if not is_targeted_cloud_compatible(pimage):
                 printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
                 return 2
 
@@ -669,54 +668,21 @@ class Image(Cmd, CoreGlobal):
             return 2
         return pimage
 
-    def is_targeted_cloud_compatible(self, pimage):
-        if pimage.targetFormat:
-            target_platform = pimage.targetFormat.name
-            if target_platform == "Amazon AWS" or "OpenStack" in target_platform:
-                return True
-        return False
-
-    def retrieve_credaccount(self, pimageId, pimage):
-        # Increases the limit for non determinist content: the xml used for openstack retrieval has a lot of
-        # non determinist content that raises an exception if limit is low.
-        # See https://stackoverflow.com/questions/1952931/how-to-rewrite-this-nondeterministic-xml-schema-to-deterministic
-        pyxb_content.AutomatonConfiguration.PermittedNondeterminism = 10000
-        if is_uri_based_on_appliance(pimage.uri):
-            return self.retrieve_credaccount_from_app(pimageId, pimage)
-        else:
-            return self.retrieve_credaccount_from_scan(pimageId, pimage)
-
-    def retrieve_credaccount_from_app(self, pimageId, pimage):
-        image_id = generics_utils.extract_id(pimage.imageUri)
-        source_id = generics_utils.extract_id(pimage.applianceUri)
-        account_id = pimage.credAccount.dbId
-        return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
-            Resources.Getaccountresources()
-
-    #TODO
-    def retrieve_credaccount_from_scan(self, pimageId, pimage):
-        image_id = generics_utils.extract_id(pimage.imageUri)
-        source_id = generics_utils.extract_id(pimage.applianceUri)
-        account_id = pimage.credAccount.dbId
-        return self.api.Users(self.login).Appliances(source_id).Images(image_id).Pimages(pimageId).Accounts(account_id).\
-            Resources.Getaccountresources()
-
-
     def deploy_aws(self, file, pimage):
         image_id = generics_utils.extract_id(pimage.imageUri)
         deployment = build_deployment_amazon(file)
         if deployment is None:
             return
 
-        deployed_instance = self.call_deploy(pimage, deployment, image_id)
+        deployed_instance = call_deploy(self, pimage, deployment, image_id)
         if deployed_instance == 2:
             return 2
         deployed_instance_id = deployed_instance.applicationId
 
         print("Deployment in progress")
 
-        status = self.show_deploy_progress_aws(deployed_instance_id)
-        self.print_deploy_info(status, deployed_instance_id)
+        status = show_deploy_progress_aws(self, deployed_instance_id)
+        print_deploy_info(self, status, deployed_instance_id)
         return 0
 
     def deploy_openstack(self, file, pimage):
@@ -724,7 +690,7 @@ class Image(Cmd, CoreGlobal):
         pid = pimage.dbId
         bar_status = OpStatus()
         progress = create_progress_bar_openstack(bar_status)
-        deployment = build_deployment_openstack(file, pimage, pid, self.retrieve_credaccount(pid, pimage))
+        deployment = build_deployment_openstack(file, pimage, pid, retrieve_credaccount(self, pid, pimage))
         if deployment is None:
             return
 
@@ -732,7 +698,7 @@ class Image(Cmd, CoreGlobal):
         bar_status.message = "Deploying instance"
         progress.update(bar_status.percentage)
 
-        deployed_instance = self.call_deploy(pimage, deployment, image_id)
+        deployed_instance = call_deploy(self, pimage, deployment, image_id)
         if deployed_instance == 2:
             return 2
         deployed_instance_id = deployed_instance.applicationId
@@ -747,58 +713,5 @@ class Image(Cmd, CoreGlobal):
         progress.update(bar_status.percentage)
         progress.finish()
 
-        self.print_deploy_info(status, deployed_instance_id)
+        print_deploy_info(self, status, deployed_instance_id)
         return 0
-
-    def call_deploy(self, pimage, deployment, image_id):
-        if is_uri_based_on_appliance(pimage.imageUri):
-            source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
-            if source is None or not hasattr(source, 'dbId'):
-                printer.out("No template found for this image", printer.ERROR)
-                return 2
-            deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
-                pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-
-        elif is_uri_based_on_scan(pimage.imageUri):
-            ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
-            ScanId = extract_scan_id(pimage.imageUri)
-            source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
-            if source is None or not hasattr(source, 'dbId'):
-                printer.out("No scan found for this image", printer.ERROR)
-                return 2
-            deployed_instance = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(
-                ScanId).Images(
-                image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-        else:
-            printer.out("No source found for this image", printer.ERROR)
-            return 2
-
-        return deployed_instance
-
-    def print_deploy_info(self, status, deployed_instance_id):
-        if status.message == "on-fire":
-            printer.out("Deployment failed", printer.ERROR)
-            if status.detailedError:
-                printer.out(status.detailedErrorMsg, printer.ERROR)
-            return 1
-        else:
-            printer.out("Deployment is successful", printer.OK)
-            printer.out("Deployment id: [" + deployed_instance_id + "]")
-            deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
-            instances = deployment.instances.instance
-            instance = instances[-1]
-            printer.out("Region: " + instance.location.provider)
-            printer.out("IP address: " + instance.hostname)
-
-    def show_deploy_progress_aws(self, deployed_instance_id):
-        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-        bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
-        bar.start()
-        i = 1
-        while not (status.message == "running" or status.message == "on-fire"):
-            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-            time.sleep(1)
-            bar.update(i)
-            i += 2
-        bar.finish()
-        return status
