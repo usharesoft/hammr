@@ -214,6 +214,7 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         instance = instances[-1]
         printer.out("Region: " + instance.location.provider)
         printer.out("IP address: " + instance.hostname)
+        return 0
 
 def show_deploy_progress_aws(image_object, deployed_instance_id):
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()

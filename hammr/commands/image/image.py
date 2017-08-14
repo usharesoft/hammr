@@ -682,8 +682,7 @@ class Image(Cmd, CoreGlobal):
         print("Deployment in progress")
 
         status = show_deploy_progress_aws(self, deployed_instance_id)
-        print_deploy_info(self, status, deployed_instance_id)
-        return 0
+        return print_deploy_info(self, status, deployed_instance_id)
 
     def deploy_openstack(self, file, pimage):
         image_id = generics_utils.extract_id(pimage.imageUri)
@@ -713,5 +712,4 @@ class Image(Cmd, CoreGlobal):
         progress.update(bar_status.percentage)
         progress.finish()
 
-        print_deploy_info(self, status, deployed_instance_id)
-        return 0
+        return print_deploy_info(self, status, deployed_instance_id)
