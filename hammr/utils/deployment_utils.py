@@ -141,13 +141,17 @@ def retrieve_openstack_resources(region_name, network_name, flavor_name, pimage,
             break;
 
     region_retrieved = None
-    # TODO handle when region not found
     regionsEntities = tenant.regionsEntities
     for regionEntities in regionsEntities:
         regions = regionEntities.regionEntities
         for region in regions:
             if region.regionName == region_name:
+                region_retrieved = region
                 break;
+
+    if region_retrieved == None:
+        printer.out("Region of the published image not found", printer.ERROR)
+        return None, None
 
     flavors = region.flavors.flavor
     for flavor in flavors:
