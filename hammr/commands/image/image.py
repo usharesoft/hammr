@@ -253,7 +253,58 @@ class Image(Cmd, CoreGlobal):
                 deployment = build_deployment_amazon(file)
 
             if "OpenStack" in target_platform:
-                deployment = build_deployment_openstack(file, pimage, doArgs.pid, self.retrieve_credaccount(doArgs.pid, pimage))
+                bar_status = OpStatus()
+                bar_status.message = "Retrieving information from OpenStack"
+                bar_status.percentage = 0
+                statusWidget = progressbar_widget.Status()
+                statusWidget.status = bar_status
+                widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
+                progress = ProgressBar(widgets=widgets, maxval=100).start()
+                progress.start()
+                deployment = build_deployment_openstack(file, pimage, doArgs.pid,
+                                                            self.retrieve_credaccount(doArgs.pid, pimage))
+                if deployment is None:
+                    return
+                bar_status.percentage = 50
+                bar_status.message = "Deploying instance"
+                progress.update(bar_status.percentage)
+
+                if is_uri_based_on_appliance(pimage.imageUri):
+                    source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+                    if source is None or not hasattr(source, 'dbId'):
+                        printer.out("No template found for this image", printer.ERROR)
+                        return 2
+                    deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
+                        pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+                elif is_uri_based_on_scan(pimage.imageUri):
+                    ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
+                    ScanId = extract_scan_id(pimage.imageUri)
+                    source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
+                    if source is None or not hasattr(source, 'dbId'):
+                        printer.out("No scan found for this image", printer.ERROR)
+                        return 2
+                    deployed_instance = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(
+                        ScanId).Images(
+                        image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+                else:
+                    printer.out("No source found for this image", printer.ERROR)
+                    return 2
+
+                deployed_instance_id = deployed_instance.applicationId
+
+                status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                while not (status.message == "running" or status.message == "on-fire"):
+                    status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+                    time.sleep(1)
+
+                bar_status.percentage = 100
+                bar_status.message = "Deployment complete"
+                progress.update(bar_status.percentage)
+                progress.finish()
+
+                return 0
+
 
             if deployment is None:
                 return

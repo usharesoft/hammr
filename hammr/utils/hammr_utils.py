@@ -179,10 +179,8 @@ def validate_deployment(file):
     try:
         isJson = check_extension_is_json(file)
         if isJson:
-            print "you provided a json file, checking..."
             data = generics_utils.check_json_syntax(file)
         else:
-            print "you provided a yaml file, checking..."
             data = generics_utils.check_yaml_syntax(file)
 
         if data is None:
