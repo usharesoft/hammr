@@ -129,7 +129,7 @@ class TestDeployAws(TestCase):
         return deployment
 
     def prepare_image_deploy_command(self, id):
-         args = "--file deploy_aws.yml --publish-id %s" % (id)
+         args = "--file ./deploy_aws.yml --publish-id %s" % (id)
          return args
 
     def prepare_image(self):
