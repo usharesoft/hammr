@@ -232,10 +232,6 @@ class Image(Cmd, CoreGlobal):
             if pimage.targetFormat:
                 target_platform = pimage.targetFormat.name
 
-            if not is_targeted_cloud_compatible(pimage):
-                printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
-                return 2
-
             if not self.is_pimage_ready_to_deploy(pimage):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
@@ -254,6 +250,8 @@ class Image(Cmd, CoreGlobal):
 
             if "OpenStack" in target_platform:
                 return self.deploy_openstack(file, pimage)
+
+            printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
 
             return 2
 
@@ -702,14 +700,5 @@ class Image(Cmd, CoreGlobal):
             return 2
         deployed_instance_id = deployed_instance.applicationId
 
-        status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-        while not (status.message == "running" or status.message == "on-fire"):
-            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-            time.sleep(1)
-
-        bar_status.percentage = 100
-        bar_status.message = "Deployment complete"
-        progress.update(bar_status.percentage)
-        progress.finish()
-
+        status = show_deploy_progress_openstack(self, deployed_instance_id, bar_status, progress)
         return print_deploy_info(self, status, deployed_instance_id)

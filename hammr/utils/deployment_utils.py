@@ -49,13 +49,6 @@ def retrieve_credaccount_from_scan(image_object, pimageId, pimage):
     return image_object.api.Users(image_object.login).Scannedinstances(scannedinstance_id).Scans(scan_id).\
         Images(image_id).Pimages(pimageId).Accounts(account_id).Resources.Getaccountresources()
 
-def is_targeted_cloud_compatible(pimage):
-    if pimage.targetFormat:
-        target_platform = pimage.targetFormat.name
-        if target_platform == "Amazon AWS" or "OpenStack" in target_platform:
-            return True
-    return False
-
 def validate_deployment(file):
     try:
         isJson = check_extension_is_json(file)
@@ -229,4 +222,16 @@ def show_deploy_progress_aws(image_object, deployed_instance_id):
         bar.update(i)
         i += 2
     bar.finish()
+    return status
+
+def show_deploy_progress_openstack(image_object, deployed_instance_id, bar_status, progress):
+    status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+    while not (status.message == "running" or status.message == "on-fire"):
+        status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+        time.sleep(1)
+
+    bar_status.percentage = 100
+    bar_status.message = "Deployment complete"
+    progress.update(bar_status.percentage)
+    progress.finish()
     return status
