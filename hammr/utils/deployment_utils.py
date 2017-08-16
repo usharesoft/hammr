@@ -175,6 +175,8 @@ def create_progress_bar_openstack(bar_status):
     widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
     progress = ProgressBar(widgets=widgets, maxval=100).start()
     progress.start()
+    bar_status.percentage = 10
+    progress.update(bar_status.percentage)
     return progress
 
 def call_deploy(image_object, pimage, deployment, image_id):
