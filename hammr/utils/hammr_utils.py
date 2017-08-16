@@ -21,6 +21,7 @@ import traceback
 from os.path import expanduser
 import os
 import urllib
+import pyxb
 
 from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
@@ -28,7 +29,6 @@ from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
 from hammr.utils.bundle_utils import *
 from hammr.utils import constants
-
 
 def check_mandatory_stack(stack):
     if not "name" in stack:
@@ -173,7 +173,7 @@ def validate_bundle(file):
         printer.out("Syntax of bundle file ["+file+"]: FAILED")
     except IOError as e:
         printer.out("unknown error bundle json file", printer.ERROR)
-    
+
 def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
     file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")
 
