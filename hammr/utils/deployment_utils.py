@@ -188,8 +188,7 @@ def call_deploy(image_object, pimage, deployment, image_id):
             printer.out("No scan found for this image", printer.ERROR)
             return 2
         deployed_instance = image_object.api.Users(image_object.login).Scannedinstances(ScannedInstanceId).Scans(
-            ScanId).Images(
-            image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+            ScanId).Images(Itid=image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
     else:
         printer.out("No source found for this image", printer.ERROR)
         return 2
