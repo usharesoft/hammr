@@ -74,3 +74,4 @@ Physical Targets
    :titlesonly:
 
    builders-iso
+   builders-pxe

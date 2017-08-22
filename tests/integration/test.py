@@ -159,6 +159,12 @@ class TestTemplate(unittest.TestCase):
                 os.remove("archive.tar.gz")
                 self.assertEqual(r, 0)
 
+        def test_09_buildPXE(self):
+                template = hammr.commands.template.Template()
+                template.set_globals(api, login, password)
+                r = template.do_build("--file data/templatePXE.json")
+                self.assertEqual(r, 0)
+
 
 
 
