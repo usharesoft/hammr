@@ -26,8 +26,14 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     SimpleProgress, Timer, UnknownLength
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
-from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from hammr.utils.deployment_utils import *
+from uforge.objects.uforge import *
+
+#This import and configuration avoid pyxb warnings about xmls
+import logging
+logging.basicConfig()
+logging.getLogger("pyxb").setLevel(logging.ERROR)
 
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
@@ -202,16 +208,10 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
                                   description="Deploy an instance of a published image on the targeted cloud.")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='pid', required=True,
+        mandatory.add_argument('--file', dest='file', required=True,
+                               help="yaml/json file providing the instance parameters required for deployment on targeted cloud")
+        mandatory.add_argument('--publish-id', dest='pid', required=True,
                                help="the ID of the published image to deploy")
-        mandatory.add_argument('-n', '--name', dest='deploy_name', required=True,
-                               help="the name of the image to deploy")
-
-        optional = doParser.add_argument_group("optional arguments")
-        optional.add_argument('--vcpu', dest='vcpu', required=False,
-                              help="minimal number of cores for the image to deploy. Number is 1 by default.")
-        optional.add_argument('-m', '--memory', dest='memory', required=False,
-                              help="minimal RAM for the image to deploy. RAM is 1024M by default.")
         return doParser
 
     def do_deploy(self, args):
@@ -228,69 +228,32 @@ class Image(Cmd, CoreGlobal):
             if pimage == 2:
                 return 2
 
-            image_id = generics_utils.extract_id(pimage.imageUri)
-            if image_id is None or image_id == "":
-                printer.out("Image not found", printer.ERROR)
-                return 2
+            target_platform = ""
+            if pimage.targetFormat:
+                target_platform = pimage.targetFormat.name
 
             if not self.is_pimage_ready_to_deploy(pimage):
                 printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
-            deployment = self.get_deployment_from_args_for_deploy(doArgs)
-
-            if is_uri_based_on_appliance(pimage.imageUri):
-                source = self.api.Users(self.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
-                if source is None or not hasattr(source, 'dbId'):
-                    printer.out("No template found for this image", printer.ERROR)
-                    return 2
-                deployed_instance = self.api.Users(self.login).Appliances(source.dbId).Images(image_id).Pimages(
-                    pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-
-            elif is_uri_based_on_scan(pimage.imageUri):
-                ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
-                ScanId = extract_scan_id(pimage.imageUri)
-                source = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
-                if source is None or not hasattr(source, 'dbId'):
-                    printer.out("No scan found for this image", printer.ERROR)
-                    return 2
-                deployed_instance = self.api.Users(self.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Images(
-                    image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-
-            else:
-                printer.out("No source found for this image", printer.ERROR)
+            file = generics_utils.get_file(doArgs.file)
+            if file is None:
                 return 2
 
-            deployed_instance_id = deployed_instance.applicationId
+            image_id = generics_utils.extract_id(pimage.imageUri)
+            if image_id is None or image_id == "":
+                printer.out("Image not found", printer.ERROR)
+                return 2
 
-            print("Deployment in progress")
+            if "Amazon" in target_platform:
+                return self.deploy_aws(file, pimage)
 
-            status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-            bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
-            bar.start()
-            i = 1
-            while not (status.message == "running" or status.message == "on-fire"):
-                status = self.api.Users(self.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
-                time.sleep(1)
-                bar.update(i)
-                i += 2
-            bar.finish()
+            if "OpenStack" in target_platform:
+                return self.deploy_openstack(file, pimage)
 
-            if status.message == "on-fire":
-                printer.out("Deployment failed", printer.ERROR)
-                if status.detailedError:
-                    printer.out(status.detailedErrorMsg, printer.ERROR)
-                return 1
-            else:
-                printer.out("Deployment is successful", printer.OK)
-                printer.out("Deployment id: [" + deployed_instance_id + "]")
-                deployment = self.api.Users(self.login).Deployments(deployed_instance_id).Get()
-                instances = deployment.instances.instance
-                instance = instances[-1]
-                printer.out("Region: " + instance.location.provider)
-                printer.out("IP address: " + instance.hostname)
+            printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
 
-            return 0
+            return 2
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
@@ -422,7 +385,7 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " download", add_help=True,
                                   description="Downloads a machine image to the local filesystem")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to delete")
+        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to download")
         mandatory.add_argument('--file', dest='file', required=True,
                                help="the pathname where to store the machine image")
         return doParser
@@ -703,25 +666,39 @@ class Image(Cmd, CoreGlobal):
             return 2
         return pimage
 
-    def get_deployment_from_args_for_deploy(self, args):
-        deployment = Deployment()
-        myinstance = Instance()
+    def deploy_aws(self, file, pimage):
+        image_id = generics_utils.extract_id(pimage.imageUri)
+        deployment = build_deployment_amazon(file)
+        if deployment is None:
+            return
 
-        if args.deploy_name:
-            deployment.name = args.deploy_name
-        else:
-            printer.out("No name given for the deployment", printer.ERROR)
-            return ""
-        if args.vcpu:
-            myinstance.cores = str(args.vcpu)
-        else:
-            myinstance.cores = "1"
-        if args.memory:
-            myinstance.memory = str(args.memory)
-        else:
-            myinstance.memory = "1024"
-        deployment.instances = pyxb.BIND()
-        deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
+        deployed_instance = call_deploy(self, pimage, deployment, image_id)
+        if deployed_instance == 2:
+            return 2
+        deployed_instance_id = deployed_instance.applicationId
 
-        return deployment
+        print("Deployment in progress")
+
+        status = show_deploy_progress_aws(self, deployed_instance_id)
+        return print_deploy_info(self, status, deployed_instance_id)
+
+    def deploy_openstack(self, file, pimage):
+        image_id = generics_utils.extract_id(pimage.imageUri)
+        pid = pimage.dbId
+        bar_status = OpStatus()
+        progress = create_progress_bar_openstack(bar_status)
+        deployment = build_deployment_openstack(file, pimage, pid, retrieve_credaccount(self, pid, pimage))
+        if deployment is None:
+            return
+
+        bar_status.percentage = 50
+        bar_status.message = "Deploying instance"
+        progress.update(bar_status.percentage)
+
+        deployed_instance = call_deploy(self, pimage, deployment, image_id)
+        if deployed_instance == 2:
+            return 2
+        deployed_instance_id = deployed_instance.applicationId
+
+        status = show_deploy_progress_openstack(self, deployed_instance_id, bar_status, progress)
+        return print_deploy_info(self, status, deployed_instance_id)

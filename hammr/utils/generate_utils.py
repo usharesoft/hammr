@@ -210,6 +210,10 @@ def generate_iso(image, builder, installProfile, api=None, login=None):
     image.compress = True
     return image, installProfile
 
+def generate_pxe(image, builder, installProfile, api=None, login=None):
+    image.compress = False
+    return image, installProfile
+
 
 ##--------------------- Virtual Formats    
 def generate_ovf(image, builder, installProfile, api=None, login=None):

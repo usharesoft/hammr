@@ -2,14 +2,43 @@
 
 .. _machine-image-deploy:
 
-Deploying a published machine image
+Deploying a Published Machine Image
 ===================================
+
+In order to deploy a machine image already published, you must make sure that the builders section of the template has the necessary info. For information on publishing a machine image, refer to :ref:`machine-image-publish`.
+
+The following is a YAML example of the builders section illustrating the deployement of a published image to OpenStack. For details of the required parameters for each of the published image formats, refer to the documentation. You can use either YAML or JSON to create your template.
+
+.. code-block:: yaml
+
+        ---
+        provisioner:
+          type: OpenStack
+          name: MyDeploy
+          region: GRA1
+          network: 8d3e91fd-c533-418f-8578-4252de201489
+          flavor: 98c1e679-5f2c-4069-b4ea-4a4f7179b758
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "provisioner": {
+      "type": "OpenStack",
+      "name": "MyDeploy",
+      "region": "GRA1",
+      "network": "8d3e91fd-c533-418f-8578-4252de201489",
+      "flavor": "98c1e679-5f2c-4069-b4ea-4a4f7179b758"
+    }
+  }
+
 
 You can deploy an instance of a published machine image by running ``image deploy``:
 
 .. code-block:: shell
 
-	$ hammr image deploy --id <the id> --name <your-deployment-name>
+	$ hammr image deploy --publish-id <the id> --file <your file>
         Deployment in progress
         |##################################################################################################################|
         OK: Deployment is successful
@@ -17,7 +46,7 @@ You can deploy an instance of a published machine image by running ``image deplo
         Region: eu-west-1
         IP address: 54.171.53.9
 
-To get the id of the machine image generated, use the command ``image list``:
+To get the id of the machine image published, use the command ``image list``. Any images published will appear in the second table ``Publications``, where the ``Publish ID`` is listed.
 
 .. code-block:: shell
 

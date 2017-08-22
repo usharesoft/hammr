@@ -24,7 +24,7 @@ from uforge.objects import uforge
 import datetime
 from hammr.commands.image import image
 
-class TestDeploy(TestCase):
+class TestDeployAws(TestCase):
 
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     def test_do_deploy_return_2_when_imageId_is_None(self, mock_api_deploy):
@@ -113,7 +113,7 @@ class TestDeploy(TestCase):
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        myinstance = Instance()
+        myinstance = InstanceAmazon()
         myinstance.cores = "1"
         myinstance.memory = "1024"
         myinstance.hostname = "example.com"
@@ -128,9 +128,8 @@ class TestDeploy(TestCase):
 
         return deployment
 
-
     def prepare_image_deploy_command(self, id):
-         args = "--id %s --name DeploymentName" % (id)
+         args = "--file tests/integration/data/deploy_aws.yml --publish-id %s" % (id)
          return args
 
     def prepare_image(self):
@@ -152,7 +151,7 @@ class TestDeploy(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "test"
+        newImage.targetFormat.name = "Amazon AWS"
 
         new_pimages.publishImages.append(newImage)
 
@@ -168,7 +167,7 @@ class TestDeploy(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "test"
+        newImage.targetFormat.name = "Amazon AWS"
 
         new_pimages.publishImages.append(newImage)
 
