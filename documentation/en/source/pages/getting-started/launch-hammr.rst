@@ -125,7 +125,7 @@ Add the authentication and UForge URL endpoint to this file, using the following
 	---
 	user: root
 	password: password
-	url: http://10.1.2.24/ufws-3.3
+	url: http://10.1.2.24/api
 	acceptAutoSigned: false
 
 If you are using JSON:
@@ -135,7 +135,7 @@ If you are using JSON:
 	{
 	  "user" : "root",
 	  "password" : "password",
-	  "url" : "http://10.1.2.24/ufws-3.3",
+	  "url" : "http://10.1.2.24/api",
 	  "acceptAutoSigned": false
 	}
 
