@@ -19,7 +19,7 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 
 .. code-block:: shell
 
-	$ hammr scan run --ip 192.0.2.0 --scan-login LOGIN --name scan-name
+	$ hammr scan run --ip 192.0.2.0 --scan-login root --name scan-name
 	Password for root@192.0.2.0: 
 	... uforge-scan v2.54 (Feb 18 2014 13:16:37) (SVN Revision: 21664)
 	... Distribution:        Debian / 6.0.9 / x86_64
