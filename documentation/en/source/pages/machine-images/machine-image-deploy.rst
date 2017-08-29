@@ -7,7 +7,7 @@ Deploying a Published Machine Image
 
 In order to deploy a machine image already published, you must make sure that the builders section of the template has the necessary info. For information on publishing a machine image, refer to :ref:`machine-image-publish`.
 
-The following is a YAML example of the builders section illustrating the deployement of a published image to OpenStack. For details of the required parameters for each of the published image formats, refer to the documentation. You can use either YAML or JSON to create your template.
+The following is a YAML example of the builders section illustrating the deployment of a published image to OpenStack. For details of the required parameters for each of the published image formats, refer to the documentation. You can use either YAML or JSON to create your template.
 
 .. code-block:: yaml
 
@@ -16,8 +16,8 @@ The following is a YAML example of the builders section illustrating the deploye
           type: OpenStack
           name: MyDeploy
           region: GRA1
-          network: 8d3e91fd-c533-418f-8578-4252de201489
-          flavor: 98c1e679-5f2c-4069-b4ea-4a4f7179b758
+          network: Ext-Net
+          flavor: vps-ssd-2
 
 If you are using JSON:
 
@@ -28,8 +28,8 @@ If you are using JSON:
       "type": "OpenStack",
       "name": "MyDeploy",
       "region": "GRA1",
-      "network": "8d3e91fd-c533-418f-8578-4252de201489",
-      "flavor": "98c1e679-5f2c-4069-b4ea-4a4f7179b758"
+      "network": "Ext-Net",
+      "flavor": "vps-ssd-2"
     }
   }
 
