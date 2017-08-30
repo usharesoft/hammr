@@ -3,6 +3,15 @@
 Changelog
 =========
 
+hammr 3.7.7 (2017-09-04)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp7-1 only
+* Users can deploy instances from published machine images to Amazon AWS and OpenStack.
+* Images can be created in PXE format for CentOS
+
 hammr 3.7.6 (2017-07-25)
 --------------------------
 
