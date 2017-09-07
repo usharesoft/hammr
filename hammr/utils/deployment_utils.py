@@ -90,6 +90,41 @@ def build_deployment_amazon(file):
     deployment.instances.append(myinstance)
     return deployment
 
+def build_deployment_azure(file):
+    file = validate_deployment(file)
+    deployment = Deployment()
+    myinstance = InstanceAzureResourceManager()
+    if not "name" in file:
+        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+        return None
+    deployment.name = file["name"]
+    if "userName" in file:
+        myinstance.userName = file["userName"]
+    else:
+        printer.out("There is no attribute [userName] for the provisioner", printer.ERROR)
+        return None
+    if "userPassword" in file:
+        myinstance.userPassword = file["userPassword"]
+    elif "userSshKey" in file:
+        myinstance.userSshKey = file["userSshKey"]
+    else:
+        printer.out("There is no attribute [userPassword] or [userSshKey] for the provisioner", printer.ERROR)
+        return None
+
+    if not "cores" in file:
+        myinstance.cores = "1"
+    else:
+        myinstance.cores = file["cores"]
+    if not "memory" in file:
+        myinstance.memory = "1024"
+    else:
+        myinstance.memory = file["memory"]
+
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+    return deployment
+
 def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
     file = validate_deployment(file)
     deployment = Deployment()
