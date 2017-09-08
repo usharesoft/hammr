@@ -245,7 +245,7 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         printer.out("IP address: " + instance.hostname)
         return 0
 
-def show_deploy_progress_aws(image_object, deployed_instance_id):
+def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
     bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
     bar.start()
@@ -258,7 +258,7 @@ def show_deploy_progress_aws(image_object, deployed_instance_id):
     bar.finish()
     return status
 
-def show_deploy_progress_openstack(image_object, deployed_instance_id, bar_status, progress):
+def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar_status, progress):
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
     while not (status.message == "running" or status.message == "on-fire"):
         status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()

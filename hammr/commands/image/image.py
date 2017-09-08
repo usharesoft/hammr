@@ -682,7 +682,7 @@ class Image(Cmd, CoreGlobal):
 
         print("Deployment in progress")
 
-        status = show_deploy_progress_aws(self, deployed_instance_id)
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
         return print_deploy_info(self, status, deployed_instance_id)
 
     def deploy_openstack(self, file, pimage):
@@ -703,7 +703,7 @@ class Image(Cmd, CoreGlobal):
             return 2
         deployed_instance_id = deployed_instance.applicationId
 
-        status = show_deploy_progress_openstack(self, deployed_instance_id, bar_status, progress)
+        status = show_deploy_progress_with_percentage(self, deployed_instance_id, bar_status, progress)
         return print_deploy_info(self, status, deployed_instance_id)
 
     def deploy_azure(self, file, pimage):
@@ -719,5 +719,5 @@ class Image(Cmd, CoreGlobal):
 
         print("Deployment in progress")
 
-        status = show_deploy_progress_aws(self, deployed_instance_id)
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
         return print_deploy_info(self, status, deployed_instance_id)

@@ -23,61 +23,46 @@ from uforge.objects.uforge import *
 from uforge.objects import uforge
 import datetime
 from hammr.commands.image import image
+from test_deploy_aws import TestDeployAWS
 
-class TestDeployAWS(TestCase):
-
-    @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
-    def test_do_deploy_aws_return_2_when_imageId_is_None(self, mock_api_deploy):
-        # given
-        i = self.prepare_image()
-        deployment = self.get_deployment_aws()
-        mock_api_deploy.return_value = deployment
-        args = self.prepare_image_deploy_command_aws(None)
-
-        # when
-        deploy_return = i.do_deploy(args)
-
-        # then
-        self.assertEquals(deploy_return, 2)
-
+class TestDeployAzure(TestCase):
     @patch('uforge.application.Api._Users._Pimages.Getall')
     @patch('uforge.application.Api._Users._Deployments._Status.Getdeploystatus')
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     @patch('uforge.application.Api._Users._Appliances.Get')
     @patch('uforge.application.Api._Users._Deployments.Get')
-    def test_do_deploy_aws_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy,
+    def test_do_deploy_azure_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy,
                                                         mock_get_deploy_status, mock_api_pimg_getall_for_app):
         # given
-        i = self.prepare_image()
-        args = self.prepare_image_deploy_command_aws(1234)
+        i = TestDeployAWS.prepare_image()
+        args = self.prepare_image_deploy_command_azure(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_api_deploy)
-        self.prepare_mock_app_get(mock_app_get)
-        self.prepare_mock_api_pimg_getall_for_app_aws(mock_api_pimg_getall_for_app)
-        self.prepare_mock_deploy_status_running(mock_get_deploy_status)
+        self.prepare_mock_deploy_azure(mock_get_deployment, mock_api_deploy)
+        TestDeployAWS.prepare_mock_app_get(mock_app_get)
+        self.prepare_mock_api_pimg_getall_for_app_azure(mock_api_pimg_getall_for_app)
+        TestDeployAWS.prepare_mock_deploy_status_running(mock_get_deploy_status)
 
         # when
         deploy_return = i.do_deploy(args)
 
         # then
         self.assertEquals(deploy_return, 0)
-
 
     @patch('uforge.application.Api._Users._Pimages.Getall')
     @patch('uforge.application.Api._Users._Deployments._Status.Getdeploystatus')
     @patch('uforge.application.Api._Users._Scannedinstances._Scans._Images._Pimages._Deploys.Deploy')
     @patch('uforge.application.Api._Users._Scannedinstances._Scans.Get')
     @patch('uforge.application.Api._Users._Deployments.Get')
-    def test_do_deploy_aws_a_scan_return_0_when_status_is_running(self, mock_get_deployment, mock_scan_get, mock_scan_deploy,
+    def test_do_deploy_azure_a_scan_return_0_when_status_is_running(self, mock_get_deployment, mock_scan_get, mock_scan_deploy,
                                                         mock_get_deploy_status, prepare_mock_api_pimg_getall_for_scan):
         # given
-        i = self.prepare_image()
-        args = self.prepare_image_deploy_command_aws(1234)
+        i = TestDeployAWS.prepare_image()
+        args = self.prepare_image_deploy_command_azure(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_scan_deploy)
-        self.prepare_mock_scan_get(mock_scan_get)
-        self.prepare_mock_api_pimg_getall_for_scan_aws(prepare_mock_api_pimg_getall_for_scan)
-        self.prepare_mock_deploy_status_running(mock_get_deploy_status)
+        self.prepare_mock_deploy_azure(mock_get_deployment, mock_scan_deploy)
+        TestDeployAWS.prepare_mock_scan_get(mock_scan_get)
+        self.prepare_mock_api_pimg_getall_for_scan_azure(prepare_mock_api_pimg_getall_for_scan)
+        TestDeployAWS.prepare_mock_deploy_status_running(mock_get_deploy_status)
 
         # when
         deploy_return = i.do_deploy(args)
@@ -90,16 +75,16 @@ class TestDeployAWS(TestCase):
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     @patch('uforge.application.Api._Users._Appliances.Get')
     @patch('uforge.application.Api._Users._Deployments.Get')
-    def test_do_deploy_aws_return_1_when_status_is_onfire(self, mock_get_deployment, mock_app_get, mock_api_deploy,
-                                                        mock_get_deploy_status, mock_api_pimg_getall_for_app):
+    def test_do_deploy_azure_return_1_when_status_is_onfire(self, mock_get_deployment, mock_app_get, mock_api_deploy,
+                                                          mock_get_deploy_status, mock_api_pimg_getall_for_app):
         # given
-        i = self.prepare_image()
-        args = self.prepare_image_deploy_command_aws(1234)
+        i = TestDeployAWS.prepare_image()
+        args = self.prepare_image_deploy_command_azure(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_api_deploy)
-        self.prepare_mock_app_get(mock_app_get)
-        self.prepare_mock_api_pimg_getall_for_app_aws(mock_api_pimg_getall_for_app)
-        self.prepare_mock_deploy_status_onfire(mock_get_deploy_status)
+        self.prepare_mock_deploy_azure(mock_get_deployment, mock_api_deploy)
+        TestDeployAWS.prepare_mock_app_get(mock_app_get)
+        self.prepare_mock_api_pimg_getall_for_app_azure(mock_api_pimg_getall_for_app)
+        TestDeployAWS.prepare_mock_deploy_status_onfire(mock_get_deploy_status)
 
         # when
         deploy_return = i.do_deploy(args)
@@ -107,15 +92,17 @@ class TestDeployAWS(TestCase):
         # then
         self.assertEquals(deploy_return, 1)
 
-    def get_deployment_aws(self):
+    def get_deployment_azure(self):
         deployment = Deployment()
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        myinstance = InstanceAmazon()
+        myinstance = InstanceAzureResourceManager()
         myinstance.cores = "1"
         myinstance.memory = "1024"
         myinstance.hostname = "example.com"
+        myinstance.userName = "myName"
+        myinstance.userPassword = "myPassword"
 
         myLocation = Location()
         myLocation.provider = "myprovider"
@@ -127,89 +114,52 @@ class TestDeployAWS(TestCase):
 
         return deployment
 
-    def prepare_image_deploy_command_aws(self, id):
+    def prepare_image_deploy_command_azure(self, id):
          args = "--file tests/integration/data/deploy_aws.yml --publish-id %s" % (id)
          return args
 
-    @staticmethod
-    def prepare_image():
-        i = image.Image()
-        i.api = Api("url", username="username", password="password", headers=None,
-                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
-        i.login = "login"
-        i.password = "password"
-        return i
-
-    def prepare_aws_pimages_from_app(self):
+    def prepare_azure_pimages_from_app(self):
         new_pimages = uforge.publishImages()
         new_pimages.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAws()
+        newImage = PublishImageAzureResourceManager()
         newImage.dbId = 1234
         newImage.imageUri = 'users/guest/appliances/5/images/1234'
         newImage.applianceUri = 'users/guest/appliances/5'
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Amazon AWS"
+        newImage.targetFormat.name = "Azure ARM"
 
         new_pimages.publishImages.append(newImage)
 
         return new_pimages
 
-    def prepare_pimages_from_scan_aws(self):
+    def prepare_pimages_from_scan_azure(self):
         new_pimages = uforge.publishImages()
         new_pimages.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAws()
+        newImage = PublishImageAzureResourceManager()
         newImage.dbId = 1234
         newImage.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Amazon AWS"
+        newImage.targetFormat.name = "Azure ARM"
 
         new_pimages.publishImages.append(newImage)
 
         return new_pimages
 
-    @staticmethod
-    def prepare_mock_deploy_status_running(mock_get_deploy_status):
-        # The mock will return statusStarting on first and second calls, and statusRunning on third call
-        statusStarting = OpStatus()
-        statusStarting.message = "starting"
-        statusRunning = OpStatus()
-        statusRunning.message = "running"
-        mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
-
-    @staticmethod
-    def prepare_mock_deploy_status_onfire(mock_get_deploy_status):
-        # The mock will return statusStarting on first and second calls, and statusRunning on third call
-        statusStarting = OpStatus()
-        statusStarting.message = "starting"
-        statusRunning = OpStatus()
-        statusRunning.message = "on-fire"
-        mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
-
-    def prepare_mock_deploy_aws(self, mock_get_deployment, mock_api_deploy):
-        deployment = self.get_deployment_aws()
+    def prepare_mock_deploy_azure(self, mock_get_deployment, mock_api_deploy):
+        deployment = self.get_deployment_azure()
         mock_api_deploy.return_value = deployment
         mock_get_deployment.return_value = deployment
 
-    @staticmethod
-    def prepare_mock_app_get(mock_app_get):
-        newAppliance = Appliance()
-        mock_app_get.return_value = newAppliance
-
-    @staticmethod
-    def prepare_mock_scan_get(mock_scan_get):
-        newScan = Scan()
-        mock_scan_get.return_value = newScan
-
-    def prepare_mock_api_pimg_getall_for_app_aws(self, mock_api_pimg_getall_for_app):
-        new_pimages = self.prepare_aws_pimages_from_app()
+    def prepare_mock_api_pimg_getall_for_app_azure(self, mock_api_pimg_getall_for_app):
+        new_pimages = self.prepare_azure_pimages_from_app()
         mock_api_pimg_getall_for_app.return_value = new_pimages
 
-    def prepare_mock_api_pimg_getall_for_scan_aws(self, mock_api_pimg_getall_for_scan):
-        new_pimages = self.prepare_pimages_from_scan_aws()
+    def prepare_mock_api_pimg_getall_for_scan_azure(self, mock_api_pimg_getall_for_scan):
+        new_pimages = self.prepare_pimages_from_scan_azure()
         mock_api_pimg_getall_for_scan.return_value = new_pimages
