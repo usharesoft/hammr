@@ -59,6 +59,45 @@ To publish an image, the valid keys are:
 * ``region`` (mandatory): a string providing the region where to create the storage account. If the storage account already exists, then you should not specify a region. See below for valid regions.
 * ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
 
+Deploying a Published Machine Image
+-----------------------------------
+
+To deploy a published machine image to Microsoft Azure the Azure builder section must have the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  provisioner:
+    type: Azure
+    name: MyDeploy
+    userName: MyUserName
+    userPassword: MyUserPassword
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+  {
+    "provisioner": {
+      "type": "Azure",
+      "name": "MyDeploy",
+      "userName": "MyUserName",
+      "userPassword": "MyUserPassword",
+    }
+  }
+
+The valid keys are:
+
+* ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
+* ``name`` (mandatory): the name of the published machine image.
+* ``userName`` (mandatory): the name for the user account on the instance.
+
+At least one of these two keys is mandatory:
+
+* ``userPassword``: the password for the user account.
+* ``userSshKey``: the public ssh key for the user account.
+
+
 Valid Azure Regions
 ---------------------
 
@@ -122,6 +161,7 @@ If you are using JSON:
       }
     ]
   }
+
 
 Referencing the Cloud Account
 -----------------------------
