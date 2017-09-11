@@ -23,6 +23,8 @@ from hammr_utils import *
 from progressbar import Bar, ProgressBar, ReverseBar, UnknownLength, BouncingBar
 from ussclicore.utils import progressbar_widget
 import pyxb.binding.content as pyxb_content
+import getpass
+import re
 
 def retrieve_credaccount(image_object, pimageId, pimage):
     # Increases the limit for non determinist content: the xml used for openstack retrieval has a lot of
@@ -103,13 +105,16 @@ def build_deployment_azure(file):
     else:
         printer.out("There is no attribute [userName] for the provisioner", printer.ERROR)
         return None
-    if "userPassword" in file:
-        myinstance.userPassword = file["userPassword"]
-    elif "userSshKey" in file:
+    if "userSshKey" in file:
         myinstance.userSshKey = file["userSshKey"]
+    elif "userSshKeyFile" in file:
+        try:
+            myinstance.userSshKey = open(file["userSshKeyFile"], "r").read()
+        except IOError as e:
+                printer.out("File error: "+str(e), printer.ERROR)
+                return
     else:
-        printer.out("There is no attribute [userPassword] or [userSshKey] for the provisioner", printer.ERROR)
-        return None
+        myinstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
 
     if not "cores" in file:
         myinstance.cores = "1"
@@ -241,6 +246,7 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         deployment = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Get()
         instances = deployment.instances.instance
         instance = instances[-1]
+        printer.out("Cloud Provider: " + format_cloud_provider(instance.cloudProvider))
         printer.out("Region: " + instance.location.provider)
         printer.out("IP address: " + instance.hostname)
         return 0
@@ -269,3 +275,21 @@ def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar
     progress.update(bar_status.percentage)
     progress.finish()
     return status
+
+def query_password_azure(question):
+    pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=*!])(?=\\S+$).{6,}"
+    while True:
+        choice = getpass.getpass(prompt=question)
+        if re.match(pattern, choice):
+            return choice
+        else:
+            printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
+
+def format_cloud_provider(cloudprovider):
+    if "aws" in cloudprovider:
+        return "Amazon"
+    if "openstack" in cloudprovider:
+        return "OpenStack"
+    if "azure" in cloudprovider:
+        return "Azure "
+    return cloudprovider
