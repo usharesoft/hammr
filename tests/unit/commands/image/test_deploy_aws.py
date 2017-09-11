@@ -120,6 +120,7 @@ class TestDeployAWS(TestCase):
         myLocation = Location()
         myLocation.provider = "myprovider"
         myinstance.location = myLocation
+        myinstance.cloudProvider = "amazon aws"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')

@@ -3,4 +3,4 @@ provisioner:
   type: Azure
   name: MyAzureDeploy
   userName: MyUserName
-  userPassword: MyPassword
+  userSshKey: MySshKey

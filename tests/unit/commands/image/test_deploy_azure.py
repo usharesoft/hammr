@@ -102,11 +102,12 @@ class TestDeployAzure(TestCase):
         myinstance.memory = "1024"
         myinstance.hostname = "example.com"
         myinstance.userName = "myName"
-        myinstance.userPassword = "myPassword"
+        myinstance.userSshKey = "mySshKey"
 
         myLocation = Location()
         myLocation.provider = "myprovider"
         myinstance.location = myLocation
+        myinstance.cloudProvider = "azurearm"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
