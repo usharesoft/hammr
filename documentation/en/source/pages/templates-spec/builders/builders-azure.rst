@@ -71,7 +71,7 @@ To deploy a published machine image to Microsoft Azure the Azure builder section
     type: Azure
     name: MyDeploy
     userName: MyUserName
-    userPassword: MyUserPassword
+    userSshKey: MySshKey
 
 If you are using JSON:
 
@@ -82,7 +82,7 @@ If you are using JSON:
       "type": "Azure",
       "name": "MyDeploy",
       "userName": "MyUserName",
-      "userPassword": "MyUserPassword",
+      "userSshKey": "MySshKey"
     }
   }
 
