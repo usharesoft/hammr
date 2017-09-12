@@ -277,13 +277,23 @@ def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar
     return status
 
 def query_password_azure(question):
+    valid_input = 0
     pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=*!])(?=\\S+$).{6,}"
-    while True:
-        choice = getpass.getpass(prompt=question)
-        if re.match(pattern, choice):
-            return choice
-        else:
-            printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
+    while valid_input != 2:
+        if valid_input == 0:
+            first_choice = getpass.getpass(prompt=question)
+            if re.match(pattern, first_choice):
+                valid_input += 1
+            else:
+                printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
+        elif valid_input == 1:
+            second_choice = getpass.getpass(prompt="Please confirm your password: ")
+            if second_choice == first_choice:
+                valid_input += 1
+            else:
+                printer.out("The two passwords are different, please try again.", printer.WARNING)
+                valid_input = 0
+    return first_choice
 
 def format_cloud_provider(cloudprovider):
     if "aws" in cloudprovider:
