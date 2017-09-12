@@ -71,89 +71,89 @@ def validate_deployment(file):
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
 
-def build_deployment_amazon(file):
-    file = validate_deployment(file)
+def build_deployment_amazon(data):
+    data = validate_deployment(data)
     deployment = Deployment()
     myinstance = InstanceAmazon()
-    if not "name" in file:
+    if not "name" in data:
         printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
         return None
-    deployment.name = file["name"]
-    if not "cores" in file:
+    deployment.name = data["name"]
+    if not "cores" in data:
         myinstance.cores = "1"
     else:
-        myinstance.cores = file["cores"]
-    if not "memory" in file:
+        myinstance.cores = data["cores"]
+    if not "memory" in data:
         myinstance.memory = "1024"
     else:
-        myinstance.memory = file["memory"]
+        myinstance.memory = data["memory"]
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
     deployment.instances.append(myinstance)
     return deployment
 
-def build_deployment_azure(file):
-    file = validate_deployment(file)
+def build_deployment_azure(data):
+    data = validate_deployment(data)
     deployment = Deployment()
     myinstance = InstanceAzureResourceManager()
-    if not "name" in file:
+    if not "name" in data:
         printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
         return None
-    deployment.name = file["name"]
-    if "userName" in file:
-        myinstance.userName = file["userName"]
+    deployment.name = data["name"]
+    if "userName" in data:
+        myinstance.userName = data["userName"]
     else:
         printer.out("There is no attribute [userName] for the provisioner", printer.ERROR)
         return None
-    if "userSshKey" in file:
-        myinstance.userSshKey = file["userSshKey"]
-    elif "userSshKeyFile" in file:
+    if "userSshKey" in data:
+        myinstance.userSshKey = data["userSshKey"]
+    elif "userSshKeyFile" in data:
         try:
-            myinstance.userSshKey = open(file["userSshKeyFile"], "r").read()
+            myinstance.userSshKey = open(data["userSshKeyFile"], "r").read()
         except IOError as e:
                 printer.out("File error: "+str(e), printer.ERROR)
                 return
     else:
         myinstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
 
-    if not "cores" in file:
+    if not "cores" in data:
         myinstance.cores = "1"
     else:
-        myinstance.cores = file["cores"]
-    if not "memory" in file:
+        myinstance.cores = data["cores"]
+    if not "memory" in data:
         myinstance.memory = "1024"
     else:
-        myinstance.memory = file["memory"]
+        myinstance.memory = data["memory"]
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
     deployment.instances.append(myinstance)
     return deployment
 
-def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
-    file = validate_deployment(file)
+def build_deployment_openstack(data, pimage, pimageId, cred_account_ressources):
+    data = validate_deployment(data)
     deployment = Deployment()
     myinstance = InstanceOpenStack()
 
-    if not "name" in file:
+    if not "name" in data:
         printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
         return None
-    deployment.name = file["name"]
+    deployment.name = data["name"]
 
-    if not "region" in file:
+    if not "region" in data:
         printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
         return None
-    myinstance.region = file["region"]
+    myinstance.region = data["region"]
 
-    if not "network" in file:
+    if not "network" in data:
         printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
         return None
-    network_name = file["network"]
+    network_name = data["network"]
 
-    if not "flavor" in file:
+    if not "flavor" in data:
         printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
         return None
-    flavor_name = file["flavor"]
+    flavor_name = data["flavor"]
 
     myinstance.networkId, myinstance.flavorId = retrieve_openstack_resources(myinstance.region, network_name,
                                                                 flavor_name, pimage, pimageId, cred_account_ressources)
@@ -277,22 +277,16 @@ def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar
     return status
 
 def query_password_azure(question):
-    valid_input = 0
     pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=*!])(?=\\S+$).{6,}"
-    while valid_input != 2:
-        if valid_input == 0:
-            first_choice = getpass.getpass(prompt=question)
-            if re.match(pattern, first_choice):
-                valid_input += 1
-            else:
-                printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
-        elif valid_input == 1:
-            second_choice = getpass.getpass(prompt="Please confirm your password: ")
-            if second_choice == first_choice:
-                valid_input += 1
-            else:
-                printer.out("The two passwords are different, please try again.", printer.WARNING)
-                valid_input = 0
+    while(True):
+        first_choice = getpass.getpass(prompt=question)
+        if not re.match(pattern, first_choice):
+            printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
+            continue;
+        second_choice = getpass.getpass(prompt="Please confirm your password: ")
+        if second_choice == first_choice:
+            break;
+        printer.out("The two passwords are different, please try again.", printer.WARNING)
     return first_choice
 
 def format_cloud_provider(cloudprovider):
