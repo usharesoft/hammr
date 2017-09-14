@@ -23,6 +23,7 @@ from hammr_utils import *
 from progressbar import Bar, ProgressBar, ReverseBar, UnknownLength, BouncingBar
 from ussclicore.utils import progressbar_widget
 import pyxb.binding.content as pyxb_content
+from texttable import Texttable
 import getpass
 import re
 
@@ -242,13 +243,35 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         return 1
     else:
         printer.out("Deployment is successful", printer.OK)
-        printer.out("Deployment id: [" + deployed_instance_id + "]")
+
         deployment = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Get()
-        instances = deployment.instances.instance
-        instance = instances[-1]
-        printer.out("Cloud Provider: " + format_cloud_provider(instance.cloudProvider))
-        printer.out("Region: " + instance.location.provider)
-        printer.out("IP address: " + instance.hostname)
+        instance = deployment.instances.instance[-1]
+
+        deployment_name = deployment.name
+        cloud_provider = format_cloud_provider(instance.cloudProvider)
+        location = instance.location.provider
+        hostname=instance.hostname
+        deployment_status = deployment.state
+
+        if instance.sourceSummary and type(instance.sourceSummary) == ScanSummaryLight:
+            source_type = "Scan"
+            source_id = str(extract_scannedinstance_id(instance.sourceSummary.uri))
+            source_name = instance.sourceSummary.name
+        elif instance.sourceSummary and type(instance.sourceSummary) == ApplianceSummary:
+            source_type = "Template"
+            source_id = str(generics_utils.extract_id(instance.sourceSummary.uri))
+            source_name = instance.sourceSummary.name
+
+        table = Texttable(200)
+        table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
+        table.header(
+            ["Deployment name", "Deployment ID", "Cloud provider", "Region", "Hostname", "Source type", "Source ID",
+             "Source name", "Status"])
+
+        table.add_row([deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type, source_id,
+                       source_name, deployment_status])
+
+        print table.draw() + "\n"
         return 0
 
 def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
