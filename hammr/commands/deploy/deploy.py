@@ -53,11 +53,7 @@ class Deploy(Cmd, CoreGlobal):
                 printer.out("No deployment available")
             else:
                 printer.out("Deployments:")
-                table = Texttable(200)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
-                table.header(
-                    ["Deployment name", "Deployment ID", "Cloud provider", "Region", "Hostname", "Source type", "Source ID",
-                     "Source name", "Status"])
+                table = print_deploy_header()
                 deployments = generics_utils.order_list_object_by(deployments, "name")
                 for deployment in deployments:
                     deployment_id = deployment.applicationId

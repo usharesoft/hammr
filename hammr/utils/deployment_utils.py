@@ -262,15 +262,8 @@ def print_deploy_info(image_object, status, deployed_instance_id):
             source_id = str(generics_utils.extract_id(instance.sourceSummary.uri))
             source_name = instance.sourceSummary.name
 
-        table = Texttable(200)
-        table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
-        table.header(
-            ["Deployment name", "Deployment ID", "Cloud provider", "Region", "Hostname", "Source type", "Source ID",
-             "Source name", "Status"])
-
-        table.add_row([deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type, source_id,
-                       source_name, deployment_status])
-
+        table = print_deploy_info_line(deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type,
+                               source_id, source_name, deployment_status)
         print table.draw() + "\n"
         return 0
 
@@ -320,3 +313,19 @@ def format_cloud_provider(cloudprovider):
     if "azure" in cloudprovider:
         return "Azure "
     return cloudprovider
+
+
+def print_deploy_info_line(deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type,
+                       source_id, source_name, deployment_status):
+    table = print_deploy_header()
+    table.add_row([deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type, source_id,
+               source_name, deployment_status])
+    return table
+
+def print_deploy_header():
+    table = Texttable(200)
+    table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
+    table.header(
+        ["Deployment name", "Deployment ID", "Cloud provider", "Region", "Hostname", "Source type", "Source ID",
+         "Source name", "Status"])
+    return table
