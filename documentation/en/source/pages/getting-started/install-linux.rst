@@ -44,3 +44,8 @@ If you already have hammr installed and want to upgrade to the latest version yo
 	
 	$ pip install --upgrade hammr
 
+.. note:: You can only have one version of Hammr installed on your system.
+
+.. note:: If you need to remove a version of hammr, you can will need to remove both ``hammr`` and the Python SDK.
+
+
