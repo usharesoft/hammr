@@ -18,6 +18,13 @@ Red-hat based system:
 .. code-block:: shell
 	
 	$ yum install gcc python-devel libxml2-devel libxslt-devel
+	$ yum install redhat-rpm-config
+
+Ubuntu system:
+
+.. code-block:: shell
+	
+	$ sudo apt-get install libz-dev
 
 Now, you are ready to install the latest version of Hammr:
 
