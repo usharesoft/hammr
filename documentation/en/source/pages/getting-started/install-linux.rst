@@ -11,13 +11,13 @@ Debian based system:
 
 .. code-block:: shell
 	
-	$ apt-get install python-dev gcc libxslt1-dev
+	$ apt-get install python-dev gcc libxslt1-dev which
 
 Red-hat based system:
 
 .. code-block:: shell
 	
-	$ yum install gcc python-devel libxml2-devel libxslt-devel
+	$ yum install gcc python-devel libxml2-devel libxslt-devel which
 
 Now, you are ready to install the latest version of Hammr:
 
