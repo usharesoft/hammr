@@ -32,8 +32,6 @@ Now, you are ready to install the latest version of Hammr:
 	$ easy_install progressbar==2.3
 	$ pip install hammr
 
-.. note:: If ``pip install hammr`` command fails with an error message containing ``gcc: error: /usr/lib/rpm/redhat/redhat-hardened-cc1: No such file or directory``, then run ``yum install redhat-rpm-config`` and launch ``pip install hammr`` again.
-
 If you want to install a specific version of Hammr, see :ref:`install-compatibility` to find the compatible version of UForge, and in the code above replace the ``pip install hammr`` with:
 
 .. code-block:: shell
