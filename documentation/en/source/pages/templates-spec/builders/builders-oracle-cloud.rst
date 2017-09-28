@@ -5,6 +5,48 @@
 Oracle Cloud
 ============
 
+Default builder type: ``Oracle Cloud``
+
+Require Cloud Account: Yes
+
+`cloud.oracle.com <https://cloud.oracle.com>`_
+
+The Oracle Cloud builder provides information for building and publishing the machine image to the Oracle Cloud platform.
+
+The Oracle Cloud builder requires cloud account information to upload and register the machine image to the Oracle Cloud platform.
+
+The Oracle Cloud builder section has the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Oracle Cloud
+    # the rest of the definition goes here.
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+    {
+      "builders": [
+	    {
+	      "type": "Oracle Cloud",
+	      ...the rest of the definition goes here.
+	    }
+	  ]
+	}
+
+Publishing a Machine Image
+--------------------------
+
+To publish an image, the valid keys are:
+
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Oracle Cloud: ``Oracle Cloud``. To get the available builder type, please refer to :ref:`command-line-format`
+* ``account`` (mandatory): an object providing the Oracle Cloud account information required to publish the built machine image.
+* ``displayName`` (mandatory): a string providing the name of the image that will be displayed.
+* ``computeEndPoint`` (mandatory): a string providing the compute end point url to register the machine image to.
+
 Oracle Cloud Account
 --------------------
 
@@ -21,6 +63,49 @@ The Oracle Cloud account has the following valid keys:
 * ``domainName`` (mandatory): a string providing the domain for authenticating to Oracle Cloud for publishing images. For example: a123456
 
 .. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
+
+Example
+-------
+
+The following example shows an Oracle Cloud builder with all the information to build and publish a machine image to Oracle Cloud.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Oracle Cloud
+    account:
+      type: Oracle
+      name: My Oracle Cloud Account
+      login: mylogin@example.com
+      password: mypassword
+      domainName: a123456
+    displayName: myOracleDisplayName
+    computeEndPoint: myComputeEndPointUrl
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Oracle Cloud",
+        "account": {
+          "type": "Oracle",
+          "name": "My Oracle Cloud Account",
+          "login": "mylogin@example.com",
+          "password": "mypassword",
+          "domainName": "a123456"
+        },
+        "displayName": "myOracleDisplayName",
+        "computeEndPoint": "myComputeEndPointUrl"
+      }
+    ]
+  }
+
 
 Referencing the Cloud Account
 -----------------------------
@@ -50,6 +135,72 @@ If you are using JSON, create a JSON file ``oracle-cloud-account.json``:
         "login": "mylogin@example.com",
         "password": "mypassword",
         "domainName": "a123456"
+      }
+    ]
+  }
+
+
+
+The builder section can either reference by using ``file`` or ``name``.
+
+Reference by file:
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Oracle Cloud
+    account:
+      file: "/path/to/oracle-cloud-account.yml"
+    displayName: myOracleDisplayName
+    computeEndPoint: myComputeEndPointUrl
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Oracle Cloud",
+        "account": {
+              "file": "/path/to/oracle-cloud-account.json"
+        },
+        "displayName": "myOracleDisplayName",
+        "computeEndPoint": "myComputeEndPointUrl"
+      }
+    ]
+  }
+
+Reference by name, note the cloud account must already be created by using ``account create``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Oracle Cloud
+    account:
+      name: My Oracle Cloud Account
+    displayName: myOracleDisplayName
+    computeEndPoint: myComputeEndPointUrl
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Oracle Cloud",
+        "account": {
+              "name": "My Oracle Cloud Account"
+        },
+        "displayName": "myOracleDisplayName",
+        "computeEndPoint": "myComputeEndPointUrl"
       }
     ]
   }
