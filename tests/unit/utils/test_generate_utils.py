@@ -71,6 +71,33 @@ class TestGeneratePXE(TestCase):
         self.assertFalse(image.compress)
         self.assertEquals(intall_profile_given, install_profile)
 
+
+class TestGenerateOracle(TestCase):
+    def test_generate_oracleraw_should_return_compressed_image_given_compressed_image(self):
+        # given
+        image_given = CompressedImage()
+        install_profile_given = MockObject()
+
+        # when
+        image, install_profile = generate_oracleraw(image_given, WhateverObject(), install_profile_given, WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
+
+    def test_generate_oracleraw_should_return_compressed_image_given_uncompressed_image(self):
+        # given
+        image_given = UncompressedImage()
+        install_profile_given = MockObject()
+
+        # when
+        image, install_profile = generate_oracleraw(image_given, WhateverObject(), install_profile_given,
+                                                 WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
+
 class CompressedImage:
     compress = True
 
