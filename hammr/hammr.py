@@ -65,6 +65,8 @@ class CmdBuilder(object):
         class_.subCmds[quota.cmd_name] = quota
         platform = commands.platform.Platform()
         class_.subCmds[platform.cmd_name] = platform
+        deploy = commands.deploy.Deploy()
+        class_.subCmds[deploy.cmd_name] = deploy
 
 ## Main cmd
 class Hammr(Cmd):

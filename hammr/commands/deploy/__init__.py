@@ -13,14 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from account import *
-from format import *
-from image import *
-from os import *
-from template import *
-from user import *
-from bundle import *
-from scan import *
-from quota import *
-from platform import *
-from deploy import *
+import os
+import glob
+__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]

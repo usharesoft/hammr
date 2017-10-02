@@ -1,4 +1,5 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# -*- coding: utf-8 -*-
+# Copyright 2007-2016 UShareSoft SAS, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -12,15 +13,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from account import *
-from format import *
-from image import *
-from os import *
-from template import *
-from user import *
-from bundle import *
-from scan import *
-from quota import *
-from platform import *
-from deploy import *
