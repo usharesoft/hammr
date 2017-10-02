@@ -251,7 +251,10 @@ class Image(Cmd, CoreGlobal):
             if "OpenStack" in target_platform:
                 return self.deploy_openstack(file, pimage)
 
-            printer.out("Hammr only supports deployments for Amazon AWS and OpenStack.", printer.ERROR)
+            if "Azure" in target_platform:
+                return self.deploy_azure(file, pimage)
+
+            printer.out("Hammr only supports deployments for Amazon AWS, OpenStack and Microsoft Azure ARM.", printer.ERROR)
 
             return 2
 
@@ -679,7 +682,7 @@ class Image(Cmd, CoreGlobal):
 
         print("Deployment in progress")
 
-        status = show_deploy_progress_aws(self, deployed_instance_id)
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
         return print_deploy_info(self, status, deployed_instance_id)
 
     def deploy_openstack(self, file, pimage):
@@ -700,5 +703,21 @@ class Image(Cmd, CoreGlobal):
             return 2
         deployed_instance_id = deployed_instance.applicationId
 
-        status = show_deploy_progress_openstack(self, deployed_instance_id, bar_status, progress)
+        status = show_deploy_progress_with_percentage(self, deployed_instance_id, bar_status, progress)
+        return print_deploy_info(self, status, deployed_instance_id)
+
+    def deploy_azure(self, file, pimage):
+        image_id = generics_utils.extract_id(pimage.imageUri)
+        deployment = build_deployment_azure(file)
+        if deployment is None:
+            return
+
+        deployed_instance = call_deploy(self, pimage, deployment, image_id)
+        if deployed_instance == 2:
+            return 2
+        deployed_instance_id = deployed_instance.applicationId
+
+        print("Deployment in progress")
+
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
         return print_deploy_info(self, status, deployed_instance_id)

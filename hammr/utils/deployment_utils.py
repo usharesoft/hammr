@@ -23,6 +23,8 @@ from hammr_utils import *
 from progressbar import Bar, ProgressBar, ReverseBar, UnknownLength, BouncingBar
 from ussclicore.utils import progressbar_widget
 import pyxb.binding.content as pyxb_content
+import getpass
+import re
 
 def retrieve_credaccount(image_object, pimageId, pimage):
     # Increases the limit for non determinist content: the xml used for openstack retrieval has a lot of
@@ -69,51 +71,89 @@ def validate_deployment(file):
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
 
-def build_deployment_amazon(file):
-    file = validate_deployment(file)
+def build_deployment_amazon(data):
+    data = validate_deployment(data)
     deployment = Deployment()
     myinstance = InstanceAmazon()
-    if not "name" in file:
+    if not "name" in data:
         printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
         return None
-    deployment.name = file["name"]
-    if not "cores" in file:
+    deployment.name = data["name"]
+    if not "cores" in data:
         myinstance.cores = "1"
     else:
-        myinstance.cores = file["cores"]
-    if not "memory" in file:
+        myinstance.cores = data["cores"]
+    if not "memory" in data:
         myinstance.memory = "1024"
     else:
-        myinstance.memory = file["memory"]
+        myinstance.memory = data["memory"]
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
     deployment.instances.append(myinstance)
     return deployment
 
-def build_deployment_openstack(file, pimage, pimageId, cred_account_ressources):
-    file = validate_deployment(file)
+def build_deployment_azure(data):
+    data = validate_deployment(data)
+    deployment = Deployment()
+    myinstance = InstanceAzureResourceManager()
+    if not "name" in data:
+        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
+        return None
+    deployment.name = data["name"]
+    if "userName" in data:
+        myinstance.userName = data["userName"]
+    else:
+        printer.out("There is no attribute [userName] for the provisioner", printer.ERROR)
+        return None
+    if "userSshKey" in data:
+        myinstance.userSshKey = data["userSshKey"]
+    elif "userSshKeyFile" in data:
+        try:
+            myinstance.userSshKey = open(data["userSshKeyFile"], "r").read()
+        except IOError as e:
+                printer.out("File error: "+str(e), printer.ERROR)
+                return
+    else:
+        myinstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
+
+    if not "cores" in data:
+        myinstance.cores = "1"
+    else:
+        myinstance.cores = data["cores"]
+    if not "memory" in data:
+        myinstance.memory = "1024"
+    else:
+        myinstance.memory = data["memory"]
+
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(myinstance)
+    return deployment
+
+def build_deployment_openstack(data, pimage, pimageId, cred_account_ressources):
+    data = validate_deployment(data)
     deployment = Deployment()
     myinstance = InstanceOpenStack()
 
-    if not "name" in file:
+    if not "name" in data:
         printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
         return None
-    deployment.name = file["name"]
+    deployment.name = data["name"]
 
-    if not "region" in file:
+    if not "region" in data:
         printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
         return None
-    myinstance.region = file["region"]
+    myinstance.region = data["region"]
 
-    if not "network" in file:
+    if not "network" in data:
         printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
         return None
-    network_name = file["network"]
+    network_name = data["network"]
 
-    if not "flavor" in file:
+    if not "flavor" in data:
         printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
         return None
-    flavor_name = file["flavor"]
+    flavor_name = data["flavor"]
 
     myinstance.networkId, myinstance.flavorId = retrieve_openstack_resources(myinstance.region, network_name,
                                                                 flavor_name, pimage, pimageId, cred_account_ressources)
@@ -206,11 +246,12 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         deployment = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Get()
         instances = deployment.instances.instance
         instance = instances[-1]
+        printer.out("Cloud Provider: " + format_cloud_provider(instance.cloudProvider))
         printer.out("Region: " + instance.location.provider)
         printer.out("IP address: " + instance.hostname)
         return 0
 
-def show_deploy_progress_aws(image_object, deployed_instance_id):
+def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
     bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
     bar.start()
@@ -223,7 +264,7 @@ def show_deploy_progress_aws(image_object, deployed_instance_id):
     bar.finish()
     return status
 
-def show_deploy_progress_openstack(image_object, deployed_instance_id, bar_status, progress):
+def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar_status, progress):
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
     while not (status.message == "running" or status.message == "on-fire"):
         status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
@@ -234,3 +275,25 @@ def show_deploy_progress_openstack(image_object, deployed_instance_id, bar_statu
     progress.update(bar_status.percentage)
     progress.finish()
     return status
+
+def query_password_azure(question):
+    pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=*!])(?=\\S+$).{6,}"
+    while(True):
+        first_choice = getpass.getpass(prompt=question)
+        if not re.match(pattern, first_choice):
+            printer.out("""The user password must be between 6-72 characters long and must contains at least one uppercase character, one lowercase character, one numeric digit and one special character (@#$%^&+=*!)""", printer.WARNING)
+            continue;
+        second_choice = getpass.getpass(prompt="Please confirm your password: ")
+        if second_choice == first_choice:
+            break;
+        printer.out("The two passwords are different, please try again.", printer.WARNING)
+    return first_choice
+
+def format_cloud_provider(cloudprovider):
+    if "aws" in cloudprovider:
+        return "Amazon"
+    if "openstack" in cloudprovider:
+        return "OpenStack"
+    if "azure" in cloudprovider:
+        return "Azure "
+    return cloudprovider

@@ -21,6 +21,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget, downlo
 from hammr.utils import *
 from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from hammr.utils.deployment_utils import *
 import shlex
 import time
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
@@ -79,7 +80,7 @@ class Deploy(Cmd, CoreGlobal):
                         if instance.location:
                             location = instance.location.provider
                         if instance.cloudProvider:
-                            cloud_provider = self.format_cloud_provider(instance.cloudProvider)
+                            cloud_provider = format_cloud_provider(instance.cloudProvider)
 
                     table.add_row([deployment_name, deployment_id, cloud_provider, location, hostname, source_type, source_id,
                                    source_name, deployment_status])
@@ -173,12 +174,3 @@ class Deploy(Cmd, CoreGlobal):
                 if deployment_id == searched_deploy_id:
                     return deployment
         return None
-
-    def format_cloud_provider(self, cloudprovider):
-        if "aws" in cloudprovider:
-            return "Amazon"
-        if "openstack" in cloudprovider:
-            return "OpenStack"
-        if "azure" in cloudprovider:
-            return "Azure "
-        return cloudprovider

@@ -253,6 +253,44 @@ To publish an image, the valid keys are:
 * ``region`` (mandatory): a string providing the region where to create the storage account. If the storage account already exists, then you should not specify a region. See below for valid regions.
 * ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
 
+Deploying a Published Machine Image
+-----------------------------------
+
+To deploy a published machine image to Microsoft Azure the Azure builder section must have the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  provisioner:
+    type: Azure
+    name: MyDeploy
+    userName: MyUserName
+    userSshKey: MySshKey
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+  {
+    "provisioner": {
+      "type": "Azure",
+      "name": "MyDeploy",
+      "userName": "MyUserName",
+      "userSshKey": "MySshKey"
+    }
+  }
+
+The valid keys are:
+
+* ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
+* ``name`` (mandatory): the name of the published machine image.
+* ``userName`` (mandatory): the name for the user account on the instance.
+* ``userSshKey`` (optional): the public ssh key for the user account.
+* ``userSshKeyFile`` (optional): a file containing the public ssh key for the user account.
+
+If no ssh key is given, you will have to give a password for the user account.
+
+
 Valid Azure Regions
 ---------------------
 
@@ -317,8 +355,8 @@ If you are using JSON:
     ]
   }
 
-Referencing the Azure Classic Cloud Account
--------------------------------------------
+Referencing the Cloud Account
+-----------------------------
 
 To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``azure-account.yml``.
 
