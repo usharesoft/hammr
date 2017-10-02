@@ -116,7 +116,7 @@ class TestDeployAzure(TestCase):
         return deployment
 
     def prepare_image_deploy_command_azure(self, id):
-         args = "--file tests/integration/data/deploy_aws.yml --publish-id %s" % (id)
+         args = "--file tests/integration/data/deploy_azure.yml --publish-id %s" % (id)
          return args
 
     def prepare_azure_pimages_from_app(self):
