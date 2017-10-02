@@ -1,4 +1,4 @@
 ---
 provisioner:
   name: myName
-  userName: myUserName
+  userSshKey: MySshKey
