@@ -261,6 +261,10 @@ def print_deploy_info(image_object, status, deployed_instance_id):
             source_type = "Template"
             source_id = str(generics_utils.extract_id(instance.sourceSummary.uri))
             source_name = instance.sourceSummary.name
+        else:
+            source_type = None
+            source_id = None
+            source_name = None
 
         table = print_deploy_info_line(deployment_name, deployed_instance_id, cloud_provider, location, hostname, source_type,
                                source_id, source_name, deployment_status)
