@@ -47,3 +47,14 @@ class TestDeployUtils(TestCase):
         #Then
         self.assertEquals(return_value, None)
 
+    def testbuild_deployment_azure_returns_None_when_file_incomplete(self):
+        # Given
+        file = "tests/integration/data/deploy_azure_incomplete.yml"
+
+        # When
+        return_value = build_deployment_azure(file)
+
+        #Then
+        self.assertEquals(return_value, None)
+
+

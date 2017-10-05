@@ -1,0 +1,4 @@
+---
+provisioner:
+  name: myName
+  userSshKey: MySshKey
