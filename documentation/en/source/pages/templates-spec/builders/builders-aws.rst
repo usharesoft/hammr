@@ -78,7 +78,7 @@ The following regions are supported:
 Deploying a Published Machine Image
 -----------------------------------
 
-To deploy a published machine image to OpenStack the builder section must have the following definition when using YAML:
+To deploy a published machine image to Amazon the builder section must have the following definition when using YAML:
 
 .. code-block:: yaml
 

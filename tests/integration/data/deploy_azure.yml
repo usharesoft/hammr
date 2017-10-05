@@ -1,0 +1,6 @@
+---
+provisioner:
+  type: Azure
+  name: MyAzureDeploy
+  userName: MyUserName
+  userSshKey: MySshKey
