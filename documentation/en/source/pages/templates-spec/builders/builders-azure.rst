@@ -75,9 +75,9 @@ The Azure Resource Manager cloud account has the following valid keys:
 
 * ``type`` (mandatory): a string providing the cloud account type. Default platform type for Microsoft Azure: ``Microsoft Azure``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
-* ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See `Microsoft Azure documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id>`_ to retrieve yours.
+* ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See `Microsoft Azure tenant ID documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id>`_ to retrieve yours.
 * ``subscriptionId`` (mandatory): The subscription ID that will be used by UForge.
-* ``applicationId`` (mandatory): The application ID that will be used by UForge. See `Microsoft Azure documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key>`_ to create one application.
+* ``applicationId`` (mandatory): The application ID that will be used by UForge. See `Microsoft Azure application ID documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key>`_ to create one application.
 * ``applicationKey`` (mandatory): The application authentication key associated to the application ID.
 
 .. note:: In the case where name or file is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
