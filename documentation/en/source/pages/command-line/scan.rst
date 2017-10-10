@@ -61,3 +61,5 @@ Executes a deep scan of a running system.
 	* ``--dir`` (optional): the directory where to install the uforge-scan.bin binary used to execute the deep scan
 	* ``--exclude`` (optional): a list of directories or files to exclude during the deep scan
 	* ``--overlay`` (optional): include overlay (extra files) for the given scan
+
+.. note:: If a CTR exception (eg: `ERROR: Caught exception: CTR mode needs counter parameter, not IV`) occurs while executing ``run`` sub-command try upgrading your paramiko library to either 1.18.4 or 2.3.1 using ``sudo pip install paramiko==VERSION``.
