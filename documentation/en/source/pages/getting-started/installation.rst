@@ -28,7 +28,9 @@ Installing Hammr
 
 Once pip has been installed, you can now install the hammr packages (note, you may have to run this command as ``sudo`` or ``administrator``).
 
-A version of Hammr is compatible with only one version of UForge. To see the compatibility table, go to :ref:`install-compatibility` section.
+.. note:: A version of Hammr is compatible with only one version of UForge. To see the compatibility table, go to :ref:`install-compatibility` section.
+
+.. note:: You can only have one version of Hammr installedon your system.
 
 Please refer to the installation instructions depending upon your desktop type:
 
