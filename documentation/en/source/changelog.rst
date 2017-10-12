@@ -3,6 +3,15 @@
 Changelog
 =========
 
+hammr 3.7.8 (2017-10-16)
+--------------------------
+
+Evolutions:
+
+* Microsoft Azure connector has been updated. Previously with UForge the machine image was publish as a "vhd" blob file in the Azure cloud Account. Now an image will be accessible in the cloud console from this blob file. In order to support this additional information must be entered in ``Credentials`` for Microsoft Azure ARM connector.
+* Users can deploy instances from published machine images to Microsoft Azure ARM.
+* Improve output display of deploy command.
+
 hammr 3.7.7 (2017-09-04)
 --------------------------
 
