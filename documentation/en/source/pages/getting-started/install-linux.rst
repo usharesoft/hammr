@@ -17,7 +17,7 @@ Red-hat based system:
 
 .. code-block:: shell
 	
-	$ yum install gcc python-devel libxml2-devel libxslt-devel which
+	$ yum install gcc python-devel libxml2-devel libxslt-devel which redhat-rpm-config
 
 Ubuntu system:
 
