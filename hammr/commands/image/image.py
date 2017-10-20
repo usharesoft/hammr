@@ -224,45 +224,49 @@ class Image(Cmd, CoreGlobal):
             if not doArgs:
                 return 2
 
-            pimage = self.get_pimage_from_id(doArgs.pid)
-            if pimage == 2:
+            publishImage = self.get_publish_image_from_publish_id(doArgs.pid)
+            if publishImage == 2:
                 return 2
 
-            target_platform = ""
-            if pimage.targetFormat:
-                target_platform = pimage.targetFormat.name
-
-            if not self.is_pimage_ready_to_deploy(pimage):
-                printer.out("Published image with name '" + pimage.name + " cannot be deployed", printer.ERROR)
+            if not self.is_pimage_ready_to_deploy(publishImage):
+                printer.out("Published image with name '" + publishImage.name + " cannot be deployed", printer.ERROR)
                 return 2
 
-            file = generics_utils.get_file(doArgs.file)
-            if file is None:
+            deployFile = generics_utils.get_file(doArgs.file)
+            if deployFile is None:
                 return 2
 
-            image_id = generics_utils.extract_id(pimage.imageUri)
-            if image_id is None or image_id == "":
+            imageId = generics_utils.extract_id(publishImage.imageUri)
+            if imageId is None or imageId == "":
                 printer.out("Image not found", printer.ERROR)
                 return 2
 
-            if "Amazon" in target_platform:
-                return self.deploy_aws(file, pimage)
+            targetPlatform = publishImage.targetFormat.name
+            if "Amazon" in targetPlatform:
+                return self.deploy_aws(deployFile, publishImage)
 
-            if "OpenStack" in target_platform:
-                return self.deploy_openstack(file, pimage)
+            elif "OpenStack" in targetPlatform:
+                return self.deploy_openstack(deployFile, publishImage)
 
-            if "Azure" in target_platform:
-                return self.deploy_azure(file, pimage)
+            elif "Azure" in targetPlatform:
+                return self.deploy_azure(deployFile, publishImage)
 
-            printer.out("Hammr only supports deployments for Amazon AWS, OpenStack and Microsoft Azure ARM.", printer.ERROR)
+            else:
+                printer.out("Hammr only supports deployments for Amazon AWS, OpenStack and Microsoft Azure ARM.",
+                            printer.ERROR)
+                return 2
 
+        except TypeError as e:
+            printer.out(str(e), printer.ERROR)
             return 2
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_deploy()
         except KeyboardInterrupt:
-            printer.out("You have exited the command-line, however the deployment may still be in progress. Please go to the cloud's console for more information", printer.WARNING)
+            printer.out(
+                "You have exited the command-line, however the deployment may still be in progress. Please go to the cloud's console for more information",
+                printer.WARNING)
             pass
         except Exception as e:
             return handle_uforge_exception(e)
@@ -654,7 +658,7 @@ class Image(Cmd, CoreGlobal):
                 account_name = account["name"]
         return account_name
 
-    def get_pimage_from_id(self, id):
+    def get_publish_image_from_publish_id(self, id):
         pimages = self.api.Users(self.login).Pimages.Getall()
         pimages = pimages.publishImages.publishImage
         pimage = None
@@ -669,55 +673,44 @@ class Image(Cmd, CoreGlobal):
             return 2
         return pimage
 
-    def deploy_aws(self, file, pimage):
-        image_id = generics_utils.extract_id(pimage.imageUri)
-        deployment = build_deployment_amazon(file)
-        if deployment is None:
-            return
+    def deploy_aws(self, deployFile, publishImage):
+        attributes = check_and_get_attributes_from_file(deployFile, ["name"])
+        imageId = generics_utils.extract_id(publishImage.imageUri)
 
-        deployed_instance = call_deploy(self, pimage, deployment, image_id)
-        if deployed_instance == 2:
-            return 2
-        deployed_instance_id = deployed_instance.applicationId
+        deployment = build_deployment_amazon(attributes)
+        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
 
-        print("Deployment in progress")
+        deployedInstanceId = deployedInstance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployedInstanceId)
+        return print_deploy_info(self, status, deployedInstanceId)
 
-        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
-        return print_deploy_info(self, status, deployed_instance_id)
+    def deploy_openstack(self, deployFile, publishImage):
+        attributes = check_and_get_attributes_from_file(deployFile, ["name", "region", "network", "flavor"])
 
-    def deploy_openstack(self, file, pimage):
-        image_id = generics_utils.extract_id(pimage.imageUri)
-        pid = pimage.dbId
         bar_status = OpStatus()
         progress = create_progress_bar_openstack(bar_status)
-        deployment = build_deployment_openstack(file, pimage, pid, retrieve_credaccount(self, pid, pimage))
-        if deployment is None:
-            return
 
-        bar_status.percentage = 50
+        cred_account = retrieve_credaccount(self, publishImage.dbId, publishImage)
+        deployment = build_deployment_openstack(attributes, publishImage, cred_account)
+
         bar_status.message = "Deploying instance"
+        bar_status.percentage = 50
         progress.update(bar_status.percentage)
 
-        deployed_instance = call_deploy(self, pimage, deployment, image_id)
-        if deployed_instance == 2:
-            return 2
-        deployed_instance_id = deployed_instance.applicationId
+        imageId = generics_utils.extract_id(publishImage.imageUri)
+        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
 
-        status = show_deploy_progress_with_percentage(self, deployed_instance_id, bar_status, progress)
-        return print_deploy_info(self, status, deployed_instance_id)
+        deployedInstanceId = deployedInstance.applicationId
+        status = show_deploy_progress_with_percentage(self, deployedInstanceId, bar_status, progress)
+        return print_deploy_info(self, status, deployedInstanceId)
 
-    def deploy_azure(self, file, pimage):
-        image_id = generics_utils.extract_id(pimage.imageUri)
-        deployment = build_deployment_azure(file)
-        if deployment is None:
-            return
+    def deploy_azure(self, deployFile, publishImage):
+        attributes = check_and_get_attributes_from_file(deployFile, ["name", "userName"])
 
-        deployed_instance = call_deploy(self, pimage, deployment, image_id)
-        if deployed_instance == 2:
-            return 2
-        deployed_instance_id = deployed_instance.applicationId
+        deployment = build_deployment_azure(attributes)
+        imageId = generics_utils.extract_id(publishImage.imageUri)
+        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
 
-        print("Deployment in progress")
-
-        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
-        return print_deploy_info(self, status, deployed_instance_id)
+        deployedInstanceId = deployedInstance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployedInstanceId)
+        return print_deploy_info(self, status, deployedInstanceId)
