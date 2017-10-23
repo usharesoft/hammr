@@ -15,8 +15,10 @@
 import os.path
 
 def findRelativePathFor(myUnitTestDataFile):
-    # When Unit Tests are launched from pycher, the path is the directory of the unit test file
+    # When Unit Tests are launched from pycharm, the path is the directory of the unit test file
     if os.path.isfile('../../../' + myUnitTestDataFile):
         return '../../../' + myUnitTestDataFile
+    if os.path.isfile('../../../../' + myUnitTestDataFile):
+        return '../../../../' + myUnitTestDataFile
     # When Unit Tests are launched from CI, the path is the project directory
     return myUnitTestDataFile
