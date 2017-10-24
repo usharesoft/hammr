@@ -91,7 +91,7 @@ def build_deployment_aws(attributes):
     myInstance = InstanceAmazon()
 
     deployment.name = attributes["name"]
-    get_instance_cores_and_memory(myInstance, attributes)
+    set_instance_cores_and_memory(myInstance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
@@ -113,7 +113,7 @@ def build_deployment_azure(attributes):
     else:
         myInstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
 
-    get_instance_cores_and_memory(myInstance, attributes)
+    set_instance_cores_and_memory(myInstance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
@@ -121,7 +121,7 @@ def build_deployment_azure(attributes):
     return deployment
 
 
-def get_instance_cores_and_memory(my_instance, attributes):
+def set_instance_cores_and_memory(my_instance, attributes):
     if not "cores" in attributes:
         my_instance.cores = "1"
     else:
