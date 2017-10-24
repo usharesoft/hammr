@@ -217,46 +217,41 @@ class Image(Cmd, CoreGlobal):
     def do_deploy(self, args):
         try:
             # add arguments
-            doParser = self.arg_deploy()
-            doArgs = doParser.parse_args(shlex.split(args))
+            do_parser = self.arg_deploy()
+            do_args = do_parser.parse_args(shlex.split(args))
 
             # if the help command is called, parse_args returns None object
-            if not doArgs:
+            if not do_args:
                 return 2
 
-            publishImage = self.get_publish_image_from_publish_id(doArgs.pid)
-            if publishImage == 2:
-                return 2
+            publish_image = self.get_publish_image_from_publish_id(do_args.pid)
 
-            if not self.is_pimage_ready_to_deploy(publishImage):
-                printer.out("Published image with name '" + publishImage.name + " cannot be deployed", printer.ERROR)
-                return 2
+            if not self.is_publish_image_ready_to_deploy(publish_image):
+                raise ValueError("Published image with id '" + do_args.pid + " is not ready to be deployed")
 
-            deployFile = generics_utils.get_file(doArgs.file)
-            if deployFile is None:
-                return 2
+            deploy_file = generics_utils.get_file(do_args.file)
+            if deploy_file is None:
+                raise TypeError("Deploy file cannot be None")
 
-            imageId = generics_utils.extract_id(publishImage.imageUri)
-            if imageId is None or imageId == "":
-                printer.out("Image not found", printer.ERROR)
-                return 2
+            if publish_image.targerFormat is None:
+                raise TypeError("Publish image target format cannot be None")
 
-            targetPlatform = publishImage.targetFormat.name
-            if "Amazon" in targetPlatform:
-                return self.deploy_aws(deployFile, publishImage)
+            target_plateform_name = publish_image.targetFormat.name
+            if "Amazon" in target_plateform_name:
+                return self.deploy_aws(deploy_file, publish_image)
 
-            elif "OpenStack" in targetPlatform:
-                return self.deploy_openstack(deployFile, publishImage)
+            elif "OpenStack" in target_plateform_name:
+                return self.deploy_openstack(deploy_file, publish_image)
 
-            elif "Azure" in targetPlatform:
-                return self.deploy_azure(deployFile, publishImage)
+            elif "Azure" in target_plateform_name:
+                return self.deploy_azure(deploy_file, publish_image)
 
             else:
                 printer.out("Hammr only supports deployments for Amazon AWS, OpenStack and Microsoft Azure ARM.",
                             printer.ERROR)
                 return 2
 
-        except TypeError as e:
+        except (TypeError, ValueError) as e:
             printer.out(str(e), printer.ERROR)
             return 2
 
@@ -552,8 +547,8 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
-    def is_pimage_ready_to_deploy(self, pimage):
-        if not pimage.status.complete or pimage.status.error or pimage.status.cancelled:
+    def is_publish_image_ready_to_deploy(self, publishImage):
+        if not publishImage.status.complete or publishImage.status.error or publishImage.status.cancelled:
             return False
 
         return True
@@ -658,20 +653,22 @@ class Image(Cmd, CoreGlobal):
                 account_name = account["name"]
         return account_name
 
-    def get_publish_image_from_publish_id(self, id):
-        pimages = self.api.Users(self.login).Pimages.Getall()
-        pimages = pimages.publishImages.publishImage
-        pimage = None
-        if pimages is None or len(pimages) == 0:
-            printer.out("No published images available")
+    def get_publish_image_from_publish_id(self, publish_id):
+        publish_images = self.api.Users(self.login).Pimages.Getall()
+        publish_images = publish_images.publishImages.publishImage
+
+        if publish_images is None or len(publish_images) == 0:
+            raise TypeError("No published images available")
+
+        publish_image = None
+        for p in publish_images:
+            if str(p.dbId) == str(publish_id):
+                publish_image = p
+
+        if publish_image is None:
+            raise TypeError("Published image not found")
         else:
-            for piimage in pimages:
-                if str(piimage.dbId) == str(id):
-                    pimage = piimage
-        if pimage is None:
-            printer.out("published image not found", printer.ERROR)
-            return 2
-        return pimage
+            return publish_image
 
     def deploy_aws(self, deployFile, publishImage):
         attributes = check_and_get_attributes_from_file(deployFile, ["name"])
