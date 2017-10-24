@@ -128,7 +128,7 @@ def set_instance_cores_and_memory(my_instance, attributes):
         my_instance.memory = attributes["memory"]
 
 
-def build_deployment_openstack(attributes, publish_image, cred_account_ressources):
+def build_deployment_openstack(attributes, publish_image, cred_account_resources):
     deployment = Deployment()
     my_instance = InstanceOpenStack()
 
@@ -138,7 +138,8 @@ def build_deployment_openstack(attributes, publish_image, cred_account_ressource
     flavor_name = attributes["flavor"]
 
     my_instance.networkId, my_instance.flavorId = retrieve_openstack_resources(my_instance.region, network_name,
-                                                                             flavor_name, publish_image, cred_account_ressources)
+                                                                               flavor_name, publish_image,
+                                                                               cred_account_resources)
 
     append_instance_to_deployment(deployment, my_instance)
     return deployment
@@ -150,19 +151,19 @@ def append_instance_to_deployment(deployment, my_instance):
     deployment.instances.append(my_instance)
 
 
-def retrieve_openstack_resources(regionName, networkName, flavorName, publishImage, credAccountRessources):
-    tenant = retrieve_cred_account_ressources_tenant(credAccountRessources, publishImage)
-    region = retrieve_openstack_resources_region(regionName, tenant)
-    flavorId = retrieve_openstack_resources_flavor_id(flavorName, region)
-    networkId = retrieve_openstack_resources_network_id(networkName, region)
+def retrieve_openstack_resources(region_name, network_name, flavor_name, publish_image, cred_account_resources):
+    tenant = retrieve_cred_account_resources_tenant(cred_account_resources, publish_image)
+    region = retrieve_openstack_resources_region(region_name, tenant)
+    flavorId = retrieve_openstack_resources_flavor_id(flavor_name, region)
+    networkId = retrieve_openstack_resources_network_id(network_name, region)
 
     return networkId[0].encode('ascii', 'ignore'), flavorId.encode('ascii', 'ignore')
 
 
-def retrieve_cred_account_ressources_tenant(credAccountRessources, publishImage):
+def retrieve_cred_account_resources_tenant(cred_account_resources, publish_image):
     tenant = None
-    for t in credAccountRessources.cloudResources.tenants.tenant:
-        if t.name == publishImage.tenantName:
+    for t in cred_account_resources.cloudResources.tenants.tenant:
+        if t.name == publish_image.tenantName:
             tenant = t
             break
 
@@ -174,10 +175,10 @@ def retrieve_cred_account_ressources_tenant(credAccountRessources, publishImage)
 
 def retrieve_openstack_resources_region(region_name, tenant):
     region = None
-    for regionEntities in tenant.regionsEntities:
-        for regionEntity in regionEntities.regionEntities:
-            if regionEntity.regionName == region_name:
-                region = regionEntity
+    for region_entities in tenant.regionsEntities:
+        for region_entity in region_entities.regionEntities:
+            if region_entity.regionName == region_name:
+                region = region_entity
                 break
 
     if region is None:
@@ -187,29 +188,29 @@ def retrieve_openstack_resources_region(region_name, tenant):
 
 
 def retrieve_openstack_resources_flavor_id(flavor_name, region):
-    flavorId = None
+    flavor_id = None
     for flavor in region.flavors.flavor:
         if flavor.name == flavor_name:
-            flavorId = flavor.id
+            flavor_id = flavor.id
             break
 
-    if flavorId is None:
+    if flavor_id is None:
         raise TypeError("Cannot find flavor " + flavor_name + " in region " + region.regionName)
     else:
-        return flavorId
+        return flavor_id
 
 
 def retrieve_openstack_resources_network_id(network_name, region):
-    networkId = None
+    network_id = None
     for network in region.networks.network:
         if network.name == network_name:
-            networkId = network.id
+            network_id = network.id
             break
 
-    if networkId is None:
+    if network_id is None:
         raise TypeError("Cannot find network " + network_name + " in region " + region.regionName)
     else:
-        return networkId
+        return network_id
 
 
 def create_progress_bar_openstack(bar_status):
@@ -225,29 +226,32 @@ def create_progress_bar_openstack(bar_status):
     return progress
 
 
-def call_deploy(imageObject, publishImage, deployment):
-    image_id = generics_utils.extract_id(publishImage.imageUri)
+def call_deploy(image_object, publish_image, deployment):
+    image_id = generics_utils.extract_id(publish_image.imageUri)
 
-    if is_uri_based_on_appliance(publishImage.imageUri):
-        source = imageObject.api.Users(imageObject.login).Appliances(
-            generics_utils.extract_id(publishImage.applianceUri)).Get()
+    if image_id is None or image_id == "":
+        raise TypeError("Cannot retrieve image id from publish image")
+
+    if is_uri_based_on_appliance(publish_image.imageUri):
+        source = image_object.api.Users(image_object.login).Appliances(
+            generics_utils.extract_id(publish_image.applianceUri)).Get()
 
         if source is None or not hasattr(source, 'dbId'):
             raise TypeError("No template found for this image")
         else:
-            return imageObject.api.Users(imageObject.login).Appliances(source.dbId).Images(imageId).Pimages(
-                publishImage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+            return image_object.api.Users(image_object.login).Appliances(source.dbId).Images(image_id).Pimages(
+                publish_image.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
 
-    elif is_uri_based_on_scan(publishImage.imageUri):
-        scannedInstanceId = extract_scannedinstance_id(publishImage.imageUri)
-        scanId = extract_scan_id(publishImage.imageUri)
-        source = imageObject.api.Users(imageObject.login).Scannedinstances(scannedInstanceId).Scans(scanId).Get()
+    elif is_uri_based_on_scan(publish_image.imageUri):
+        scanned_instance_id = extract_scannedinstance_id(publish_image.imageUri)
+        scan_id = extract_scan_id(publish_image.imageUri)
+        source = image_object.api.Users(image_object.login).Scannedinstances(scanned_instance_id).Scans(scan_id).Get()
 
         if source is None or not hasattr(source, 'dbId'):
             raise TypeError("No scan found for this image")
         else:
-            return imageObject.api.Users(imageObject.login).Scannedinstances(scannedInstanceId).Scans(
-                scanId).Images(Itid=imageId).Pimages(publishImage.dbId).Deploys.Deploy(body=deployment,
+            return image_object.api.Users(image_object.login).Scannedinstances(scanned_instance_id).Scans(
+                scan_id).Images(Itid=image_id).Pimages(publish_image.dbId).Deploys.Deploy(body=deployment,
                                                                                        element_name="ns1:deployment")
     else:
         raise TypeError("No source found for this image")

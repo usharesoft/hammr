@@ -233,7 +233,7 @@ class Image(Cmd, CoreGlobal):
             if deploy_file is None:
                 raise TypeError("Deploy file cannot be None")
 
-            if publish_image.targerFormat is None:
+            if publish_image.targetFormat is None:
                 raise TypeError("Publish image target format cannot be None")
 
             target_plateform_name = publish_image.targetFormat.name
@@ -704,6 +704,7 @@ class Image(Cmd, CoreGlobal):
         attributes = check_and_get_attributes_from_file(deploy_file, ["name", "userName"])
 
         deployment = build_deployment_azure(attributes)
+
         deployed_instance = call_deploy(self, publish_image, deployment)
 
         deployed_instance_id = deployed_instance.applicationId
