@@ -93,9 +93,7 @@ def build_deployment_aws(attributes):
     deployment.name = attributes["name"]
     set_instance_cores_and_memory(my_instance, attributes)
 
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(my_instance)
+    append_instance_to_deployment(deployment, my_instance)
     return deployment
 
 
@@ -115,9 +113,7 @@ def build_deployment_azure(attributes):
 
     set_instance_cores_and_memory(my_instance, attributes)
 
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(my_instance)
+    append_instance_to_deployment(deployment, my_instance)
     return deployment
 
 
@@ -144,10 +140,14 @@ def build_deployment_openstack(attributes, publish_image, cred_account_ressource
     my_instance.networkId, my_instance.flavorId = retrieve_openstack_resources(my_instance.region, network_name,
                                                                              flavor_name, publish_image, cred_account_ressources)
 
+    append_instance_to_deployment(deployment, my_instance)
+    return deployment
+
+
+def append_instance_to_deployment(deployment, my_instance):
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
     deployment.instances.append(my_instance)
-    return deployment
 
 
 def retrieve_openstack_resources(regionName, networkName, flavorName, publishImage, credAccountRessources):
