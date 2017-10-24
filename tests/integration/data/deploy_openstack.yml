@@ -1,0 +1,7 @@
+---
+provisioner:
+  type: OpenStack
+  name: MyDeploy
+  region: GRA1
+  network: myNetwork
+  flavor: myFlavor
