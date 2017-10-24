@@ -77,13 +77,13 @@ def validate_deployment(file):
         printer.out("unknown error deployment json file", printer.ERROR)
 
 
-def check_and_get_attributes_from_file(file, expectedAttributes):
-    attributes = validate_deployment(file)
-    for attribute in expectedAttributes:
-        if not attribute in attributes:
-            raise TypeError("There is no attribute [" + attribute + "] for the provisioner")
+def check_and_get_attributes_from_file(deploy_file, expected_attributes):
+    file_attributes = validate_deployment(deploy_file)
+    for attribute in expected_attributes:
+        if not attribute in file_attributes:
+            raise ValueError("There is no attribute [" + attribute + "] for the provisioner")
 
-    return attributes
+    return file_attributes
 
 
 def build_deployment_amazon(attributes):
@@ -228,7 +228,9 @@ def create_progress_bar_openstack(bar_status):
     return progress
 
 
-def call_deploy(imageObject, publishImage, deployment, imageId):
+def call_deploy(imageObject, publishImage, deployment):
+    image_id = generics_utils.extract_id(publishImage.imageUri)
+
     if is_uri_based_on_appliance(publishImage.imageUri):
         source = imageObject.api.Users(imageObject.login).Appliances(
             generics_utils.extract_id(publishImage.applianceUri)).Get()
