@@ -88,36 +88,36 @@ def check_and_get_attributes_from_file(deploy_file, expected_attributes):
 
 def build_deployment_aws(attributes):
     deployment = Deployment()
-    myInstance = InstanceAmazon()
+    my_instance = InstanceAmazon()
 
     deployment.name = attributes["name"]
-    set_instance_cores_and_memory(myInstance, attributes)
+    set_instance_cores_and_memory(my_instance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myInstance)
+    deployment.instances.append(my_instance)
     return deployment
 
 
 def build_deployment_azure(attributes):
     deployment = Deployment()
-    myInstance = InstanceAzureResourceManager()
+    my_instance = InstanceAzureResourceManager()
 
     deployment.name = attributes["name"]
-    myInstance.userName = attributes["userName"]
+    my_instance.userName = attributes["userName"]
 
     if "userSshKey" in attributes:
-        myInstance.userSshKey = attributes["userSshKey"]
+        my_instance.userSshKey = attributes["userSshKey"]
     elif "userSshKeyFile" in attributes:
-        myInstance.userSshKey = open(attributes["userSshKeyFile"], "r").read()
+        my_instance.userSshKey = open(attributes["userSshKeyFile"], "r").read()
     else:
-        myInstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
+        my_instance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
 
-    set_instance_cores_and_memory(myInstance, attributes)
+    set_instance_cores_and_memory(my_instance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myInstance)
+    deployment.instances.append(my_instance)
     return deployment
 
 
@@ -132,21 +132,21 @@ def set_instance_cores_and_memory(my_instance, attributes):
         my_instance.memory = attributes["memory"]
 
 
-def build_deployment_openstack(attributes, publishImage, credAccountRessources):
+def build_deployment_openstack(attributes, publish_image, cred_account_ressources):
     deployment = Deployment()
-    myInstance = InstanceOpenStack()
+    my_instance = InstanceOpenStack()
 
     deployment.name = attributes["name"]
-    myInstance.region = attributes["region"]
-    networkName = attributes["network"]
-    flavorName = attributes["flavor"]
+    my_instance.region = attributes["region"]
+    network_name = attributes["network"]
+    flavor_name = attributes["flavor"]
 
-    myInstance.networkId, myInstance.flavorId = retrieve_openstack_resources(myInstance.region, networkName,
-                                                                             flavorName, publishImage, credAccountRessources)
+    my_instance.networkId, my_instance.flavorId = retrieve_openstack_resources(my_instance.region, network_name,
+                                                                             flavor_name, publish_image, cred_account_ressources)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myInstance)
+    deployment.instances.append(my_instance)
     return deployment
 
 
