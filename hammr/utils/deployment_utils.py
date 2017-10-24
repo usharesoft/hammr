@@ -91,14 +91,7 @@ def build_deployment_amazon(attributes):
     myInstance = InstanceAmazon()
 
     deployment.name = attributes["name"]
-    if not "cores" in attributes:
-        myInstance.cores = "1"
-    else:
-        myInstance.cores = attributes["cores"]
-    if not "memory" in attributes:
-        myInstance.memory = "1024"
-    else:
-        myInstance.memory = attributes["memory"]
+    get_instance_cores_and_memory(myInstance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
@@ -120,19 +113,23 @@ def build_deployment_azure(attributes):
     else:
         myInstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
 
-    if not "cores" in attributes:
-        myInstance.cores = "1"
-    else:
-        myInstance.cores = attributes["cores"]
-    if not "memory" in attributes:
-        myInstance.memory = "1024"
-    else:
-        myInstance.memory = attributes["memory"]
+    get_instance_cores_and_memory(myInstance, attributes)
 
     deployment.instances = pyxb.BIND()
     deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
     deployment.instances.append(myInstance)
     return deployment
+
+
+def get_instance_cores_and_memory(my_instance, attributes):
+    if not "cores" in attributes:
+        my_instance.cores = "1"
+    else:
+        my_instance.cores = attributes["cores"]
+    if not "memory" in attributes:
+        my_instance.memory = "1024"
+    else:
+        my_instance.memory = attributes["memory"]
 
 
 def build_deployment_openstack(attributes, publishImage, credAccountRessources):
