@@ -33,27 +33,36 @@ class TestDeployUtils(TestCase):
         file = findRelativePathFor("tests/integration/data/deploy_openstack_incomplete.yml")
 
         # When
-        return_value = build_deployment_openstack(file, None, None, None)
+        try:
+            check_and_get_attributes_from_file(file, ["name", "region", "network", "flavor"])
+        except ValueError:
+            return
 
         #Then
-        self.assertEquals(return_value, None)
+        self.fail(self)
 
     def testbuild_deployment_amazon_returns_None_when_file_incomplete(self):
         # Given
         file = findRelativePathFor("tests/integration/data/deploy_aws_incomplete.yml")
 
         # When
-        return_value = build_deployment_aws(file)
+        try:
+            check_and_get_attributes_from_file(file, ["name"])
+        except ValueError:
+            return
 
         #Then
-        self.assertEquals(return_value, None)
+        self.fail(self)
 
     def testbuild_deployment_azure_returns_None_when_file_incomplete(self):
         # Given
         file = findRelativePathFor("tests/integration/data/deploy_azure_incomplete.yml")
 
         # When
-        return_value = build_deployment_azure(file)
+        try:
+            check_and_get_attributes_from_file(file, ["name", "userName"])
+        except ValueError:
+            return
 
         #Then
-        self.assertEquals(return_value, None)
+        self.fail(self)

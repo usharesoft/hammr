@@ -79,6 +79,10 @@ def validate_deployment(file):
 
 def check_and_get_attributes_from_file(deploy_file, expected_attributes):
     file_attributes = validate_deployment(deploy_file)
+
+    if expected_attributes is None:
+        return file_attributes
+
     for attribute in expected_attributes:
         if not attribute in file_attributes:
             raise ValueError("There is no attribute [" + attribute + "] for the provisioner")
