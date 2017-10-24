@@ -43,7 +43,7 @@ class TestDeployUtils(TestCase):
         file = findRelativePathFor("tests/integration/data/deploy_aws_incomplete.yml")
 
         # When
-        return_value = build_deployment_amazon(file)
+        return_value = build_deployment_aws(file)
 
         #Then
         self.assertEquals(return_value, None)

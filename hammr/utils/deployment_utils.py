@@ -86,7 +86,7 @@ def check_and_get_attributes_from_file(deploy_file, expected_attributes):
     return file_attributes
 
 
-def build_deployment_amazon(attributes):
+def build_deployment_aws(attributes):
     deployment = Deployment()
     myInstance = InstanceAmazon()
 

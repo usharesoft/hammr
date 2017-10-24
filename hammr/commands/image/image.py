@@ -673,7 +673,7 @@ class Image(Cmd, CoreGlobal):
     def deploy_aws(self, deploy_file, publish_image):
         attributes = check_and_get_attributes_from_file(deploy_file, ["name"])
 
-        deployment = build_deployment_amazon(attributes)
+        deployment = build_deployment_aws(attributes)
 
         deployed_instance = call_deploy(self, publish_image, deployment)
 
