@@ -670,44 +670,42 @@ class Image(Cmd, CoreGlobal):
         else:
             return publish_image
 
-    def deploy_aws(self, deployFile, publishImage):
-        attributes = check_and_get_attributes_from_file(deployFile, ["name"])
-        imageId = generics_utils.extract_id(publishImage.imageUri)
+    def deploy_aws(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name"])
 
         deployment = build_deployment_amazon(attributes)
-        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
 
-        deployedInstanceId = deployedInstance.applicationId
-        status = show_deploy_progress_without_percentage(self, deployedInstanceId)
-        return print_deploy_info(self, status, deployedInstanceId)
+        deployed_instance = call_deploy(self, publish_image, deployment)
 
-    def deploy_openstack(self, deployFile, publishImage):
-        attributes = check_and_get_attributes_from_file(deployFile, ["name", "region", "network", "flavor"])
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
+        return print_deploy_info(self, status, deployed_instance_id)
+
+    def deploy_openstack(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name", "region", "network", "flavor"])
 
         bar_status = OpStatus()
         progress = create_progress_bar_openstack(bar_status)
 
-        cred_account = retrieve_credaccount(self, publishImage.dbId, publishImage)
-        deployment = build_deployment_openstack(attributes, publishImage, cred_account)
+        cred_account = retrieve_credaccount(self, publish_image.dbId, publish_image)
+        deployment = build_deployment_openstack(attributes, publish_image, cred_account)
 
         bar_status.message = "Deploying instance"
         bar_status.percentage = 50
         progress.update(bar_status.percentage)
 
-        imageId = generics_utils.extract_id(publishImage.imageUri)
-        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
+        deployed_instance = call_deploy(self, publish_image, deployment)
 
-        deployedInstanceId = deployedInstance.applicationId
-        status = show_deploy_progress_with_percentage(self, deployedInstanceId, bar_status, progress)
-        return print_deploy_info(self, status, deployedInstanceId)
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_with_percentage(self, deployed_instance_id, bar_status, progress)
+        return print_deploy_info(self, status, deployed_instance_id)
 
-    def deploy_azure(self, deployFile, publishImage):
-        attributes = check_and_get_attributes_from_file(deployFile, ["name", "userName"])
+    def deploy_azure(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name", "userName"])
 
         deployment = build_deployment_azure(attributes)
-        imageId = generics_utils.extract_id(publishImage.imageUri)
-        deployedInstance = call_deploy(self, publishImage, deployment, imageId)
+        deployed_instance = call_deploy(self, publish_image, deployment)
 
-        deployedInstanceId = deployedInstance.applicationId
-        status = show_deploy_progress_without_percentage(self, deployedInstanceId)
-        return print_deploy_info(self, status, deployedInstanceId)
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
+        return print_deploy_info(self, status, deployed_instance_id)
