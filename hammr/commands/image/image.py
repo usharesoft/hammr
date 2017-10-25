@@ -231,10 +231,10 @@ class Image(Cmd, CoreGlobal):
 
             deploy_file = generics_utils.get_file(do_args.file)
             if deploy_file is None:
-                raise TypeError("Deploy file cannot be None")
+                raise TypeError("Deploy file not found")
 
             if publish_image.targetFormat is None:
-                raise TypeError("Publish image target format cannot be None")
+                raise TypeError("Publish image target format not found")
 
             target_plateform_name = publish_image.targetFormat.name
             if "Amazon" in target_plateform_name:
