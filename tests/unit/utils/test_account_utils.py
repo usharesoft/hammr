@@ -16,7 +16,7 @@ from unittest import TestCase
 
 from hammr.utils.account_utils import *
 
-from fileUtils import *
+from file_utils import *
 
 class TestK5(TestCase):
     def test_k5_should_return_cred_account_when_valid_entries(self):

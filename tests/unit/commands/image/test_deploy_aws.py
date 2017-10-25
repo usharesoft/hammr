@@ -21,15 +21,16 @@ from uforge.application import Api
 from hammr.utils import constants
 from uforge.objects.uforge import *
 from uforge.objects import uforge
-import datetime
-from hammr.commands.image import image
+from tests.unit.commands.image.deploy_test_utils import prepare_image, prepare_mock_deploy
+from tests.unit.utils.file_utils import findRelativePathFor
+
 
 class TestDeployAWS(TestCase):
 
     @patch('uforge.application.Api._Users._Appliances._Images._Pimages._Deploys.Deploy')
     def test_do_deploy_aws_return_2_when_imageId_is_None(self, mock_api_deploy):
         # given
-        i = self.prepare_image()
+        i = prepare_image()
         deployment = self.get_deployment_aws()
         mock_api_deploy.return_value = deployment
         args = self.prepare_image_deploy_command_aws(None)
@@ -48,13 +49,15 @@ class TestDeployAWS(TestCase):
     def test_do_deploy_aws_return_0_when_status_is_running(self, mock_get_deployment, mock_app_get, mock_api_deploy,
                                                         mock_get_deploy_status, mock_api_pimg_getall_for_app):
         # given
-        i = self.prepare_image()
+        i = prepare_image()
         args = self.prepare_image_deploy_command_aws(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_api_deploy)
-        self.prepare_mock_app_get(mock_app_get)
-        self.prepare_mock_api_pimg_getall_for_app_aws(mock_api_pimg_getall_for_app)
-        self.prepare_mock_deploy_status_running(mock_get_deploy_status)
+        deployment = self.get_deployment_aws()
+        pimages = self.prepare_aws_pimages_from_app()
+
+        prepare_mock_deploy(deployment, pimages, Appliance(), ["starting", "starting", "running"],
+                        mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status,
+                        mock_api_pimg_getall_for_app)
 
         # when
         deploy_return = i.do_deploy(args)
@@ -71,13 +74,15 @@ class TestDeployAWS(TestCase):
     def test_do_deploy_aws_a_scan_return_0_when_status_is_running(self, mock_get_deployment, mock_scan_get, mock_scan_deploy,
                                                         mock_get_deploy_status, prepare_mock_api_pimg_getall_for_scan):
         # given
-        i = self.prepare_image()
+        i = prepare_image()
         args = self.prepare_image_deploy_command_aws(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_scan_deploy)
-        self.prepare_mock_scan_get(mock_scan_get)
-        self.prepare_mock_api_pimg_getall_for_scan_aws(prepare_mock_api_pimg_getall_for_scan)
-        self.prepare_mock_deploy_status_running(mock_get_deploy_status)
+        deployment = self.get_deployment_aws()
+        pimages = self.prepare_aws_pimages_from_scan()
+
+        prepare_mock_deploy(deployment, pimages, Scan(), ["starting", "starting", "running"],
+                        mock_get_deployment, mock_scan_get, mock_scan_deploy, mock_get_deploy_status,
+                        prepare_mock_api_pimg_getall_for_scan)
 
         # when
         deploy_return = i.do_deploy(args)
@@ -93,13 +98,15 @@ class TestDeployAWS(TestCase):
     def test_do_deploy_aws_return_1_when_status_is_onfire(self, mock_get_deployment, mock_app_get, mock_api_deploy,
                                                         mock_get_deploy_status, mock_api_pimg_getall_for_app):
         # given
-        i = self.prepare_image()
+        i = prepare_image()
         args = self.prepare_image_deploy_command_aws(1234)
 
-        self.prepare_mock_deploy_aws(mock_get_deployment, mock_api_deploy)
-        self.prepare_mock_app_get(mock_app_get)
-        self.prepare_mock_api_pimg_getall_for_app_aws(mock_api_pimg_getall_for_app)
-        self.prepare_mock_deploy_status_onfire(mock_get_deploy_status)
+        deployment = self.get_deployment_aws()
+        pimages = self.prepare_aws_pimages_from_app()
+
+        prepare_mock_deploy(deployment, pimages, Appliance(), ["starting", "starting", "on-fire"],
+                        mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status,
+                        mock_api_pimg_getall_for_app)
 
         # when
         deploy_return = i.do_deploy(args)
@@ -129,17 +136,8 @@ class TestDeployAWS(TestCase):
         return deployment
 
     def prepare_image_deploy_command_aws(self, id):
-         args = "--file tests/integration/data/deploy_aws.yml --publish-id %s" % (id)
+         args = "--file %s --publish-id %s" % (findRelativePathFor("tests/integration/data/deploy_aws.yml"), id)
          return args
-
-    @staticmethod
-    def prepare_image():
-        i = image.Image()
-        i.api = Api("url", username="username", password="password", headers=None,
-                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
-        i.login = "login"
-        i.password = "password"
-        return i
 
     def prepare_aws_pimages_from_app(self):
         new_pimages = uforge.publishImages()
@@ -158,7 +156,7 @@ class TestDeployAWS(TestCase):
 
         return new_pimages
 
-    def prepare_pimages_from_scan_aws(self):
+    def prepare_aws_pimages_from_scan(self):
         new_pimages = uforge.publishImages()
         new_pimages.publishImages = pyxb.BIND()
 
@@ -174,43 +172,4 @@ class TestDeployAWS(TestCase):
 
         return new_pimages
 
-    @staticmethod
-    def prepare_mock_deploy_status_running(mock_get_deploy_status):
-        # The mock will return statusStarting on first and second calls, and statusRunning on third call
-        statusStarting = OpStatus()
-        statusStarting.message = "starting"
-        statusRunning = OpStatus()
-        statusRunning.message = "running"
-        mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
 
-    @staticmethod
-    def prepare_mock_deploy_status_onfire(mock_get_deploy_status):
-        # The mock will return statusStarting on first and second calls, and statusRunning on third call
-        statusStarting = OpStatus()
-        statusStarting.message = "starting"
-        statusRunning = OpStatus()
-        statusRunning.message = "on-fire"
-        mock_get_deploy_status.side_effect = [statusStarting, statusStarting, statusRunning]
-
-    def prepare_mock_deploy_aws(self, mock_get_deployment, mock_api_deploy):
-        deployment = self.get_deployment_aws()
-        mock_api_deploy.return_value = deployment
-        mock_get_deployment.return_value = deployment
-
-    @staticmethod
-    def prepare_mock_app_get(mock_app_get):
-        newAppliance = Appliance()
-        mock_app_get.return_value = newAppliance
-
-    @staticmethod
-    def prepare_mock_scan_get(mock_scan_get):
-        newScan = Scan()
-        mock_scan_get.return_value = newScan
-
-    def prepare_mock_api_pimg_getall_for_app_aws(self, mock_api_pimg_getall_for_app):
-        new_pimages = self.prepare_aws_pimages_from_app()
-        mock_api_pimg_getall_for_app.return_value = new_pimages
-
-    def prepare_mock_api_pimg_getall_for_scan_aws(self, mock_api_pimg_getall_for_scan):
-        new_pimages = self.prepare_pimages_from_scan_aws()
-        mock_api_pimg_getall_for_scan.return_value = new_pimages
