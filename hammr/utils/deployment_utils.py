@@ -165,56 +165,32 @@ def retrieve_openstack_resources(region_name, network_name, flavor_name, publish
 
 
 def retrieve_cred_account_resources_tenant(cred_account_resources, publish_image):
-    tenant = None
-    for t in cred_account_resources.cloudResources.tenants.tenant:
-        if t.name == publish_image.tenantName:
-            tenant = t
-            break
-
-    if tenant is None:
-        raise TypeError("Tenant not found")
-    else:
-        return tenant
+    for tenant in cred_account_resources.cloudResources.tenants.tenant:
+        if tenant.name == publish_image.tenantName:
+            return tenant
+    raise TypeError("Tenant not found")
 
 
 def retrieve_openstack_resources_region(region_name, tenant):
-    region = None
-    for region_entities in tenant.regionsEntities:
-        for region_entity in region_entities.regionEntities:
-            if region_entity.regionName == region_name:
-                region = region_entity
-                break
-
-    if region is None:
-        raise TypeError("Region " + region_name + " not found on OpenStack")
-    else:
-        return region
+    for region_entity in tenant.regionsEntities:
+        for region in region_entity.regionEntities:
+            if region.regionName == region_name:
+                return region
+    raise TypeError("Region " + region_name + " not found on OpenStack")
 
 
 def retrieve_openstack_resources_flavor_id(flavor_name, region):
-    flavor_id = None
     for flavor in region.flavors.flavor:
         if flavor.name == flavor_name:
-            flavor_id = flavor.id
-            break
-
-    if flavor_id is None:
-        raise TypeError("Cannot find flavor " + flavor_name + " in region " + region.regionName)
-    else:
-        return flavor_id
+            return flavor.id
+    raise TypeError("Cannot find flavor " + flavor_name + " in region " + region.regionName)
 
 
 def retrieve_openstack_resources_network_id(network_name, region):
-    network_id = None
     for network in region.networks.network:
         if network.name == network_name:
-            network_id = network.id
-            break
-
-    if network_id is None:
-        raise TypeError("Cannot find network " + network_name + " in region " + region.regionName)
-    else:
-        return network_id
+            return network.id
+    raise TypeError("Cannot find network " + network_name + " in region " + region.regionName)
 
 
 def create_progress_bar_openstack(bar_status):
