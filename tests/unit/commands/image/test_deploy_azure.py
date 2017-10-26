@@ -62,9 +62,9 @@ class TestDeployAzure(TestCase):
         args = self.prepare_image_deploy_command_azure(1234)
 
         deployment = self.get_deployment_azure()
-        pimages = self.prepare_azure_pimages_from_scan()
+        publish_images = self.prepare_azure_pimages_from_scan()
 
-        prepare_mock_deploy(deployment, pimages, Scan(), ["starting", "starting", "running"],
+        prepare_mock_deploy(deployment, publish_images, Scan(), ["starting", "starting", "running"],
                         mock_get_deployment, mock_scan_get, mock_scan_deploy, mock_get_deploy_status,
                             prepare_mock_api_pimg_getall_for_scan)
 
@@ -86,9 +86,9 @@ class TestDeployAzure(TestCase):
         args = self.prepare_image_deploy_command_azure(1234)
 
         deployment = self.get_deployment_azure()
-        pimages = self.prepare_azure_pimages_from_app()
+        publish_images = self.prepare_azure_pimages_from_app()
 
-        prepare_mock_deploy(deployment, pimages, Appliance(), ["starting", "starting", "on-fire"],
+        prepare_mock_deploy(deployment, publish_images, Appliance(), ["starting", "starting", "on-fire"],
                         mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status,
                         mock_api_pimg_getall_for_app)
 
@@ -103,21 +103,21 @@ class TestDeployAzure(TestCase):
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        myinstance = InstanceAzureResourceManager()
-        myinstance.cores = "1"
-        myinstance.memory = "1024"
-        myinstance.hostname = "example.com"
-        myinstance.userName = "myName"
-        myinstance.userSshKey = "mySshKey"
+        instance = InstanceAzureResourceManager()
+        instance.cores = "1"
+        instance.memory = "1024"
+        instance.hostname = "example.com"
+        instance.userName = "myName"
+        instance.userSshKey = "mySshKey"
 
-        myLocation = Location()
-        myLocation.provider = "myprovider"
-        myinstance.location = myLocation
-        myinstance.cloudProvider = "azurearm"
+        location = Location()
+        location.provider = "myprovider"
+        instance.location = location
+        instance.cloudProvider = "azurearm"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
+        deployment.instances.append(instance)
 
         return deployment
 
@@ -126,35 +126,35 @@ class TestDeployAzure(TestCase):
          return args
 
     def prepare_azure_pimages_from_app(self):
-        new_pimages = uforge.publishImages()
-        new_pimages.publishImages = pyxb.BIND()
+        publish_images = uforge.publishImages()
+        publish_images.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAzureResourceManager()
-        newImage.dbId = 1234
-        newImage.imageUri = 'users/guest/appliances/5/images/1234'
-        newImage.applianceUri = 'users/guest/appliances/5'
-        newImage.status = "complete"
-        newImage.status.complete = True
-        newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Microsoft Azure"
+        publish_image = PublishImageAzureResourceManager()
+        publish_image.dbId = 1234
+        publish_image.imageUri = 'users/guest/appliances/5/images/1234'
+        publish_image.applianceUri = 'users/guest/appliances/5'
+        publish_image.status = "complete"
+        publish_image.status.complete = True
+        publish_image.targetFormat = uforge.targetFormat()
+        publish_image.targetFormat.name = "Microsoft Azure"
 
-        new_pimages.publishImages.append(newImage)
+        publish_images.publishImages.append(publish_image)
 
-        return new_pimages
+        return publish_images
 
     def prepare_azure_pimages_from_scan(self):
-        new_pimages = uforge.publishImages()
-        new_pimages.publishImages = pyxb.BIND()
+        publish_images = uforge.publishImages()
+        publish_images.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAzureResourceManager()
-        newImage.dbId = 1234
-        newImage.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
-        newImage.status = "complete"
-        newImage.status.complete = True
-        newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Microsoft Azure"
+        publish_image = PublishImageAzureResourceManager()
+        publish_image.dbId = 1234
+        publish_image.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
+        publish_image.status = "complete"
+        publish_image.status.complete = True
+        publish_image.targetFormat = uforge.targetFormat()
+        publish_image.targetFormat.name = "Microsoft Azure"
 
-        new_pimages.publishImages.append(newImage)
+        publish_images.publishImages.append(publish_image)
 
-        return new_pimages
+        return publish_images
 

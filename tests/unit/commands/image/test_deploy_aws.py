@@ -78,9 +78,9 @@ class TestDeployAWS(TestCase):
         args = self.prepare_image_deploy_command_aws(1234)
 
         deployment = self.get_deployment_aws()
-        pimages = self.prepare_aws_pimages_from_scan()
+        publish_images = self.prepare_aws_pimages_from_scan()
 
-        prepare_mock_deploy(deployment, pimages, Scan(), ["starting", "starting", "running"],
+        prepare_mock_deploy(deployment, publish_images, Scan(), ["starting", "starting", "running"],
                         mock_get_deployment, mock_scan_get, mock_scan_deploy, mock_get_deploy_status,
                         prepare_mock_api_pimg_getall_for_scan)
 
@@ -102,9 +102,9 @@ class TestDeployAWS(TestCase):
         args = self.prepare_image_deploy_command_aws(1234)
 
         deployment = self.get_deployment_aws()
-        pimages = self.prepare_aws_pimages_from_app()
+        publish_images = self.prepare_aws_pimages_from_app()
 
-        prepare_mock_deploy(deployment, pimages, Appliance(), ["starting", "starting", "on-fire"],
+        prepare_mock_deploy(deployment, publish_images, Appliance(), ["starting", "starting", "on-fire"],
                         mock_get_deployment, mock_app_get, mock_api_deploy, mock_get_deploy_status,
                         mock_api_pimg_getall_for_app)
 
@@ -119,19 +119,19 @@ class TestDeployAWS(TestCase):
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        myinstance = InstanceAmazon()
-        myinstance.cores = "1"
-        myinstance.memory = "1024"
-        myinstance.hostname = "example.com"
+        instance = InstanceAmazon()
+        instance.cores = "1"
+        instance.memory = "1024"
+        instance.hostname = "example.com"
 
-        myLocation = Location()
-        myLocation.provider = "myprovider"
-        myinstance.location = myLocation
-        myinstance.cloudProvider = "amazon aws"
+        location = Location()
+        location.provider = "myprovider"
+        instance.location = location
+        instance.cloudProvider = "amazon aws"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-        deployment.instances.append(myinstance)
+        deployment.instances.append(instance)
 
         return deployment
 
@@ -140,36 +140,36 @@ class TestDeployAWS(TestCase):
          return args
 
     def prepare_aws_pimages_from_app(self):
-        new_pimages = uforge.publishImages()
-        new_pimages.publishImages = pyxb.BIND()
+        publish_images = uforge.publishImages()
+        publish_images.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAws()
-        newImage.dbId = 1234
-        newImage.imageUri = 'users/guest/appliances/5/images/1234'
-        newImage.applianceUri = 'users/guest/appliances/5'
-        newImage.status = "complete"
-        newImage.status.complete = True
-        newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Amazon AWS"
+        publish_image = PublishImageAws()
+        publish_image.dbId = 1234
+        publish_image.imageUri = 'users/guest/appliances/5/images/1234'
+        publish_image.applianceUri = 'users/guest/appliances/5'
+        publish_image.status = "complete"
+        publish_image.status.complete = True
+        publish_image.targetFormat = uforge.targetFormat()
+        publish_image.targetFormat.name = "Amazon AWS"
 
-        new_pimages.publishImages.append(newImage)
+        publish_images.publishImages.append(publish_image)
 
-        return new_pimages
+        return publish_images
 
     def prepare_aws_pimages_from_scan(self):
-        new_pimages = uforge.publishImages()
-        new_pimages.publishImages = pyxb.BIND()
+        publish_images = uforge.publishImages()
+        publish_images.publishImages = pyxb.BIND()
 
-        newImage = PublishImageAws()
-        newImage.dbId = 1234
-        newImage.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
-        newImage.status = "complete"
-        newImage.status.complete = True
-        newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Amazon AWS"
+        publish_image = PublishImageAws()
+        publish_image.dbId = 1234
+        publish_image.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
+        publish_image.status = "complete"
+        publish_image.status.complete = True
+        publish_image.targetFormat = uforge.targetFormat()
+        publish_image.targetFormat.name = "Amazon AWS"
 
-        new_pimages.publishImages.append(newImage)
+        publish_images.publishImages.append(publish_image)
 
-        return new_pimages
+        return publish_images
 
 
