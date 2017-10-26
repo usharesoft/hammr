@@ -136,7 +136,7 @@ class TestDeployAzure(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Azure ARM"
+        newImage.targetFormat.name = "Microsoft Azure"
 
         new_pimages.publishImages.append(newImage)
 
@@ -152,7 +152,7 @@ class TestDeployAzure(TestCase):
         newImage.status = "complete"
         newImage.status.complete = True
         newImage.targetFormat = uforge.targetFormat()
-        newImage.targetFormat.name = "Azure ARM"
+        newImage.targetFormat.name = "Microsoft Azure"
 
         new_pimages.publishImages.append(newImage)
 
