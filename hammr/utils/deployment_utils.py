@@ -27,6 +27,7 @@ from texttable import Texttable
 import getpass
 import re
 
+
 def retrieve_credaccount(image_object, pimageId, pimage):
     # Increases the limit for non determinist content: the xml used for openstack retrieval has a lot of
     # non determinist content that raises an exception if limit is low.
@@ -37,12 +38,14 @@ def retrieve_credaccount(image_object, pimageId, pimage):
     else:
         return retrieve_credaccount_from_scan(image_object, pimageId, pimage)
 
+
 def retrieve_credaccount_from_app(image_object, pimageId, pimage):
     image_id = generics_utils.extract_id(pimage.imageUri)
     source_id = generics_utils.extract_id(pimage.applianceUri)
     account_id = pimage.credAccount.dbId
     return image_object.api.Users(image_object.login).Appliances(source_id).Images(image_id).Pimages(pimageId).\
         Accounts(account_id).Resources.Getaccountresources()
+
 
 def retrieve_credaccount_from_scan(image_object, pimageId, pimage):
     image_id = generics_utils.extract_id(pimage.imageUri)
@@ -51,6 +54,7 @@ def retrieve_credaccount_from_scan(image_object, pimageId, pimage):
     account_id = pimage.credAccount.dbId
     return image_object.api.Users(image_object.login).Scannedinstances(scannedinstance_id).Scans(scan_id).\
         Images(image_id).Pimages(pimageId).Accounts(account_id).Resources.Getaccountresources()
+
 
 def validate_deployment(file):
     try:
@@ -72,134 +76,122 @@ def validate_deployment(file):
     except IOError as e:
         printer.out("unknown error deployment json file", printer.ERROR)
 
-def build_deployment_amazon(data):
-    data = validate_deployment(data)
+
+def check_and_get_attributes_from_file(deploy_file, expected_attributes):
+    file_attributes = validate_deployment(deploy_file)
+
+    if expected_attributes is None:
+        return file_attributes
+
+    for attribute in expected_attributes:
+        if not attribute in file_attributes:
+            raise ValueError("There is no attribute [" + attribute + "] for the provisioner")
+
+    return file_attributes
+
+
+def build_deployment_aws(attributes):
     deployment = Deployment()
-    myinstance = InstanceAmazon()
-    if not "name" in data:
-        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-        return None
-    deployment.name = data["name"]
-    if not "cores" in data:
-        myinstance.cores = "1"
-    else:
-        myinstance.cores = data["cores"]
-    if not "memory" in data:
-        myinstance.memory = "1024"
-    else:
-        myinstance.memory = data["memory"]
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myinstance)
+    my_instance = InstanceAmazon()
+
+    deployment.name = attributes["name"]
+    set_instance_cores_and_memory(my_instance, attributes)
+
+    append_instance_to_deployment(deployment, my_instance)
     return deployment
 
-def build_deployment_azure(data):
-    data = validate_deployment(data)
+
+def build_deployment_azure(attributes):
     deployment = Deployment()
-    myinstance = InstanceAzureResourceManager()
-    if not "name" in data:
-        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-        return None
-    deployment.name = data["name"]
-    if "userName" in data:
-        myinstance.userName = data["userName"]
-    else:
-        printer.out("There is no attribute [userName] for the provisioner", printer.ERROR)
-        return None
-    if "userSshKey" in data:
-        myinstance.userSshKey = data["userSshKey"]
-    elif "userSshKeyFile" in data:
-        try:
-            myinstance.userSshKey = open(data["userSshKeyFile"], "r").read()
-        except IOError as e:
-                printer.out("File error: "+str(e), printer.ERROR)
-                return
-    else:
-        myinstance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
+    my_instance = InstanceAzureResourceManager()
 
-    if not "cores" in data:
-        myinstance.cores = "1"
-    else:
-        myinstance.cores = data["cores"]
-    if not "memory" in data:
-        myinstance.memory = "1024"
-    else:
-        myinstance.memory = data["memory"]
+    deployment.name = attributes["name"]
+    my_instance.userName = attributes["userName"]
 
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myinstance)
+    if "userSshKey" in attributes:
+        my_instance.userSshKey = attributes["userSshKey"]
+    elif "userSshKeyFile" in attributes:
+        my_instance.userSshKey = open(attributes["userSshKeyFile"], "r").read()
+    else:
+        my_instance.userPassword = query_password_azure("Please enter the password to connect to the instance: ")
+
+    set_instance_cores_and_memory(my_instance, attributes)
+
+    append_instance_to_deployment(deployment, my_instance)
     return deployment
 
-def build_deployment_openstack(data, pimage, pimageId, cred_account_ressources):
-    data = validate_deployment(data)
+
+def set_instance_cores_and_memory(my_instance, attributes):
+    if not "cores" in attributes:
+        my_instance.cores = "1"
+    else:
+        my_instance.cores = attributes["cores"]
+    if not "memory" in attributes:
+        my_instance.memory = "1024"
+    else:
+        my_instance.memory = attributes["memory"]
+
+
+def build_deployment_openstack(attributes, publish_image, cred_account_resources):
     deployment = Deployment()
-    myinstance = InstanceOpenStack()
+    my_instance = InstanceOpenStack()
 
-    if not "name" in data:
-        printer.out("There is no attribute [name] for the provisioner", printer.ERROR)
-        return None
-    deployment.name = data["name"]
+    deployment.name = attributes["name"]
+    my_instance.region = attributes["region"]
+    network_name = attributes["network"]
+    flavor_name = attributes["flavor"]
 
-    if not "region" in data:
-        printer.out("There is no attribute [region] for the provisioner", printer.ERROR)
-        return None
-    myinstance.region = data["region"]
+    my_instance.networkId, my_instance.flavorId = retrieve_openstack_resources(my_instance.region, network_name,
+                                                                               flavor_name, publish_image,
+                                                                               cred_account_resources)
 
-    if not "network" in data:
-        printer.out("There is no attribute [network] for the provisioner", printer.ERROR)
-        return None
-    network_name = data["network"]
-
-    if not "flavor" in data:
-        printer.out("There is no attribute [flavor] for the provisioner", printer.ERROR)
-        return None
-    flavor_name = data["flavor"]
-
-    myinstance.networkId, myinstance.flavorId = retrieve_openstack_resources(myinstance.region, network_name,
-                                                                flavor_name, pimage, pimageId, cred_account_ressources)
-
-    deployment.instances = pyxb.BIND()
-    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
-    deployment.instances.append(myinstance)
-
+    append_instance_to_deployment(deployment, my_instance)
     return deployment
 
-def retrieve_openstack_resources(region_name, network_name, flavor_name, pimage, pimageId, cred_account_ressources):
-    flavor_id = None
-    network_id = None
-    tenants = cred_account_ressources.cloudResources.tenants.tenant
-    tenant_name = pimage.tenantName
-    for tenant in tenants:
-        if tenant.name == tenant_name:
-            break;
 
-    region_retrieved = None
-    regionsEntities = tenant.regionsEntities
-    for regionEntities in regionsEntities:
-        regions = regionEntities.regionEntities
-        for region in regions:
+def append_instance_to_deployment(deployment, my_instance):
+    deployment.instances = pyxb.BIND()
+    deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
+    deployment.instances.append(my_instance)
+
+
+def retrieve_openstack_resources(region_name, network_name, flavor_name, publish_image, cred_account_resources):
+    tenant = retrieve_cred_account_resources_tenant(cred_account_resources, publish_image)
+    region = retrieve_openstack_resources_region(region_name, tenant)
+    flavorId = retrieve_openstack_resources_flavor_id(flavor_name, region)
+    networkId = retrieve_openstack_resources_network_id(network_name, region)
+
+    return networkId[0].encode('ascii', 'ignore'), flavorId.encode('ascii', 'ignore')
+
+
+def retrieve_cred_account_resources_tenant(cred_account_resources, publish_image):
+    for tenant in cred_account_resources.cloudResources.tenants.tenant:
+        if tenant.name == publish_image.tenantName:
+            return tenant
+    raise TypeError("Tenant not found")
+
+
+def retrieve_openstack_resources_region(region_name, tenant):
+    for region_entity in tenant.regionsEntities:
+        for region in region_entity.regionEntities:
             if region.regionName == region_name:
-                region_retrieved = region
-                break;
+                return region
+    raise TypeError("Region " + region_name + " not found on OpenStack")
 
-    if region_retrieved == None:
-        printer.out("Region of the published image not found", printer.ERROR)
-        return None, None
 
-    flavors = region.flavors.flavor
-    for flavor in flavors:
+def retrieve_openstack_resources_flavor_id(flavor_name, region):
+    for flavor in region.flavors.flavor:
         if flavor.name == flavor_name:
-            flavor_id = flavor.id
-            break;
+            return flavor.id
+    raise TypeError("Cannot find flavor " + flavor_name + " in region " + region.regionName)
 
-    networks = region.networks.network
-    for network in networks:
+
+def retrieve_openstack_resources_network_id(network_name, region):
+    for network in region.networks.network:
         if network.name == network_name:
-            network_id = network.id
-            break;
+            return network.id
+    raise TypeError("Cannot find network " + network_name + " in region " + region.regionName)
 
-    return network_id[0].encode('ascii', 'ignore'), flavor_id.encode('ascii', 'ignore')
 
 def create_progress_bar_openstack(bar_status):
     bar_status.message = "Retrieving information from OpenStack"
@@ -213,27 +205,37 @@ def create_progress_bar_openstack(bar_status):
     progress.update(bar_status.percentage)
     return progress
 
-def call_deploy(image_object, pimage, deployment, image_id):
-    if is_uri_based_on_appliance(pimage.imageUri):
-        source = image_object.api.Users(image_object.login).Appliances(generics_utils.extract_id(pimage.applianceUri)).Get()
+
+def call_deploy(image_object, publish_image, deployment):
+    image_id = generics_utils.extract_id(publish_image.imageUri)
+
+    if image_id is None or image_id == "":
+        raise TypeError("Cannot retrieve image id from publish image")
+
+    if is_uri_based_on_appliance(publish_image.imageUri):
+        source = image_object.api.Users(image_object.login).Appliances(
+            generics_utils.extract_id(publish_image.applianceUri)).Get()
+
         if source is None or not hasattr(source, 'dbId'):
-            printer.out("No template found for this image", printer.ERROR)
-            return 2
-        deployed_instance = image_object.api.Users(image_object.login).Appliances(source.dbId).Images(image_id).Pimages(
-            pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
-    elif is_uri_based_on_scan(pimage.imageUri):
-        ScannedInstanceId = extract_scannedinstance_id(pimage.imageUri)
-        ScanId = extract_scan_id(pimage.imageUri)
-        source = image_object.api.Users(image_object.login).Scannedinstances(ScannedInstanceId).Scans(ScanId).Get()
+            raise TypeError("No template found for this image")
+        else:
+            return image_object.api.Users(image_object.login).Appliances(source.dbId).Images(image_id).Pimages(
+                publish_image.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+
+    elif is_uri_based_on_scan(publish_image.imageUri):
+        scanned_instance_id = extract_scannedinstance_id(publish_image.imageUri)
+        scan_id = extract_scan_id(publish_image.imageUri)
+        source = image_object.api.Users(image_object.login).Scannedinstances(scanned_instance_id).Scans(scan_id).Get()
+
         if source is None or not hasattr(source, 'dbId'):
-            printer.out("No scan found for this image", printer.ERROR)
-            return 2
-        deployed_instance = image_object.api.Users(image_object.login).Scannedinstances(ScannedInstanceId).Scans(
-            ScanId).Images(Itid=image_id).Pimages(pimage.dbId).Deploys.Deploy(body=deployment, element_name="ns1:deployment")
+            raise TypeError("No scan found for this image")
+        else:
+            return image_object.api.Users(image_object.login).Scannedinstances(scanned_instance_id).Scans(
+                scan_id).Images(Itid=image_id).Pimages(publish_image.dbId).Deploys.Deploy(body=deployment,
+                                                                                       element_name="ns1:deployment")
     else:
-        printer.out("No source found for this image", printer.ERROR)
-        return 2
-    return deployed_instance
+        raise TypeError("No source found for this image")
+
 
 def print_deploy_info(image_object, status, deployed_instance_id):
     if status.message == "on-fire":
@@ -272,6 +274,8 @@ def print_deploy_info(image_object, status, deployed_instance_id):
         return 0
 
 def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
+    printer.out("Deployment in progress", printer.INFO)
+
     status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
     bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
     bar.start()
