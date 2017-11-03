@@ -101,7 +101,7 @@ def check_mandatory_create_account(iterables, type):
 
 def check_extension_is_json(file):
     fileExtension = os.path.splitext(file)[1]
-    if fileExtension == ".yml":
+    if fileExtension == ".yml" or fileExtension == ".yaml":
         return False
     elif fileExtension == ".json":
         return True
