@@ -99,15 +99,15 @@ def check_mandatory_create_account(iterables, type):
 
     return iterables
 
-def check_extension_is_json(file):
-    fileExtension = os.path.splitext(file)[1]
+def check_extension_is_json(file_path):
+    fileExtension = os.path.splitext(file_path)[1]
     if fileExtension == ".yml" or fileExtension == ".yaml":
         return False
     elif fileExtension == ".json":
         return True
     else:
         printer.out("please provide a json or yaml file \n", printer.ERROR)
-        raise Exception("File '" + file + "' is not allowed. Please provide a json or yaml file.")
+        raise Exception("File '" + file_path + "' is not allowed. Please provide a json or yaml file.")
 
 def load_data(file):
     isJson = check_extension_is_json(file)
@@ -122,10 +122,10 @@ def load_data(file):
 def validate(file):
     isJson = check_extension_is_json(file)
     if isJson:
-        print "you provided a json file, checking..."
+        printer.out("You provided a json file, checking...", printer.INFO)
         template = validate_configurations_file(file, isJson=True)
     else:
-        print "you provided a yaml file, checking..."
+        printer.out("You provided a yaml file, checking...", printer.INFO)
         template = validate_configurations_file(file, isJson=False)
     return template
 
