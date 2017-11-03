@@ -76,8 +76,8 @@ To deploy a published machine image to OpenStack the OpenStack builder section m
     type: OpenStack
     name: MyDeploy
     region: GRA1
-    network: 8d3e91fd-c533-418f-8578-4252de201489
-    flavor: 98c1e679-5f2c-4069-b4ea-4a4f7179b758
+    network: Ext-Net
+    flavor: vps-ssd-2
 
 If you are using JSON:
 
@@ -88,8 +88,8 @@ If you are using JSON:
       "type": "OpenStack",
       "name": "MyDeploy",
       "region": "GRA1",
-      "network": "8d3e91fd-c533-418f-8578-4252de201489",
-      "flavor": "98c1e679-5f2c-4069-b4ea-4a4f7179b758"
+      "network": "Ext-Net",
+      "flavor": "vps-ssd-2"
     }
   }
 
