@@ -48,6 +48,43 @@ class TestFiles(unittest.TestCase):
         # Then
         mock_validate_configurations_file.assert_called_with(json_path, isJson=False)
 
+    def test_check_extension_is_json_return_true_if_extension_is_json(self):
+        # Given
+        json_path = "test.json"
+
+        # When
+        is_json = hammr_utils.check_extension_is_json(json_path)
+
+        # Then
+        self.assertTrue(is_json)
+
+    def test_check_extension_is_json_return_false_if_extension_is_yaml(self):
+        # Given
+        yaml_path = "test.yaml"
+
+        # When
+        is_json = hammr_utils.check_extension_is_json(yaml_path)
+
+        # Then
+        self.assertFalse(is_json)
+
+    def test_check_extension_is_json_return_false_if_extension_is_yml(self):
+        # Given
+        yml_path = "test.yml"
+
+        # When
+        is_json = hammr_utils.check_extension_is_json(yml_path)
+
+        # Then
+        self.assertFalse(is_json)
+
+    def test_check_extension_raise_exception_if_extension_is_not_supported(self):
+        # Given
+        unsupported_extension_path = "test.uss"
+
+        # When
+        # Then
+        self.assertRaises(Exception, hammr_utils.check_extension_is_json, unsupported_extension_path)
 
 if __name__ == '__main__':
     unittest.main()

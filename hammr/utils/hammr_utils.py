@@ -99,11 +99,12 @@ def check_mandatory_create_account(iterables, type):
 
     return iterables
 
+
 def check_extension_is_json(file_path):
-    fileExtension = os.path.splitext(file_path)[1]
-    if fileExtension == ".yml" or fileExtension == ".yaml":
+    file_extension = os.path.splitext(file_path)[1]
+    if file_extension == ".yml" or file_extension == ".yaml":
         return False
-    elif fileExtension == ".json":
+    elif file_extension == ".json":
         return True
     else:
         printer.out("please provide a json or yaml file \n", printer.ERROR)
