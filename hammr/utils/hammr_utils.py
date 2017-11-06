@@ -119,14 +119,15 @@ def load_data(file):
         data = generics_utils.check_yaml_syntax(file)
     return data
 
-def validate(file):
-    isJson = check_extension_is_json(file)
-    if isJson:
+
+def validate(file_path):
+    is_json = check_extension_is_json(file_path)
+    if is_json:
         printer.out("You provided a json file, checking...", printer.INFO)
-        template = validate_configurations_file(file, isJson=True)
+        template = validate_configurations_file(file_path, isJson=True)
     else:
         printer.out("You provided a yaml file, checking...", printer.INFO)
-        template = validate_configurations_file(file, isJson=False)
+        template = validate_configurations_file(file_path, isJson=False)
     return template
 
 def validate_configurations_file(file, isJson):
