@@ -99,8 +99,8 @@ The valid keys are:
 * ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
 * ``name`` (mandatory): the name of the published machine image
 * ``region`` (mandatory): the Cloud region 
-* ``network`` (network): OpenStack network address
-* ``flavor`` (network): the OpenStack flavor defines the compute, memory, and storage capacity of your instance.
+* ``network`` (mandatory): OpenStack network address
+* ``flavor`` (mandatory): the OpenStack flavor defines the compute, memory, and storage capacity of your instance.
 
 OpenStack Cloud Account
 -----------------------
