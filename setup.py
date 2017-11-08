@@ -35,7 +35,7 @@ requires=['uforge_python_sdk==3.7.8',
                     'termcolor==1.1.0',
                     'junit-xml==1.3',
                     'xmlrunner==1.7.7',
-                    'ussclicore==1.0.9']
+                    'ussclicore==1.0.10']
 
 test_requires=['mock']
 
