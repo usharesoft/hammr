@@ -152,7 +152,7 @@ If you are using JSON, create a JSON file ``oracle-cloud-account.json``:
 
 
 
-The builder section can either reference by using ``file`` or ``name``.
+The builder section can be references by using either ``file`` or ``name``.
 
 Reference by file:
 
