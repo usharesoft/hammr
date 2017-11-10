@@ -32,6 +32,8 @@ The following table lists the compatibility between versions of Hammr, UForge_py
 	+-----------------+-----------------------------+------------------+
 	|      3.7.7      |            3.7.7            |      3.7.7       |
 	+-----------------+-----------------------------+------------------+
+	|      3.7.8      |            3.7.8            |      3.7.8       |
+	+-----------------+-----------------------------+------------------+
 
 
 If your hammr version is not compatible with the UForge version that you want to reach, hammr will raise an error message with the UForge version:
