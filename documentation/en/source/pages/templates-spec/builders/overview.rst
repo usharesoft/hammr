@@ -35,6 +35,7 @@ Cloud Targets
    builders-k5
    builders-nimbula
    builders-openstack
+   builders-oracle-cloud
    builders-outscale
    builders-suse-cloud
    builders-vcd

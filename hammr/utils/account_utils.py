@@ -530,6 +530,28 @@ def docker(account):
     myCredAccount.password = account["password"]
     return myCredAccount
 
+def oracle(account):
+    myCredAccount = CredAccountOracle()
+
+    if not "name" in account:
+        printer.out("name for Oracle account is missing", printer.ERROR)
+        return
+    if not "login" in account:
+        printer.out("login for Oracle account is missing", printer.ERROR)
+        return
+    if not "password" in account:
+        printer.out("password for Oracle account is missing", printer.ERROR)
+        return
+    if not "domainName" in account:
+        printer.out("domain name for Oracle account is missing", printer.ERROR)
+        return
+
+    myCredAccount.name = account["name"]
+    myCredAccount.domainName = account["domainName"]
+    myCredAccount.login = account["login"]
+    myCredAccount.password = account["password"]
+    return myCredAccount
+
 
 def get_target_platform_object(api, login, targetPlatformName):
     targetPlatformsUser = api.Users(login).Targetplatforms.Getall()
