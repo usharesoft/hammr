@@ -117,7 +117,6 @@ If you are using JSON:
     ]
   }
 
-
 Referencing the Cloud Account
 -----------------------------
 
