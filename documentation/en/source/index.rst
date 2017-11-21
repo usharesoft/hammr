@@ -19,6 +19,7 @@ Contents:
    pages/account/overview
    pages/templates/overview
    pages/machine-images/overview
+   pages/deployments/overview
    pages/importing/overview
    pages/templates-spec/overview
    pages/migration/migrate-system.rst

@@ -1,0 +1,47 @@
+{
+  "name": "Bundle",
+  "version": "6.0",
+  "destination": "/tmp/myBundle",
+  "restrictionRule": "",
+  "files": [
+    {
+      "name": "directoryTest",
+      "source": "tests/integration/data/directoryTest",
+      "tag": "softwarefile",
+      "rights": "755",
+      "ownerGroup": "root:root",
+      "symlink": "/tmp/directoryTestLink",
+      "destination": "/usr/local/myBundle",
+      "files": [
+        {
+          "name": "file1of3.txt",
+          "source": "tests/integration/data/directoryTest/file1of3.txt",
+          "tag": "softwarefile",
+          "rights": "625",
+          "ownerGroup": "test:test",
+          "symlink": "",
+          "files": []
+        }
+      ]
+    },
+    {
+      "name": "iotop-0.6-2.el7.noarch.rpm",
+      "tag": "ospkg",
+      "source": "tests/integration/data/iotop-0.6-2.el7.noarch.rpm",
+      "install": true,
+      "files": []
+    },
+    {
+      "name": "cleanup_tmp.sh",
+      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
+      "tag": "bootscript",
+      "bootOrder": 1,
+      "bootType": "firstboot",
+      "destination": "/usr/local/myBundle"
+    }
+  ],
+  "license": {
+    "name": "license.html",
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
+  }
+}

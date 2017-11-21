@@ -23,3 +23,4 @@ from bundle import *
 from scan import *
 from quota import *
 from platform import *
+from deploy import *

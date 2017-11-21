@@ -49,8 +49,202 @@ For building an image, the valid keys are:
 
 .. note:: When building from a scan, your yaml or json file must contain an ``installation`` section in ``builders``. This is mandatory when you create a new template, but might be missing when you build from a scan. Make sure it is present or your build will fail.
 
-Publishing a Machine Image
---------------------------
+
+
+Publishing a Machine Image with Azure Resource Manager Connector
+----------------------------------------------------------------
+
+To publish an image, the valid keys are:
+
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Azure: ``Microsoft Azure``. To get the available builder type, please refer to :ref:`command-line-format`
+* ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
+* ``storageAccount`` (mandatory): a string providing the storage account name to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services. It must exist in your Microsoft account.
+* ``container`` (mandatory): the container that will contain the blob file in Azure Cloud. If the name provided does not already exist it will be created.
+* ``blob`` (mandatory): the name of the vhd blob that will contain the machine image data. It must end with ".vhd". If it already exists it will be overwritten with the new blob info.
+* ``displayName`` (mandatory): a string providing the name of the machine image to display in Azure cloud. If an image with this name already exists it will be overwritten.
+* ``resourceGroup`` (optional): an existing resource group available in your clound accound. By default the resource group of your storage account will be used.
+
+
+Azure Resource Manager Cloud Account
+------------------------------------
+
+Key: ``account``
+
+Used to authenticate the Azure platform.
+The Azure Resource Manager cloud account has the following valid keys:
+
+* ``type`` (mandatory): a string providing the cloud account type. Default platform type for Microsoft Azure: ``Microsoft Azure``. To get the available platform type, please refer to :ref:`command-line-platform`
+* ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``tenantId`` (mandatory): The tenant ID also named "Directory ID". See `Microsoft Azure tenant ID documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-tenant-id>`_ to retrieve yours.
+* ``subscriptionId`` (mandatory): The subscription ID that will be used by UForge.
+* ``applicationId`` (mandatory): The application ID that will be used by UForge. See `Microsoft Azure application ID documentation <https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal#get-application-id-and-authentication-key>`_ to create one application.
+* ``applicationKey`` (mandatory): The application authentication key associated to the application ID.
+
+.. note:: In the case where name or file is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
+
+Example
+-------
+
+The following example shows an Azure builder with all the information to build and publish a machine image to Azure.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Microsoft Azure
+    account:
+      type: Microsoft Azure
+      name: My Azure Resource Manager account
+      tenantId: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee
+      subscriptionId: ffffffff-eeee-dddd-cccc-bbbbbbbbbbbbb
+      applicationId: 0000000-1111-2222-3333-4444444444444
+      applicationKey: myApplicationKey
+    storageAccount: mystorageaccount
+    container: mycontainer
+    resourceGroup: myResourceGroup
+    blob: myBlob.vhd
+    displayName: myImage
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+          "type": "Microsoft Azure",
+          "name": "My Azure Resource Manager account",
+          "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee",
+          "subscriptionId": "ffffffff-eeee-dddd-cccc-bbbbbbbbbbbbb",
+          "applicationId": "0000000-1111-2222-3333-4444444444444",
+          "applicationKey": "myApplicationKey"
+        },
+        "storageAccount":"mystorageaccount",
+        "container":"mycontainer",
+        "resourceGroup":"myResourceGroup",
+        "blob":"myBlob.vhd",
+        "displayName":"myImage"
+      }
+    ]
+  }
+
+Referencing the Azure Resource Manager Cloud Account
+----------------------------------------------------
+
+To help with security, the cloud account information can be referenced by the builder section. This example is the same as the previous example but with the account information in another file. Create a YAML file ``azure-app-account.yml``.
+
+.. code-block:: yaml
+
+  ---
+  accounts:
+  - type: Microsoft Azure
+    name: My Azure Resource Manager account
+    tenantId: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee
+    subscriptionId: ffffffff-eeee-dddd-cccc-bbbbbbbbbbbbb
+    applicationId: 0000000-1111-2222-3333-4444444444444
+    applicationKey: myApplicationKey
+
+
+If you are using JSON, create a JSON file ``azure-app-account.json``:
+
+.. code-block:: json
+
+  {
+    "accounts": [
+      {
+        "type": "Microsoft Azure",
+        "name": "My Azure Resource Manager account",
+        "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeee",
+        "subscriptionId": "ffffffff-eeee-dddd-cccc-bbbbbbbbbbbbb",
+        "applicationId": "0000000-1111-2222-3333-4444444444444",
+        "applicationKey": "myApplicationKey"
+      }
+    ]
+  }
+
+The builder section can either be referenced by using ``file`` or ``name``.
+
+Reference by file:
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Microsoft Azure
+    account:
+      file: "/home/user/accounts/azure-app-account.yml"
+    storageAccount: mystorageaccount
+    container: mycontainer
+    resourceGroup: myResourceGroup
+    blob: myBlob.vhd
+    displayName: myImage
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+              "file": "/home/user/accounts/azure-app-account.json"
+        },
+        "storageAccount":"mystorageaccount",
+        "container":"mycontainer",
+        "resourceGroup":"myResourceGroup",
+        "blob":"myBlob.vhd",
+        "displayName":"myImage"
+      }
+    ]
+  }
+
+Reference by name, note the cloud account must already be created by using ``account create``.
+
+If you are using YAML:
+
+.. code-block:: yaml
+
+  ---
+  builders:
+  - type: Microsoft Azure
+    account:
+      name: My Azure Resource Manager Account
+    storageAccount: mystorageaccount
+    container: mycontainer
+    resourceGroup: myResourceGroup
+    blob: myBlob.vhd
+    displayName: myImage
+
+If you are using JSON:
+
+.. code-block:: json
+
+  {
+    "builders": [
+      {
+        "type": "Microsoft Azure",
+        "account": {
+              "name": "My Azure Resource Manager Account"
+        },
+        "storageAccount":"mystorageaccount",
+        "container":"mycontainer",
+        "resourceGroup":"myResourceGroup",
+        "blob":"myBlob.vhd",
+        "displayName":"myImage"
+      }
+    ]
+  }
+
+
+Publishing a Machine Image with Azure Classic Connector
+-------------------------------------------------------
 
 To publish an image, the valid keys are:
 
@@ -58,6 +252,44 @@ To publish an image, the valid keys are:
 * ``account`` (mandatory): an object providing all the cloud account information to authenticate and publish a machine image to Azure.
 * ``region`` (mandatory): a string providing the region where to create the storage account. If the storage account already exists, then you should not specify a region. See below for valid regions.
 * ``storageAccount`` (mandatory): a string providing the storage account to use for uploading and storing the machine image. The storage account is the highest level of the namespace for accessing each of the fundamental services.
+
+Deploying a Published Machine Image
+-----------------------------------
+
+To deploy a published machine image to Microsoft Azure the Azure builder section must have the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  provisioner:
+    type: Azure
+    name: MyDeploy
+    userName: MyUserName
+    userSshKey: MySshKey
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+  {
+    "provisioner": {
+      "type": "Azure",
+      "name": "MyDeploy",
+      "userName": "MyUserName",
+      "userSshKey": "MySshKey"
+    }
+  }
+
+The valid keys are:
+
+* ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
+* ``name`` (mandatory): the name of the published machine image.
+* ``userName`` (mandatory): the name for the user account on the instance.
+* ``userSshKey`` (optional): the public ssh key for the user account.
+* ``userSshKeyFile`` (optional): a file containing the public ssh key for the user account.
+
+If no ssh key is given, you will have to give a password for the user account.
+
 
 Valid Azure Regions
 ---------------------
@@ -70,13 +302,13 @@ Valid Azure Regions
 * ``West Europe``
 * ``East Asia``
 
-Azure Cloud Account
--------------------
+Azure Classic Cloud Account
+---------------------------
 
 Key: ``account``
 
 Used to authenticate the Azure platform.
-The Azure cloud account has the following valid keys:
+The Azure Classic cloud account has the following valid keys:
 
 * ``type`` (mandatory): a string providing the cloud account type. Default platform type for Microsoft Azure: ``Microsoft Azure``. To get the available platform type, please refer to :ref:`command-line-platform`
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
@@ -151,7 +383,7 @@ If you are using JSON, create a JSON file ``azure-account.json``:
     ]
   }
 
-The builder section can either reference by using ``file`` or ``name``.
+The builder section can either be referenced by using ``file`` or ``name``.
 
 Reference by file:
 

@@ -39,27 +39,25 @@ def publish_vcenter(builder):
     pimage = PublishImageVSphere()
 
     # doing field verification
-    if not "datastore" in builder:
-        printer.out("datastore in vcenter builder not found", printer.ERROR)
-        return
-    if not "datacenterName" in builder:
-        printer.out("datacenterName in vcenter builder not found", printer.ERROR)
-        return
-    if not "clusterName" in builder:
-        printer.out("clusterName in vcenter builder not found", printer.ERROR)
-        return
+
     if not "displayName" in builder:
         printer.out("displayName in vcenter builder not found", printer.ERROR)
         return
-    if not "network" in builder:
-        printer.out("network in vcenter builder not found", printer.ERROR)
+
+    if not "esxHost" in builder:
+        printer.out("esxHost in vcenter builder not found", printer.ERROR)
         return
 
-    pimage.datastore = builder["datastore"]
-    pimage.datacenterName = builder["datacenterName"]
-    pimage.clusterName = builder["clusterName"]
+    if not "datastore" in builder:
+        printer.out("datastore in vcenter builder not found", printer.ERROR)
+        return
+
+    if "network" in builder:
+        pimage.network = builder["network"]
+
     pimage.displayName = builder["displayName"]
-    pimage.network = builder["network"]
+    pimage.esxHost = builder["esxHost"]
+    pimage.datastore = builder["datastore"]
     return pimage
 
 
@@ -171,7 +169,7 @@ def publish_aws(builder):
 
 
 def publish_azure(builder):
-    if not "storageAccount" in builder:
+    if "blob" in builder or "container" in builder:
         printer.out("Azure Resource Manager publish")
         return publish_azure_arm(builder)
     else:
@@ -199,16 +197,26 @@ def publish_azure_classic(builder):
 def publish_azure_arm(builder):
     pimage = PublishImageAzureResourceManager()
 
-    # doing field verification
+    if not "storageAccount" in builder:
+        printer.out("storageAccount not found", printer.ERROR)
+        return
     if not "container" in builder:
-        printer.out("container in Microsoft Azure not found", printer.ERROR)
+        printer.out("container not found", printer.ERROR)
         return
     if not "blob" in builder:
-        printer.out("blob in Microsoft Azure not found", printer.ERROR)
+        printer.out("blob not found", printer.ERROR)
+        return
+    if not "displayName" in builder:
+        printer.out("displayName not found", printer.ERROR)
         return
 
+    if "resourceGroup" in builder:
+        pimage.resourceGroup = builder["resourceGroup"]
+
+    pimage.storageAccount = builder["storageAccount"]
     pimage.container = builder["container"]
     pimage.blob = builder["blob"]
+    pimage.displayName = builder["displayName"]
 
     return pimage
 

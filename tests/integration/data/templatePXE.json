@@ -1,0 +1,22 @@
+{
+  "stack" : {
+    "name" : "unittest",
+    "version" : "1.0",
+    "installation" : {
+      "internetSettings" : "dhcp",
+      "diskSize" : 12288,
+      "swapSize" : 512
+    },
+    "os" : {
+      "name" : "CentOS",
+      "version" : "7",
+      "arch" : "x86_64",
+      "profile" : "Minimal"
+    }
+ },
+ "builders" : [
+ {
+  "type" : "PXE"
+ }
+ ]
+}

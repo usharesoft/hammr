@@ -3,6 +3,61 @@
 Changelog
 =========
 
+hammr 3.7.8 (2017-10-16)
+--------------------------
+
+Evolutions:
+
+* Microsoft Azure connector has been updated. Previously with UForge the machine image was publish as a "vhd" blob file in the Azure cloud Account. Now an image will be accessible in the cloud console from this blob file. In order to support this additional information must be entered in ``Credentials`` for Microsoft Azure ARM connector.
+* Users can deploy instances from published machine images to Microsoft Azure ARM.
+* Improve output display of deploy command.
+
+hammr 3.7.7 (2017-09-04)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp7-1 only
+* Users can deploy instances from published machine images to Amazon AWS and OpenStack.
+* Images can be created in PXE format for CentOS
+
+hammr 3.7.6 (2017-07-25)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp6-1 only
+
+hammr 3.7.5 (2017-06-12)
+--------------------------
+
+Evolutions:
+
+* Modification of VMware VCenter image publication
+* Support restrictions on Software Bundle
+
+Bug fixes:
+
+* Version check when using hammr commands without interactive mode
+* A scan name including a space cannot be specified with hammr scan run
+* hammr image list displays 0B for images generated from a scan
+
+Compatibility with UForge AppCenter 3.7.fp5-1 only
+
+hammr 3.7.4 (2017-28-04)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7.fp4-1 only
+* Add overlay argument to scan run command to run a scan with overlay
+
+Bug fixes:
+
+* Flag acceptAutoSigned not working for image download
+* Name for the builder account can now be read from an external file
+* Fixes on documentation
+
 hammr 3.7.3 (2017-21-03)
 --------------------------
 

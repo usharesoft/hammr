@@ -21,6 +21,7 @@ import traceback
 from os.path import expanduser
 import os
 import urllib
+import pyxb
 
 from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
@@ -28,7 +29,6 @@ from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
 from hammr.utils.bundle_utils import *
 from hammr.utils import constants
-
 
 def check_mandatory_stack(stack):
     if not "name" in stack:
@@ -99,15 +99,16 @@ def check_mandatory_create_account(iterables, type):
 
     return iterables
 
-def check_extension_is_json(file):
-    fileExtension = os.path.splitext(file)[1]
-    if fileExtension == ".yml":
+
+def check_extension_is_json(file_path):
+    file_extension = os.path.splitext(file_path)[1]
+    if file_extension == ".yml" or file_extension == ".yaml":
         return False
-    elif fileExtension == ".json":
+    elif file_extension == ".json":
         return True
     else:
         printer.out("please provide a json or yaml file \n", printer.ERROR)
-        raise Exception("File '" + file + "' is not allowed. Please provide a json or yaml file.")
+        raise Exception("File '" + file_path + "' is not allowed. Please provide a json or yaml file.")
 
 def load_data(file):
     isJson = check_extension_is_json(file)
@@ -119,14 +120,15 @@ def load_data(file):
         data = generics_utils.check_yaml_syntax(file)
     return data
 
-def validate(file):
-    isJson = check_extension_is_json(file)
-    if isJson:
-        print "you provided a json file, checking..."
-        template = validate_configurations_file(file, isJson=True)
+
+def validate(file_path):
+    is_json = check_extension_is_json(file_path)
+    if is_json:
+        printer.out("You provided a json file, checking...", printer.INFO)
+        template = validate_configurations_file(file_path, isJson=True)
     else:
-        print "you provided a yaml file, checking..."
-        template = validate_configurations_file(file, isJson=False)
+        printer.out("You provided a yaml file, checking...", printer.INFO)
+        template = validate_configurations_file(file_path, isJson=False)
     return template
 
 def validate_configurations_file(file, isJson):
@@ -173,7 +175,7 @@ def validate_bundle(file):
         printer.out("Syntax of bundle file ["+file+"]: FAILED")
     except IOError as e:
         printer.out("unknown error bundle json file", printer.ERROR)
-    
+
 def dump_data_in_file(data, archive_files, isJsonFile, fileName, newFileName):
     file = open(constants.TMP_WORKING_DIR + os.sep + newFileName, "w")
 
@@ -240,3 +242,31 @@ def create_user_ssh_key(api, login, sshKey):
         printer.out("Impossible to create sshKey ["+mySshKey.name+"]", printer.ERROR)
         return 2
     return key
+
+def is_uri_based_on_appliance(uri):
+    match = re.match( r'users/[^/]+/appliances/[0-9]+($|/)', uri)
+    if match:
+        return True
+    else:
+        return False
+
+def is_uri_based_on_scan(uri):
+    match = re.match( r'users/[^/]+/scannedinstances/[0-9]+/scans/[0-9]+($|/)', uri)
+    if match:
+        return True
+    else:
+        return False
+
+def extract_scannedinstance_id(image_uri):
+    match = re.match( r'users/[^/]+/scannedinstances/([0-9]+)($|/)', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
+
+def extract_scan_id(image_uri):
+    match = re.match( r'users/[^/]+/scannedinstances/[0-9]+/scans/([0-9]+)($|/)', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None

@@ -64,6 +64,44 @@ To publish an image, the valid keys are:
 * ``keystoneProject`` (mandatory for keystone v3.0): a string providing the keystone project to publish this machine image to.
 * ``publicImage`` (optional): a boolean to determine if the machine image is public (for other users to use for provisioning).
 
+Deploying a Published Machine Image
+-----------------------------------
+
+To deploy a published machine image to OpenStack the OpenStack builder section must have the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  provisioner:
+    type: OpenStack
+    name: MyDeploy
+    region: GRA1
+    network: Ext-Net
+    flavor: vps-ssd-2
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+  {
+    "provisioner": {
+      "type": "OpenStack",
+      "name": "MyDeploy",
+      "region": "GRA1",
+      "network": "Ext-Net",
+      "flavor": "vps-ssd-2"
+    }
+  }
+
+
+The valid keys are:
+
+* ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
+* ``name`` (mandatory): the name of the published machine image
+* ``region`` (mandatory): the Cloud region 
+* ``network`` (mandatory): OpenStack network address
+* ``flavor`` (mandatory): the OpenStack flavor defines the compute, memory, and storage capacity of your instance.
+
 OpenStack Cloud Account
 -----------------------
 

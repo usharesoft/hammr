@@ -29,6 +29,7 @@ Below provides a list of the available ``commands``:
 
    account
    bundle
+   deploy
    format
    platform
    image

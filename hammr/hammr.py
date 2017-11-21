@@ -65,6 +65,8 @@ class CmdBuilder(object):
         class_.subCmds[quota.cmd_name] = quota
         platform = commands.platform.Platform()
         class_.subCmds[platform.cmd_name] = platform
+        deploy = commands.deploy.Deploy()
+        class_.subCmds[deploy.cmd_name] = deploy
 
 ## Main cmd
 class Hammr(Cmd):
@@ -114,22 +116,28 @@ class Hammr(Cmd):
         doParser = self.arg_batch()
         doParser.print_help()
 
+    def compatibility_verbose(self):
+        try:
+            compatible, serviceStatusVersion = checkUForgeCompatible(api)
+            if not compatible:
+                printer.out("Sorry but this version of Hammr (version = '" + str(
+                    constants.VERSION) + "') is not compatible with the version of UForge (version = '" + str(
+                    serviceStatusVersion) + "').", printer.ERROR)
+                printer.out(
+                    "Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.",
+                    printer.ERROR)
+                sys.exit(2)
+
+        except Exception as e:
+            hammr_utils.print_uforge_exception(e)
+            sys.exit(2)
+
     def cmdloop(self, args):
+        self.compatibility_verbose()
         if len(args):
             code = self.run_commands_at_invocation([str.join(' ', args)])
             sys.exit(code)
         else:
-            try:
-                compatible, serviceStatusVersion = checkUForgeCompatible(api)
-                if not compatible:
-                    printer.out("Sorry but this version of Hammr (version = '"+str(constants.VERSION)+ "') is not compatible with the version of UForge (version = '"+str(serviceStatusVersion)+ "').", printer.ERROR)
-                    printer.out("Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.", printer.ERROR)
-                    sys.exit(2)
-
-            except Exception as e:
-                hammr_utils.print_uforge_exception(e)
-                sys.exit(2)
-
             self._cmdloop()
 
 def generate_base_doc(app, hamm_help):

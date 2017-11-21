@@ -18,11 +18,11 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="3.7.4-RC1"
+VERSION="3.7.8"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
-HTTP_TIMEOUT=30
+HTTP_TIMEOUT=120
 
 TEMPLATE_JSON_FILE_NAME="template.json"
 TEMPLATE_JSON_NEW_FILE_NAME="template.json"

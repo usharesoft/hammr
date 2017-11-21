@@ -57,8 +57,10 @@ To publish an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Amazon: ``Amazon AWS``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
-* ``region`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
+* ``region`` (mandatory): a string providing the region where to publish the machine image. See :ref:`amazon-regions` for valid regions.
 * ``bucket`` (mandatory): a string providing the bucket name where to store the machine image. Bucket names are global to everyone, so you must choose a unique bucket name that does not already exist (or belongs to you). A bucket name cannot include spaces. Note, that if the bucket exists already in one region (for example Europe) and you wish to upload the same machine image to another region, then you must provide a new bucket name.
+
+.. _amazon-regions:
 
 Valid Regions
 -------------
@@ -72,6 +74,41 @@ The following regions are supported:
 * ``us-east-1``: US East (North Virginia) Region
 * ``us-west-1``: US West (North california) Region
 * ``us-west-2``: US West (Oregon) Region
+
+Deploying a Published Machine Image
+-----------------------------------
+
+To deploy a published machine image to Amazon the builder section must have the following definition when using YAML:
+
+.. code-block:: yaml
+
+  ---
+  provisioner:
+    type: Amazon
+    name: MyDeploy
+    cores: 1
+    memory: 1024
+
+If you are using JSON:
+
+.. code-block:: javascript
+
+  {
+    "provisioner": {
+      "type": "Amazon",
+      "name": "MyDeploy",
+      "cores": 1,
+      "memory": 1024
+    }
+  }
+
+The valid keys are:
+
+* ``type`` (mandatory): a string providing the cloud provider on which the published image should be deployed.
+* ``name`` (mandatory): the name of the published machine image
+* ``cores`` (optional): if not specified default values will be used 
+* ``memory`` (optional): if not specified default values will be used 
+
 
 Amazon Cloud Account
 --------------------

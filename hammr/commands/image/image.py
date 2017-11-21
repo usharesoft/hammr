@@ -23,12 +23,17 @@ from ussclicore.cmd import Cmd, CoreGlobal
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer
+    SimpleProgress, Timer, UnknownLength
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
 from hammr.utils import *
-from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
+from hammr.utils.deployment_utils import *
+from uforge.objects.uforge import *
 
+#This import and configuration avoid pyxb warnings about xmls
+import logging
+logging.basicConfig()
+logging.getLogger("pyxb").setLevel(logging.ERROR)
 
 class Image(Cmd, CoreGlobal):
     """List, download or delete existing machine images. Publish new machine image to cloud account from configuration file"""
@@ -66,7 +71,7 @@ class Image(Cmd, CoreGlobal):
                 for image in images:
                     imgStatus = self.get_image_status(image.status)
                     table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
+                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
                                    "X" if image.compress else "", imgStatus])
                 print table.draw() + "\n"
                 printer.out("Found " + str(len(images)) + " images")
@@ -76,12 +81,14 @@ class Image(Cmd, CoreGlobal):
             else:
                 printer.out("Publications:")
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t"])
-                table.header(["Template name", "Image ID", "Account name", "Format", "Cloud ID", "Status"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
+                table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
                 pimages = generics_utils.order_list_object_by(pimages, "name")
                 for pimage in pimages:
                     pubStatus = self.get_publish_status(pimage.status)
-                    table.add_row([pimage.name, generics_utils.extract_id(pimage.imageUri),
+                    table.add_row([pimage.name,
+                                   generics_utils.extract_id(pimage.imageUri),
+                                   pimage.dbId,
                                    pimage.credAccount.name if pimage.credAccount is not None else "-",
                                    pimage.credAccount.targetPlatform.name,
                                    pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
@@ -195,6 +202,72 @@ class Image(Cmd, CoreGlobal):
 
     def help_publish(self):
         doParser = self.arg_publish()
+        doParser.print_help()
+
+    def arg_deploy(self):
+        doParser = ArgumentParser(prog=self.cmd_name + " deploy", add_help=True,
+                                  description="Deploy an instance of a published image on the targeted cloud.")
+        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--file', dest='file', required=True,
+                               help="yaml/json file providing the instance parameters required for deployment on targeted cloud")
+        mandatory.add_argument('--publish-id', dest='pid', required=True,
+                               help="the ID of the published image to deploy")
+        return doParser
+
+    def do_deploy(self, args):
+        try:
+            # add arguments
+            do_parser = self.arg_deploy()
+            do_args = do_parser.parse_args(shlex.split(args))
+
+            # if the help command is called, parse_args returns None object
+            if not do_args:
+                return 2
+
+            publish_image = self.get_publish_image_from_publish_id(do_args.pid)
+
+            if not self.is_publish_image_ready_to_deploy(publish_image):
+                raise ValueError("Published image with id '" + do_args.pid + " is not ready to be deployed")
+
+            deploy_file = generics_utils.get_file(do_args.file)
+            if deploy_file is None:
+                raise TypeError("Deploy file not found")
+
+            if publish_image.targetFormat is None:
+                raise TypeError("Publish image target format not found")
+
+            target_plateform_name = publish_image.targetFormat.name
+            if "Amazon" in target_plateform_name:
+                return self.deploy_aws(deploy_file, publish_image)
+
+            elif "OpenStack" in target_plateform_name:
+                return self.deploy_openstack(deploy_file, publish_image)
+
+            elif "Azure" in target_plateform_name:
+                return self.deploy_azure(deploy_file, publish_image)
+
+            else:
+                printer.out("Hammr only supports deployments for Amazon AWS, OpenStack and Microsoft Azure ARM.",
+                            printer.ERROR)
+                return 2
+
+        except (TypeError, ValueError) as e:
+            printer.out(str(e), printer.ERROR)
+            return 2
+
+        except ArgumentParserError as e:
+            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            self.help_deploy()
+        except KeyboardInterrupt:
+            printer.out(
+                "You have exited the command-line, however the deployment may still be in progress. Please go to the cloud's console for more information",
+                printer.WARNING)
+            pass
+        except Exception as e:
+            return handle_uforge_exception(e)
+
+    def help_deploy(self):
+        doParser = self.arg_deploy()
         doParser.print_help()
 
     def arg_delete(self):
@@ -340,7 +413,7 @@ class Image(Cmd, CoreGlobal):
         doParser = ArgumentParser(prog=self.cmd_name + " download", add_help=True,
                                   description="Downloads a machine image to the local filesystem")
         mandatory = doParser.add_argument_group("mandatory arguments")
-        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to delete")
+        mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to download")
         mandatory.add_argument('--file', dest='file', required=True,
                                help="the pathname where to store the machine image")
         return doParser
@@ -500,6 +573,13 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
+    def is_publish_image_ready_to_deploy(self, publishImage):
+        if not publishImage.status.complete or publishImage.status.error or publishImage.status.cancelled:
+            return False
+
+        return True
+
+
     def find_builder(self, image, template):
         for builder in template["builders"]:
             if image.targetFormat.name == builder["type"]:
@@ -598,3 +678,61 @@ class Image(Cmd, CoreGlobal):
             if account.has_key("type") and account["type"] == builder["type"] and account.has_key("name"):
                 account_name = account["name"]
         return account_name
+
+    def get_publish_image_from_publish_id(self, publish_id):
+        publish_images = self.api.Users(self.login).Pimages.Getall()
+        publish_images = publish_images.publishImages.publishImage
+
+        if publish_images is None or len(publish_images) == 0:
+            raise TypeError("No published images available")
+
+        publish_image = None
+        for p in publish_images:
+            if str(p.dbId) == str(publish_id):
+                publish_image = p
+
+        if publish_image is None:
+            raise TypeError("Published image not found")
+        else:
+            return publish_image
+
+    def deploy_aws(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name"])
+
+        deployment = build_deployment_aws(attributes)
+
+        deployed_instance = call_deploy(self, publish_image, deployment)
+
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
+        return print_deploy_info(self, status, deployed_instance_id)
+
+    def deploy_openstack(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name", "region", "network", "flavor"])
+
+        bar_status = OpStatus()
+        progress = create_progress_bar_openstack(bar_status)
+
+        cred_account = retrieve_credaccount(self, publish_image.dbId, publish_image)
+        deployment = build_deployment_openstack(attributes, publish_image, cred_account)
+
+        bar_status.message = "Deploying instance"
+        bar_status.percentage = 50
+        progress.update(bar_status.percentage)
+
+        deployed_instance = call_deploy(self, publish_image, deployment)
+
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_with_percentage(self, deployed_instance_id, bar_status, progress)
+        return print_deploy_info(self, status, deployed_instance_id)
+
+    def deploy_azure(self, deploy_file, publish_image):
+        attributes = check_and_get_attributes_from_file(deploy_file, ["name", "userName"])
+
+        deployment = build_deployment_azure(attributes)
+
+        deployed_instance = call_deploy(self, publish_image, deployment)
+
+        deployed_instance_id = deployed_instance.applicationId
+        status = show_deploy_progress_without_percentage(self, deployed_instance_id)
+        return print_deploy_info(self, status, deployed_instance_id)
