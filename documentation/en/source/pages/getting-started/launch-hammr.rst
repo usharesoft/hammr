@@ -149,3 +149,18 @@ As this file contains security information, it is recommended to change the perm
 Now every time hammr is launched, you no longer need to provide the authentication information as part of the command-line. Hammr will automatically use the information contained in this file.
 
 .. note:: The key ``acceptAutoSigned`` is to accept or not self-signed SSL certificates. Default value is ``false``.
+
+.. _supervisor-mode:
+
+Using Supervisor Mode
+---------------------
+
+UForge allows you to access UForge as another user if you have supervisor access. Supervisor access rights are assigned by the UForge administrator. 
+
+.. warning:: Users with Supervisor Access will be able to log in as ANY of the users in the organization without entering a password. This right should be limited to support or managed services. Users with Supervisor Role needs to respect the privacy of the user data, according to current legislation.
+
+To use hammr in supervisor mode you will need to enter your user name (UserA) as well as the user name of the account you want to access (UserB). For example:
+
+.. code-block:: shell
+
+	$ hammr os list --url https://uforge.usharesoft.com/api -u "UserA\UserB" -p password
