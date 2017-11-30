@@ -84,7 +84,6 @@ class TestPublishK5(TestCase):
         if region is not None: builder["region"] = region
         return builder
 
-
 class TestPublishDocker(TestCase):
     def test_publish_docker_should_return_publish_image_when_valid_entries(self):
         # given
@@ -134,8 +133,6 @@ class TestPublishDocker(TestCase):
         if repository_name is not None: builder["repositoryName"] = repository_name
         if tag_name is not None: builder["tagName"] = tag_name
         return builder
-
-
 
 class TestPublishAzure(TestCase):
 
@@ -244,4 +241,42 @@ class TestPublishAzure(TestCase):
         builder = {}
         if storageAccount is not None: builder["storageAccount"] = storageAccount
         if region is not None: builder["region"] = region
+        return builder
+
+class TestPublishOracle(TestCase):
+    def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_builder("displayName", "computeEndPoint")
+
+        # when
+        pimage = publish_oracleraw(builder)
+
+        # then
+        self.assertEqual(pimage.displayName, builder["displayName"])
+        self.assertEqual(pimage.computeEndPoint, builder["computeEndPoint"])
+
+    def test_publish_oracle_should_return_none_when_missing_display_name(self):
+        # given
+        builder = self.build_builder(None, "computeEndPoint")
+
+        # when
+        pimage = publish_oracleraw(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_oracle_should_return_none_when_missing_compute_end_point(self):
+        # given
+        builder = self.build_builder("displayName", None)
+
+        # when
+        pimage = publish_oracleraw(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_builder(self, display_name, compute_end_point):
+        builder = {}
+        if display_name is not None: builder["displayName"] = display_name
+        if compute_end_point is not None: builder["computeEndPoint"] = compute_end_point
         return builder
