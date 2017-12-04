@@ -265,3 +265,65 @@ class TestAzureManager(TestCase):
         if name is not None: account["name"] = name
         if publishsettings is not None: account["publishsettings"] = publishsettings
         return account
+
+class TestOracle(TestCase):
+    def test_oracle_should_return_cred_account_when_valid_entries(self):
+        # given
+        account_given = self.build_account("testName", "testDomainName", "testLogin", "testPassword")
+
+        # when
+        account = oracle(account_given)
+
+        # then
+        self.assertEqual(account.name, account_given["name"])
+        self.assertEqual(account.domainName, account_given["domainName"])
+        self.assertEqual(account.login, account_given["login"])
+        self.assertEqual(account.password, account_given["password"])
+
+    def test_oracle_should_return_none_when_missing_name(self):
+        # given
+        accountMocked = self.build_account(None, "testDomainName", "testLogin", "testPassword")
+
+        # when
+        account = oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def test_oracle_should_return_none_when_missing_domain_name(self):
+        # given
+        accountMocked = self.build_account("testName", None, "testLogin", "testPassword")
+
+        # when
+        account = oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def test_oracle_should_return_none_when_missing_login(self):
+        # given
+        accountMocked = self.build_account("testName", "testDomainName", None, "testPassword")
+
+        # when
+        account = oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def test_oracle_should_return_none_when_missing_password(self):
+        # given
+        accountMocked = self.build_account("testName", "testDomainName", "testLogin", None)
+
+        # when
+        account = oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def build_account(self, name, domain_name, login, password):
+        account = {}
+        if name is not None: account["name"] = name
+        if domain_name is not None: account["domainName"] = domain_name
+        if login is not None: account["login"] = login
+        if password is not None: account["password"] = password
+        return account
