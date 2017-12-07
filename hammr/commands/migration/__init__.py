@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright 2007-2017 UShareSoft SAS, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,15 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from account import *
-from format import *
-from image import *
-from os import *
-from template import *
-from user import *
-from bundle import *
-from scan import *
-from quota import *
-from platform import *
-from deploy import *
-from migration import *
+import os
+import glob
+__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]

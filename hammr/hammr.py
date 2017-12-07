@@ -67,6 +67,8 @@ class CmdBuilder(object):
         class_.subCmds[platform.cmd_name] = platform
         deploy = commands.deploy.Deploy()
         class_.subCmds[deploy.cmd_name] = deploy
+        migration = commands.migration.Migration()
+        class_.subCmds[migration.cmd_name] = migration
 
 ## Main cmd
 class Hammr(Cmd):
