@@ -87,8 +87,7 @@ def recursivelyAppendToArchive(bundle, files, parentDir, checkList, archive_file
             #changing source path to archive related source path
             files["source"]=file_tar_path
         else:
-            printer.out("found two files with the same source path in the bundles section...", printer.ERROR)
-            return 2
+            raise ValueError("Cannot have identical files in the bundles section: " + filePathBeforeTar)
 
     if "files" in files:
         for subFiles in files["files"]:

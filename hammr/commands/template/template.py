@@ -292,6 +292,9 @@ class Template(Cmd, CoreGlobal):
                             archive_files.append([file_tar_path,bundle["sourceLogo"]])
                             #changing source path to archive related source path
                             bundle["sourceLogo"]=file_tar_path
+            except ValueError as ve:
+                printer.out(str(ve), printer.ERROR)
+                return 2
             except KeyError as e:
                 printer.out("Error in bundle", printer.ERROR)
                 return 2
