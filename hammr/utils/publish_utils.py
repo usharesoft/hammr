@@ -425,3 +425,18 @@ def publish_docker(builder):
     pimage.repositoryName = builder["repositoryName"]
     pimage.tagName = builder["tagName"]
     return pimage
+
+
+def publish_oracleraw(builder):
+    pimage = PublishImageOracle()
+
+    if not "displayName" in builder:
+        printer.out("displayName in Oracle builder is missing", printer.ERROR)
+        return
+    if not "computeEndPoint" in builder:
+        printer.out("computeEndPoint in Oracle builder is missing", printer.ERROR)
+        return
+
+    pimage.displayName = builder["displayName"]
+    pimage.computeEndPoint = builder["computeEndPoint"]
+    return pimage
