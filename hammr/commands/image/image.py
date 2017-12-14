@@ -64,7 +64,7 @@ class Image(Cmd, CoreGlobal):
             else:
                 printer.out("Images:")
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
                 table.header(
                     ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
                 images = generics_utils.order_list_object_by(images, "name")
@@ -293,7 +293,7 @@ class Image(Cmd, CoreGlobal):
                 printer.out("No images available")
             else:
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
                 table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
                 deleteImage = None
                 for image in images:
@@ -347,7 +347,7 @@ class Image(Cmd, CoreGlobal):
                 printer.out("No images available")
             else:
                 table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
                 table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
                 cancelImage = None
                 for image in images:
