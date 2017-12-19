@@ -54,46 +54,47 @@ class Image(Cmd, CoreGlobal):
             # call UForge API
             # get images
             printer.out("Getting all images and publications for [" + self.login + "] ...")
-            images = self.api.Users(self.login).Images.Getall()
-            images = images.images.image
+            images = self.get_all_images()
+            if images is None :
+                return 0
+
             # get publications
             pimages = self.api.Users(self.login).Pimages.Getall()
             pimages = pimages.publishImages.publishImage
-            if images is None or len(images) == 0:
-                printer.out("No images available")
-            else:
-                printer.out("Images:")
-                table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
-                table.header(
-                    ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
-                images = generics_utils.order_list_object_by(images, "name")
-                for image in images:
-                    imgStatus = self.get_image_status(image.status)
-                    table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
-                                   "X" if image.compress else "", imgStatus])
-                print table.draw() + "\n"
-                printer.out("Found " + str(len(images)) + " images")
+
+            printer.out("Images:")
+            table = Texttable(800)
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.header(
+                ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
+            images = generics_utils.order_list_object_by(images, "name")
+            for image in images:
+                imgStatus = self.get_image_status(image.status)
+                table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
+                               image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
+                               "X" if image.compress else "", imgStatus])
+            print table.draw() + "\n"
+            printer.out("Found " + str(len(images)) + " images")
 
             if pimages is None or len(pimages) == 0:
                 printer.out("No publication available")
-            else:
-                printer.out("Publications:")
-                table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
-                table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
-                pimages = generics_utils.order_list_object_by(pimages, "name")
-                for pimage in pimages:
-                    pubStatus = self.get_publish_status(pimage.status)
-                    table.add_row([pimage.name,
-                                   generics_utils.extract_id(pimage.imageUri),
-                                   pimage.dbId,
-                                   pimage.credAccount.name if pimage.credAccount is not None else "-",
-                                   pimage.credAccount.targetPlatform.name,
-                                   pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
-                print table.draw() + "\n"
-                printer.out("Found " + str(len(pimages)) + " publications")
+                return 0
+
+            printer.out("Publications:")
+            table = Texttable(800)
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
+            table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
+            pimages = generics_utils.order_list_object_by(pimages, "name")
+            for pimage in pimages:
+                pubStatus = self.get_publish_status(pimage.status)
+                table.add_row([pimage.name,
+                               generics_utils.extract_id(pimage.imageUri),
+                               pimage.dbId,
+                               pimage.credAccount.name if pimage.credAccount is not None else "-",
+                               pimage.credAccount.targetPlatform.name,
+                               pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
+            print table.draw() + "\n"
+            printer.out("Found " + str(len(pimages)) + " publications")
 
             return 0
         except ArgumentParserError as e:
@@ -135,14 +136,12 @@ class Image(Cmd, CoreGlobal):
 
             try:
                 if doArgs.id:
-                    images = self.api.Users(self.login).Images.Getall()
-                    images = images.images.image
-                    if images is None or len(images) == 0:
-                        printer.out("No images available")
-                    else:
-                        for iimage in images:
-                            if str(iimage.dbId) == str(doArgs.id):
-                                image = iimage
+                    images = self.get_all_images()
+                    if images is None :
+                        return 2
+                    for iimage in images:
+                        if str(iimage.dbId) == str(doArgs.id):
+                            image = iimage
                     if image is None:
                         printer.out("image not found", printer.ERROR)
                         return 2
@@ -271,143 +270,143 @@ class Image(Cmd, CoreGlobal):
         doParser.print_help()
 
     def arg_delete(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " delete", add_help=True,
+        do_parser = ArgumentParser(prog=self.cmd_name + " delete", add_help=True,
                                   description="Deletes a machine image or publish information")
-        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to delete")
-        return doParser
+        return do_parser
 
     def do_delete(self, args):
         try:
             # add arguments
-            doParser = self.arg_delete()
+            do_parser = self.arg_delete()
             try:
-                doArgs = doParser.parse_args(shlex.split(args))
+                do_args = do_parser.parse_args(shlex.split(args))
             except SystemExit as e:
                 return
             # call UForge API
-            printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Getall()
-            images = images.images.image
-            if images is None or len(images) == 0:
-                printer.out("No images available")
+            printer.out("Searching image with id [" + do_args.id + "] ...")
+            images = self.get_all_images()
+            if images is None :
+                raise ValueError("No image found")
+
+            table = Texttable(800)
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
+            delete_image = None
+            for image in images:
+                if str(image.dbId) == str(do_args.id):
+                    img_status = self.get_image_status(image.status)
+                    table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
+                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
+                                   "X" if image.compress else "", img_status])
+                    delete_image = image
+            if delete_image is not None:
+                print table.draw() + "\n"
+                if generics_utils.query_yes_no(
+                                "Do you really want to delete image with id " + str(delete_image.dbId)):
+
+                    if is_uri_based_on_appliance(delete_image.uri):
+                        appliance_id = extract_appliance_id(delete_image.uri)
+                        self.api.Users(self.login).Appliances(appliance_id).Images(delete_image.dbId).Delete()
+
+                    elif is_uri_based_on_scan(delete_image.uri):
+                        scanned_instance_id = extract_scannedinstance_id(delete_image.uri)
+                        scan_id = extract_scan_id(delete_image.uri)
+                        self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id).Images(None, delete_image.dbId).Delete()
+
+                    else :
+                        raise ValueError("Image with id '" + do_args.id + " not found.")
+
+                    printer.out("Image deleted", printer.OK)
+                    return 0
             else:
-                table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
-                table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
-                deleteImage = None
-                for image in images:
-                    if str(image.dbId) == str(doArgs.id):
-                        imgStatus = self.get_image_status(image.status)
-                        table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                                       image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
-                                       "X" if image.compress else "", imgStatus])
-                        deleteImage = image
-                if deleteImage is not None:
-                    print table.draw() + "\n"
-                    if generics_utils.query_yes_no(
-                                    "Do you really want to delete image with id " + str(deleteImage.dbId)):
-                        # Check URI pour voir si Appliance ou scan
-                        # if Appliance
-                        if deleteImage.applianceUri.split('/')[2] == 'appliances':
-                            self.api.Users(self.login)\
-                                .Appliances(generics_utils.extract_id(deleteImage.applianceUri))\
-                                .Images(deleteImage.dbId)\
-                                .Delete()
-                            printer.out("Image deleted", printer.OK)
-                        # if ScanInstance
-                        elif deleteImage.applianceUri.split('/')[2] == 'scannedinstances':
-                            scan_group = deleteImage.applianceUri.split('/')[3]
-                            self.api.Users(self.login)\
-                                .Scannedinstances(scan_group)\
-                                .Scans(generics_utils.extract_id(deleteImage.applianceUri))\
-                                .Images(None,deleteImage.dbId)\
-                                .Delete()
-                            printer.out("Image deleted", printer.OK)
-                else:
-                    printer.out("Image not found", printer.ERROR)
+                printer.out("Image not found", printer.ERROR)
 
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_delete()
+            return 2
+        except ValueError as e:
+            printer.out(str(e), printer.ERROR)
+            return 2
         except Exception as e:
             return handle_uforge_exception(e)
 
     def help_delete(self):
-        doParser = self.arg_delete()
-        doParser.print_help()
+        do_parser = self.arg_delete()
+        do_parser.print_help()
 
     def arg_cancel(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " cancel", add_help=True,
+        do_parser = ArgumentParser(prog=self.cmd_name + " cancel", add_help=True,
                                   description="Cancels a machine image build or publish")
-        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to cancel")
-        return doParser
+        return do_parser
 
     def do_cancel(self, args):
         try:
             # add arguments
-            doParser = self.arg_cancel()
+            do_parser = self.arg_cancel()
             try:
-                doArgs = doParser.parse_args(shlex.split(args))
+                do_args = do_parser.parse_args(shlex.split(args))
             except SystemExit as e:
-                return
+                return 2
             # call UForge API
-            printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Getall()
-            images = images.images.image
-            if images is None or len(images) == 0:
-                printer.out("No images available")
+            printer.out("Searching image with id [" + do_args.id + "] ...")
+            images = self.get_all_images()
+            if images is None :
+                raise ValueError("No image found")
+
+            table = Texttable(800)
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
+            cancel_image = None
+            for image in images:
+                if str(image.dbId) == str(do_args.id):
+                    img_status = self.get_image_status(image.status)
+                    table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
+                                   image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
+                                   "X" if image.compress else "", img_status])
+                    print table.draw() + "\n"
+                    cancel_image = image
+            if cancel_image is None or cancel_image.status.complete or cancel_image.status.cancelled:
+                raise ValueError("Image not being generated, impossible to canceled")
+
+            if cancel_image is not None:
+                if generics_utils.query_yes_no(
+                                "Do you really want to cancel image with id " + str(cancel_image.dbId)):
+
+                    if is_uri_based_on_appliance(cancel_image.uri):
+                        appliance_id = extract_appliance_id(cancel_image.uri)
+                        self.api.Users(self.login).Appliances(appliance_id).Images(cancel_image.dbId).Status.Cancel()
+                        printer.out("Image Canceled", printer.OK)
+
+                    elif is_uri_based_on_scan(cancel_image.uri):
+                        scanned_instance_id = extract_scannedinstance_id(cancel_image.uri)
+                        scan_id = extract_scan_id(cancel_image.uri)
+                        self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id).\
+                            Images(None, cancel_image.dbId).Status.Cancel()
+                        printer.out("Image Canceled", printer.OK)
+
             else:
-                table = Texttable(800)
-                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
-                table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
-                cancelImage = None
-                for image in images:
-                    if str(image.dbId) == str(doArgs.id):
-                        imgStatus = self.get_image_status(image.status)
-                        table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                                       image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.size),
-                                       "X" if image.compress else "", imgStatus])
-                        print table.draw() + "\n"
-                        cancelImage = image
-                if cancelImage is None or cancelImage.status.complete or cancelImage.status.cancelled:
-                    printer.out("Image not being generated, impossible to canceled", printer.ERROR)
-                    return
-
-                if cancelImage is not None:
-                    if generics_utils.query_yes_no(
-                                    "Do you really want to cancel image with id " + str(cancelImage.dbId)):
-                        # Check URI pour voir si Appliance ou scan
-                        # if Appliance
-                        if cancelImage.applianceUri.split('/')[2] == 'appliances':
-                            self.api.Users(self.login).Appliances(
-                                generics_utils.extract_id(cancelImage.applianceUri)).Images(
-                                cancelImage.dbId).Status.Cancel()
-                            printer.out("Image Canceled", printer.OK)
-                        # If Scanned Instance
-                        elif cancelImage.applianceUri.split('/')[2] == 'scannedinstances':
-                            scan_group = cancelImage.applianceUri.split('/')[3]
-                            self.api.Users(self.login) \
-                                .Scannedinstances(scan_group) \
-                                .Scans(generics_utils.extract_id(cancelImage.applianceUri)) \
-                                .Images(None, cancelImage.dbId) \
-                                .Status.Cancel()
-                            printer.out("Image Canceled", printer.OK)
-                else:
-                    printer.out("Image not found", printer.ERROR)
-
+                printer.out("Image not found", printer.ERROR)
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_delete()
+            return 2
+        except ValueError as e:
+            printer.out(str(e), printer.ERROR)
+            return 2
+
         except Exception as e:
             return handle_uforge_exception(e)
 
     def help_cancel(self):
-        doParser = self.arg_cancel()
-        doParser.print_help()
+        do_parser = self.arg_cancel()
+        do_parser.print_help()
 
     def arg_download(self):
         doParser = ArgumentParser(prog=self.cmd_name + " download", add_help=True,
@@ -428,10 +427,9 @@ class Image(Cmd, CoreGlobal):
                 return
             # call UForge API
             printer.out("Searching image with id [" + doArgs.id + "] ...")
-            images = self.api.Users(self.login).Images.Getall()
-            images = images.images.image
-            if images is None or len(images) == 0:
-                printer.out("No images available")
+            images = self.get_all_images()
+            if images is None:
+                return
             else:
                 dlImage = None
                 for image in images:
@@ -736,3 +734,12 @@ class Image(Cmd, CoreGlobal):
         deployed_instance_id = deployed_instance.applicationId
         status = show_deploy_progress_without_percentage(self, deployed_instance_id)
         return print_deploy_info(self, status, deployed_instance_id)
+
+    def get_all_images(self):
+        images = self.api.Users(self.login).Images.Getall()
+        images = images.images.image
+        if images is None or len(images) == 0:
+            printer.out("No images available")
+            return None
+        else :
+            return images
