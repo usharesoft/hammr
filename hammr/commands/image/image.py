@@ -64,7 +64,7 @@ class Image(Cmd, CoreGlobal):
 
             printer.out("Images:")
             table = Texttable(800)
-            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
             table.header(
                 ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
             images = generics_utils.order_list_object_by(images, "name")
@@ -291,7 +291,7 @@ class Image(Cmd, CoreGlobal):
                 raise ValueError("No image found")
 
             table = Texttable(800)
-            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
             table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
             delete_image = None
             for image in images:
@@ -322,7 +322,6 @@ class Image(Cmd, CoreGlobal):
                     return 0
             else:
                 printer.out("Image not found", printer.ERROR)
-
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
@@ -360,7 +359,7 @@ class Image(Cmd, CoreGlobal):
                 raise ValueError("No image found")
 
             table = Texttable(800)
-            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "c", "t"])
+            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
             table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
             cancel_image = None
             for image in images:
