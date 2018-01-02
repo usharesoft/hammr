@@ -55,7 +55,7 @@ class Image(Cmd, CoreGlobal):
             # get images
             printer.out("Getting all images and publications for [" + self.login + "] ...")
             images = self.get_all_images()
-            if images is None :
+            if len(images) == 0 :
                 return 0
 
             # get publications
@@ -137,13 +137,9 @@ class Image(Cmd, CoreGlobal):
             try:
                 if doArgs.id:
                     images = self.get_all_images()
-                    if images is None :
-                        return 2
-                    for iimage in images:
-                        if str(iimage.dbId) == str(doArgs.id):
-                            image = iimage
+                    image = self.get_image(images, str(doArgs.id))
                     if image is None:
-                        printer.out("image not found", printer.ERROR)
+                        printer.out("Image not found", printer.ERROR)
                         return 2
                     if not self.is_image_ready_to_publish(image, None):
                         printer.out("Image with name '" + image.name + " can not be published", printer.ERROR)
@@ -287,7 +283,7 @@ class Image(Cmd, CoreGlobal):
             # call UForge API
             printer.out("Searching image with id [" + do_args.id + "] ...")
             images = self.get_all_images()
-            if images is None :
+            if len(images) == 0 :
                 raise ValueError("No image found")
 
             table = Texttable(800)
@@ -305,19 +301,7 @@ class Image(Cmd, CoreGlobal):
                 print table.draw() + "\n"
                 if generics_utils.query_yes_no(
                                 "Do you really want to delete image with id " + str(delete_image.dbId)):
-
-                    if is_uri_based_on_appliance(delete_image.uri):
-                        appliance_id = extract_appliance_id(delete_image.uri)
-                        self.api.Users(self.login).Appliances(appliance_id).Images(delete_image.dbId).Delete()
-
-                    elif is_uri_based_on_scan(delete_image.uri):
-                        scanned_instance_id = extract_scannedinstance_id(delete_image.uri)
-                        scan_id = extract_scan_id(delete_image.uri)
-                        self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id).Images(None, delete_image.dbId).Delete()
-
-                    else :
-                        raise ValueError("Image with id '" + do_args.id + " not found.")
-
+                    self.delete_image(delete_image)
                     printer.out("Image deleted", printer.OK)
                     return 0
             else:
@@ -355,7 +339,7 @@ class Image(Cmd, CoreGlobal):
             # call UForge API
             printer.out("Searching image with id [" + do_args.id + "] ...")
             images = self.get_all_images()
-            if images is None :
+            if len(images) == 0 :
                 raise ValueError("No image found")
 
             table = Texttable(800)
@@ -376,19 +360,7 @@ class Image(Cmd, CoreGlobal):
             if cancel_image is not None:
                 if generics_utils.query_yes_no(
                                 "Do you really want to cancel image with id " + str(cancel_image.dbId)):
-
-                    if is_uri_based_on_appliance(cancel_image.uri):
-                        appliance_id = extract_appliance_id(cancel_image.uri)
-                        self.api.Users(self.login).Appliances(appliance_id).Images(cancel_image.dbId).Status.Cancel()
-                        printer.out("Image Canceled", printer.OK)
-
-                    elif is_uri_based_on_scan(cancel_image.uri):
-                        scanned_instance_id = extract_scannedinstance_id(cancel_image.uri)
-                        scan_id = extract_scan_id(cancel_image.uri)
-                        self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id).\
-                            Images(None, cancel_image.dbId).Status.Cancel()
-                        printer.out("Image Canceled", printer.OK)
-
+                    self.cancel_image(cancel_image)
             else:
                 printer.out("Image not found", printer.ERROR)
 
@@ -427,35 +399,39 @@ class Image(Cmd, CoreGlobal):
             # call UForge API
             printer.out("Searching image with id [" + doArgs.id + "] ...")
             images = self.get_all_images()
-            if images is None:
-                return
+            if len(images) == 0:
+                raise ValueError("No image available")
+
+            dlImage = None
+            for image in images:
+                if str(image.dbId) == str(doArgs.id):
+                    dlImage = image
+            if dlImage is not None and dlImage.status.complete and not dlImage.status.error and dlImage.compress:
+                download_url = self.api.getUrl() + "/" + dlImage.downloadUri
+                dlUtils = download_utils.Download(download_url, doArgs.file, not self.api.getDisableSslCertificateValidation())
+                try:
+                    dlUtils.start()
+                except Exception, e:
+                    return
+                printer.out("Image downloaded", printer.OK)
+            elif dlImage is None:
+                printer.out("Unable to find the image to download in your library", printer.ERROR)
+            elif not dlImage.status.complete:
+                printer.out("The image is being generated. Unable to download. Please retry later", printer.ERROR)
+            elif not dlImage.compress:
+                printer.out("The image has been prepared to be published (not compressed). Cannot download.",
+                            printer.ERROR)
             else:
-                dlImage = None
-                for image in images:
-                    if str(image.dbId) == str(doArgs.id):
-                        dlImage = image
-                if dlImage is not None and dlImage.status.complete and not dlImage.status.error and dlImage.compress:
-                    download_url = self.api.getUrl() + "/" + dlImage.downloadUri
-                    dlUtils = download_utils.Download(download_url, doArgs.file, not self.api.getDisableSslCertificateValidation())
-                    try:
-                        dlUtils.start()
-                    except Exception, e:
-                        return
-                    printer.out("Image downloaded", printer.OK)
-                elif dlImage is None:
-                    printer.out("Unable to find the image to download in your library", printer.ERROR)
-                elif not dlImage.status.complete:
-                    printer.out("The image is being generated. Unable to download. Please retry later", printer.ERROR)
-                elif not dlImage.compress:
-                    printer.out("The image has been prepared to be published (not compressed). Cannot download.",
-                                printer.ERROR)
-                else:
-                    printer.out("Cannot download this image", printer.ERROR)
+                printer.out("Cannot download this image", printer.ERROR)
 
 
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_download()
+            return 2
+        except ValueError as e:
+            printer.out(str(e), printer.ERROR)
+            return 2
         except Exception as e:
             return handle_uforge_exception(e)
 
@@ -738,7 +714,41 @@ class Image(Cmd, CoreGlobal):
         images = self.api.Users(self.login).Images.Getall()
         images = images.images.image
         if images is None or len(images) == 0:
-            printer.out("No images available")
-            return None
+            return []
         else :
             return images
+
+    def get_image(self, images, image_id):
+        if images is None:
+            return None
+        for iimage in images:
+            if str(iimage.dbId) == str(image_id):
+                image = iimage
+                return image
+        return None
+
+    def delete_image(self, image):
+        if is_uri_based_on_appliance(image.uri):
+            appliance_id = extract_appliance_id(image.uri)
+            self.api.Users(self.login).Appliances(appliance_id).Images(image.dbId).Delete()
+
+        elif is_uri_based_on_scan(image.uri):
+            scanned_instance_id = extract_scannedinstance_id(image.uri)
+            scan_id = extract_scan_id(image.uri)
+            self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id).Images(None, image.dbId).Delete()
+
+        else:
+            raise ValueError("Internal error: image cannot be deleted.")
+
+    def cancel_image(self, image):
+        if is_uri_based_on_appliance(image.uri):
+            appliance_id = extract_appliance_id(image.uri)
+            self.api.Users(self.login).Appliances(appliance_id).Images(image.dbId).Status.Cancel()
+
+        elif is_uri_based_on_scan(image.uri):
+            scanned_instance_id = extract_scannedinstance_id(image.uri)
+            scan_id = extract_scan_id(image.uri)
+            self.api.Users(self.login).Scannedinstances(scanned_instance_id).Scans(scan_id). \
+                Images(None, image.dbId).Status.Cancel()
+
+        printer.out("Image Canceled", printer.OK)
