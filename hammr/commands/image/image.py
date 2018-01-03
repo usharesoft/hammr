@@ -56,25 +56,25 @@ class Image(Cmd, CoreGlobal):
             printer.out("Getting all images and publications for [" + self.login + "] ...")
             images = self.get_all_images()
             if len(images) == 0 :
-                return 0
+                printer.out("No image available")
+            else :
+                printer.out("Images:")
+                table = Texttable(800)
+                table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
+                table.header(
+                    ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
+                images = generics_utils.order_list_object_by(images, "name")
+                for image in images:
+                    imgStatus = self.get_image_status(image.status)
+                    table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
+                               image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
+                               "X" if image.compress else "", imgStatus])
+                print table.draw() + "\n"
+                printer.out("Found " + str(len(images)) + " images")
 
             # get publications
             pimages = self.api.Users(self.login).Pimages.Getall()
             pimages = pimages.publishImages.publishImage
-
-            printer.out("Images:")
-            table = Texttable(800)
-            table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
-            table.header(
-                ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
-            images = generics_utils.order_list_object_by(images, "name")
-            for image in images:
-                imgStatus = self.get_image_status(image.status)
-                table.add_row([image.dbId, image.name, image.version, image.revision, image.targetFormat.name,
-                               image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
-                               "X" if image.compress else "", imgStatus])
-            print table.draw() + "\n"
-            printer.out("Found " + str(len(images)) + " images")
 
             if pimages is None or len(pimages) == 0:
                 printer.out("No publication available")
