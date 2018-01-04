@@ -53,13 +53,13 @@ class Image(Cmd, CoreGlobal):
         try:
             # call UForge API
             # get images
-            printer.out("Getting all images and publications for [" + self.login + "] ...")
+            printer.out("Getting all images and publications for [" + self.login + "] ...", printer.INFO)
             images = self.get_all_images()
             if len(images) == 0 :
-                printer.out("No image available")
+                printer.out("No image available", printer.INFO)
             else :
                 printer.out("Images:")
-                table = Texttable(800)
+                table = self.initialize_text_table(800)
                 table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
                 table.header(
                     ["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Generation Status"])
@@ -70,31 +70,31 @@ class Image(Cmd, CoreGlobal):
                                image.created.strftime("%Y-%m-%d %H:%M:%S"), size(image.fileSize),
                                "X" if image.compress else "", imgStatus])
                 print table.draw() + "\n"
-                printer.out("Found " + str(len(images)) + " images")
+                printer.out("Found " + str(len(images)) + " images", printer.INFO)
 
             # get publications
-            pimages = self.api.Users(self.login).Pimages.Getall()
-            pimages = pimages.publishImages.publishImage
+            publish_images = self.api.Users(self.login).Pimages.Getall()
+            publish_images = publish_images.publishImages.publishImage
 
-            if pimages is None or len(pimages) == 0:
-                printer.out("No publication available")
+            if publish_images is None or len(publish_images) == 0:
+                printer.out("No publication available", printer.INFO)
                 return 0
 
             printer.out("Publications:")
-            table = Texttable(800)
+            table = self.initialize_text_table(800)
             table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t"])
             table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
-            pimages = generics_utils.order_list_object_by(pimages, "name")
-            for pimage in pimages:
-                pubStatus = self.get_publish_status(pimage.status)
-                table.add_row([pimage.name,
-                               generics_utils.extract_id(pimage.imageUri),
-                               pimage.dbId,
-                               pimage.credAccount.name if pimage.credAccount is not None else "-",
-                               pimage.credAccount.targetPlatform.name,
-                               pimage.cloudId if pimage.cloudId is not None else "-", pubStatus])
+            publish_images = generics_utils.order_list_object_by(publish_images, "name")
+            for publish_image in publish_images:
+                pubStatus = self.get_publish_status(publish_image.status)
+                table.add_row([publish_image.name,
+                               generics_utils.extract_id(publish_image.imageUri),
+                               publish_image.dbId,
+                               publish_image.credAccount.name if publish_image.credAccount is not None else "-",
+                               publish_image.credAccount.targetPlatform.name,
+                               publish_image.cloudId if publish_image.cloudId is not None else "-", pubStatus])
             print table.draw() + "\n"
-            printer.out("Found " + str(len(pimages)) + " publications")
+            printer.out("Found " + str(len(publish_images)) + " publications", printer.INFO)
 
             return 0
         except ArgumentParserError as e:
@@ -281,12 +281,12 @@ class Image(Cmd, CoreGlobal):
             except SystemExit as e:
                 return
             # call UForge API
-            printer.out("Searching image with id [" + do_args.id + "] ...")
+            printer.out("Searching image with id [" + do_args.id + "] ...", printer.INFO)
             images = self.get_all_images()
             if len(images) == 0 :
                 raise ValueError("No image found")
 
-            table = Texttable(800)
+            table = self.initialize_text_table(800)
             table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
             table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
             delete_image = None
@@ -337,12 +337,12 @@ class Image(Cmd, CoreGlobal):
             except SystemExit as e:
                 return 2
             # call UForge API
-            printer.out("Searching image with id [" + do_args.id + "] ...")
+            printer.out("Searching image with id [" + do_args.id + "] ...", printer.INFO)
             images = self.get_all_images()
             if len(images) == 0 :
                 raise ValueError("No image found")
 
-            table = Texttable(800)
+            table = self.initialize_text_table(800)
             table.set_cols_dtype(["t", "t", "t", "t", "t", "t", "t", "t", "t"])
             table.header(["Id", "Name", "Version", "Rev.", "Format", "Created", "Size", "Compressed", "Status"])
             cancel_image = None
@@ -397,7 +397,7 @@ class Image(Cmd, CoreGlobal):
             except SystemExit as e:
                 return
             # call UForge API
-            printer.out("Searching image with id [" + doArgs.id + "] ...")
+            printer.out("Searching image with id [" + doArgs.id + "] ...", printer.INFO)
             images = self.get_all_images()
             if len(images) == 0:
                 raise ValueError("No image available")
@@ -752,3 +752,7 @@ class Image(Cmd, CoreGlobal):
                 Images(None, image.dbId).Status.Cancel()
 
         printer.out("Image Canceled", printer.OK)
+
+    def initialize_text_table(self, width):
+        table = Texttable(width)
+        return table
