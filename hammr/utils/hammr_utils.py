@@ -270,3 +270,10 @@ def extract_scan_id(image_uri):
         return int(match.group(1))
     else:
         return None
+
+def extract_appliance_id(image_uri):
+    match = re.match( r'users/[^/]+/appliances/([0-9]+)($|/)', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
