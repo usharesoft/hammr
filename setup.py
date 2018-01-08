@@ -23,7 +23,7 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Declare your packages' dependencies here, for eg:
 # Always put an '==' dependency with uforge_python_sdk
-requires=['uforge_python_sdk==3.7.8',
+requires=['uforge_python_sdk==3.8.1-RC2',
                     'httplib2==0.9',
                     'texttable>=0.8.1',
                     'progressbar==2.3',
