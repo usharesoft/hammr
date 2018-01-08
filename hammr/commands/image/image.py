@@ -686,7 +686,9 @@ class Image(Cmd, CoreGlobal):
         bar_status = OpStatus()
         progress = create_progress_bar_openstack(bar_status)
 
+        self.api.setTimeout(300)
         cred_account = retrieve_credaccount(self, publish_image.dbId, publish_image)
+        self.api.setTimeout(constants.HTTP_TIMEOUT)
         deployment = build_deployment_openstack(attributes, publish_image, cred_account)
 
         bar_status.message = "Deploying instance"
