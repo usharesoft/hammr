@@ -41,7 +41,7 @@ When using the classic mode, the command ``hammr`` is used, followed by a comman
 
 .. code-block:: shell
 
-	$ hammr os list --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr os list --url https://your-uforge.com/api -u username -p password
 
 To enter interactive mode, launch the ``hammr`` command on its own. This provides a prompt, allowing you to enter commands and sub-commands the same way as you would in classic mode.
 
@@ -56,7 +56,7 @@ Launch hammr providing the batch file:
 
 .. code-block:: shell
 
-	$ hammr batch --file batchfile --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr batch --file batchfile --url https://your-uforge.com/api -u username -p password
 	os list 
 	Getting distributions for [root] ...
 	+-----+--------+---------+--------------+---------------------+-----------------+
@@ -96,7 +96,7 @@ For example
 
 .. code-block:: shell
 
-	$ hammr os list --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr os list --url https://your-uforge.com/api -u username -p password
 
 These parameters need to be passed each time you wish to use the command-line.
 

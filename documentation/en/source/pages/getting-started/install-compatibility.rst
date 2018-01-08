@@ -40,7 +40,7 @@ If your hammr version is not compatible with the UForge version that you want to
 
 .. code-block:: shell
 
-	$ hammr --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr --url https://your-uforge.com/api -u username -p password
 	ERROR: Sorry but this version of Hammr (version = 'HAMMR_VERSION') is not compatible with the version of UForge (version = 'UFORGE_VERSION').
 	ERROR: Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.
 
