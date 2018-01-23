@@ -80,7 +80,7 @@ $ hammr -v
 
 Upgrading
 =========
-If you have already installed hammr, and you with to upgrade to the latest version, use:
+If you have already installed hammr, and you want to upgrade to the latest version, use:
 ```
 $ sudo pip install --upgrade hammr
 ```
