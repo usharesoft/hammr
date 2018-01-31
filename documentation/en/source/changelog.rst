@@ -1,7 +1,14 @@
-.. Copyright (c) 2007-2017 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 Changelog
 =========
+
+hammr 3.7.0.9 (2018-01-31)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.7-9 only
 
 hammr 3.7.0.8 (2017-10-04)
 ------------------------
