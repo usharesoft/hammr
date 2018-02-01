@@ -243,6 +243,59 @@ class TestPublishAzure(TestCase):
         if region is not None: builder["region"] = region
         return builder
 
+class TestPublishCloudStack(TestCase):
+
+    def test_publish_cloudstack_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_cloudstack_builder("myImageName", "myZone", "myDescription")
+
+        # when
+        pimage = publish_cloudstack(builder)
+
+        # then
+        self.assertNotEqual(pimage, None)
+        self.assertEqual(pimage.displayName, builder["imageName"])
+        self.assertEqual(pimage.zoneName, builder["zone"])
+        self.assertEqual(pimage.description, builder["description"])
+
+    def test_publish_cloudstack_should_return_none_when_missing_image_name(self):
+        # given
+        builder = self.build_cloudstack_builder(None, "myZone", "myDescription")
+
+        # when
+        pimage = publish_cloudstack(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_cloudstack_should_return_none_when_missing_zone(self):
+        # given
+        builder = self.build_cloudstack_builder("myImageName", None, "myDescription")
+
+        # when
+        pimage = publish_cloudstack(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_cloudstack_should_return_none_when_missing_zone(self):
+        # give
+        builder = self.build_cloudstack_builder("myImageName", "myZone", None)
+
+        # when
+        pimage = publish_cloudstack(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+
+    def build_cloudstack_builder(self, image_name, zone, description):
+        builder = {}
+        if image_name is not None: builder["imageName"] = image_name
+        if zone is not None: builder["zone"] = zone
+        if description is not None: builder["description"] = description
+        return builder
+
 class TestPublishOracle(TestCase):
     def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
         # given
