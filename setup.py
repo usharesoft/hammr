@@ -22,10 +22,11 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # Declare your packages' dependencies here, for eg:
-# Always put an '==' dependency with uforge_python_sdk
-requires=['uforge_python_sdk==3.8.1',
+# Always put an '==' dependency with uforge_python_sdk during the release
+# During dev we can keep >= in order to get nightly version of sdk for the CI  
+requires=['uforge_python_sdk>=3.8.1',
                     'httplib2==0.9',
-                    'texttable>=0.8.1',
+                    'texttable==0.8.1',
                     'progressbar==2.3',
                     'argparse',
                     'paramiko==1.12',
