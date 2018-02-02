@@ -22,10 +22,11 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # Declare your packages' dependencies here, for eg:
-# Always put an '==' dependency with uforge_python_sdk
-requires=['uforge_python_sdk==3.8.0.1-RC2',
+# Always put an '==' dependency with uforge_python_sdk during the release
+# During dev we can keep >= in order to get nightly version of sdk for the CI
+requires=['uforge_python_sdk>=3.8.0.1-RC2',
                     'httplib2==0.9',
-                    'texttable>=0.8.1',
+                    'texttable==0.8.1',
                     'progressbar==2.3',
                     'argparse',
                     'paramiko==1.12',
@@ -51,11 +52,11 @@ class CleanCommand(Command):
         os.system('rm -vrf '+ROOT_DIR+'/build '+ROOT_DIR+'/dist '+ROOT_DIR+'/*.pyc '+ROOT_DIR+'/*.egg-info')
         os.system('find '+ROOT_DIR+' -iname "*.pyc" -exec rm {} +')
 
-setup (  
+setup (
 
   install_requires=requires,
   tests_require = test_requires,
-  
+
   # Fill in these to make your Egg ready for upload to
   # PyPI
   name = 'hammr',
@@ -81,7 +82,7 @@ setup (
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ),
-       
+
   # ... custom build command
     cmdclass={
         'clean': CleanCommand,
@@ -89,5 +90,5 @@ setup (
 
   #long_description= 'Long description of the package',
   scripts = ['bin/hammr', 'bin/hammr.bat'],
-  
+
 )
