@@ -55,21 +55,18 @@ Publishing a Machine Image
 To publish an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Outscale: ``Outscale``. To get the available builder type, please refer to :ref:`command-line-format`
-* ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
-* ``zone`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
+* ``account`` (mandatory): an object providing the Cloudstack cloud account information required to publish the built machine image.
+* ``region`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
 
 Valid Regions
 -------------
 
 The following regions are supported:
 
-* ``ap-northeast-1``: Asia Pacific (Tokyo) Region
-* ``ap-southeast-1``: Asia Pacific (Singapore) Region
-* ``eu-west-1``: EU (Ireland) Region
-* ``sa-east-1``: South America (Sao Paulo) Region
-* ``us-east-1``: US East (North Virginia) Region
-* ``us-west-1``: US West (North california) Region
-* ``us-west-2``: US West (Oregon) Region
+* ``eu-west-2``: EU (France) Region
+* ``us-east-2``: US East (New Jersey) Region
+* ``us-west-1``: US West (California) Region
+* ``cn-southeast-1``: Asia Pacific (Hong-Kong) Region
 
 Outscale Cloud Account
 ----------------------
@@ -89,7 +86,7 @@ The Outscale cloud account has the following valid keys:
 Example
 -------
 
-The following example shows an amazon builder with all the information to build and publish a machine image to Amazon EC2.
+The following example shows an Outscale builder with all the information to build and publish a machine image to Outscale.
 
 If you are using YAML:
 
@@ -105,7 +102,7 @@ If you are using YAML:
 	    secretAccessKey: ks30hPeH1xWqilJ04
 	  installation:
 	    diskSize: 10240
-	  zone: eu-west-2
+	  region: eu-west-2
 	  description: centos-template
 
 If you are using JSON:
@@ -125,7 +122,7 @@ If you are using JSON:
 	      "installation": {
 	        "diskSize": 10240
 	      },
-	      "zone": "eu-west-2",
+	      "region": "eu-west-2",
 	      "description": "centos-template"
 	    }
 	  ]
@@ -176,7 +173,6 @@ If you are using YAML:
 	  installation:
 	    diskSize: 10240
 	  region: eu-west-2
-	  s3bucket: centos-template
 
 If you are using JSON:
 
@@ -193,7 +189,6 @@ If you are using JSON:
 	        "diskSize": 10240
 	      },
 	      "region": "eu-west-2",
-	      "s3bucket": "centos-template"
 	    }
 	  ]
 	}
@@ -212,7 +207,6 @@ If you are using YAML:
 	  installation:
 	    diskSize: 10240
 	  region: eu-west-2
-	  s3bucket: centos-template
 
 If you are using JSON:
 
@@ -229,7 +223,6 @@ If you are using JSON:
 	        "diskSize": 10240
 	      },
 	      "region": "eu-west-2",
-	      "s3bucket": "centos-template"
 	    }
 	  ]
 	}
