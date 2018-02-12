@@ -375,15 +375,15 @@ def publish_gce(pimage, builder):
     return pimage
 
 
-def publish_outscale(pimage, builder):
-    # doing field verification
-    if not "zone" in builder:
-        printer.out("zone in outscale builder not found", printer.ERROR)
-        return
-    if not "description" in builder:
-        pimage.credAccount.description = builder["description"]
+def publish_outscale(builder):
+    pimage = PublishImageOutscale()
 
-    pimage.credAccount.zoneName = builder["zone"]
+    # doing field verification
+    if not "region" in builder:
+        printer.out("region in cloudstack builder not found", printer.ERROR)
+        return
+
+    pimage.region = builder["region"]
     return pimage
 
 
