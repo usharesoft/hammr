@@ -278,7 +278,7 @@ class TestPublishCloudStack(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_cloudstack_should_return_none_when_missing_zone(self):
+    def test_publish_cloudstack_should_return_none_when_missing_description(self):
         # give
         builder = self.build_cloudstack_builder("myImageName", "myZone", None)
 
@@ -332,4 +332,34 @@ class TestPublishOracle(TestCase):
         builder = {}
         if display_name is not None: builder["displayName"] = display_name
         if compute_end_point is not None: builder["computeEndPoint"] = compute_end_point
+        return builder
+
+
+class TestPublishOutscale(TestCase):
+    def test_publish_outscale_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_outscale_builder("myRegion")
+
+        # when
+        pimage = publish_outscale(builder)
+
+        # then
+        self.assertNotEqual(pimage, None)
+        self.assertNotEqual(pimage.region, None)
+        self.assertEqual(pimage.region, builder["region"])
+
+    def test_publish_outscale_should_return_none_when_missing_region(self):
+        # given
+        builder = self.build_outscale_builder(None)
+
+        # when
+        pimage = publish_outscale(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_outscale_builder(self, region):
+        builder = {}
+        if region is not None:
+            builder["region"] = region
         return builder
