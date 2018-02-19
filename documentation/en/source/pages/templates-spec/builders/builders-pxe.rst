@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2017 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 .. _builder-pxe:
 
