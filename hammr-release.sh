@@ -178,10 +178,6 @@ fi
 if [ ! -f "$HOME/.pypirc" ]; then
   release_failed "The PyPI UShareSoft credentials file shoud be present in $HOME/.pypirc"
 fi
-#Must not be inside git repo
-if [ -d ".git" ]; then
-  release_failed "The release script automation must not be executed inside a git repository"
-fi
 #The directory used for release must not exists on the filesystem
 if [ -d "$WORKING_DIRECTORY" ]; then
   release_failed "The directory \""$WORKING_DIRECTORY"\", used for the release, must not exists on the filesystem"
@@ -309,6 +305,6 @@ clean_directory
 terminated
 
 echo "Tag created on github : $HAMMR_VERSION"
-echo "Please edit it to create a github release or pre-release and add release note at $GIT_ADDRESS/$HAMMR_REPO/releases/tag/$HAMMR_VERSION"
+echo "Please draft a new release at $GIT_ADDRESS/$HAMMR_REPO/releases/new"
 echo "Hammr $HAMMR_VERSION should be available at https://pypi.python.org/pypi/hammr/$HAMMR_VERSION"
 exit 0
