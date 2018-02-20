@@ -31,7 +31,7 @@ get_step () {
     2) echo "::::::::::: Second step : commit the changes in Hammr repository";;
     3) echo "::::::::::: Third step : create a github annotated tag $HAMMR_VERSION for the release";;
     4) echo "::::::::::: Fourth step : commit in Hammr repository a new setup.py version with uforge-python-sdk>=$HAMMR_VERSION";;
-    5) echo "::::::::::: Fifth step : create a pull request to merge the release branch inside the master";;
+    5) echo "::::::::::: Fifth step : create a pull request to merge the release branch inside $GIT_BASE_BRANCH";;
   esac
 }
 
@@ -158,7 +158,7 @@ if [ ! "$SDK_VERSION" ]; then
 fi
 
 #Setting the directory used for the release and Hammr url
-WORKING_DIRECTORY="/home/hammr-release-$HAMMR_VERSION"
+WORKING_DIRECTORY="$HOME/hammr-release-$HAMMR_VERSION"
 HAMMR_REPO="usharesoft/hammr"
 GIT_ADDRESS="https://github.com"
 GIT_API_ADDRESS="https://api.github.com"
@@ -175,8 +175,8 @@ if [ $HOME != "/home/ussrelease" ]; then
   release_failed "The release script automation must be executed inside build-env container"
 fi
 #Must have a file with pypi credentials
-if [ ! -f "/home/ussrelease/.pypirc" ]; then
-  release_failed "The PyPI UShareSoft credentials file shoud be present in /home/ussrelease/.pypirc"
+if [ ! -f "$HOME/.pypirc" ]; then
+  release_failed "The PyPI UShareSoft credentials file shoud be present in $HOME/.pypirc"
 fi
 #Must not be inside git repo
 if [ -d ".git" ]; then
@@ -297,9 +297,9 @@ display_running_step
 #Final step the pull request
 echo "Username for $GIT_API_ADDRESS :"
 read USERNAME
-STATUS=$(curl -o /dev/null --silent --write-out '%{http_code}' --user "$USERNAME" --request POST --data '{"title":"Hammr release new version '$HAMMR_VERSION'","body":"Hammr release new version  '$HAMMR_VERSION'","head":"'$HAMMR_RELEASE_BRANCH'","base":"master"}' $GIT_API_ADDRESS/repos/$HAMMR_REPO/pulls)
+STATUS=$(curl -o /dev/null --silent --write-out '%{http_code}' --user "$USERNAME" --request POST --data '{"title":"Hammr release new version '$HAMMR_VERSION'","body":"Hammr release new version  '$HAMMR_VERSION'","head":"'$HAMMR_RELEASE_BRANCH'","base":"'$GIT_BASE_BRANCH'"}' $GIT_API_ADDRESS/repos/$HAMMR_REPO/pulls)
 if [ $STATUS -ne 201 ]; then
-  release_failed "Cannot create the pull request to integrate $HAMMR_RELEASE_BRANCH into master"
+  release_failed "Cannot create the pull request to integrate $HAMMR_RELEASE_BRANCH into $GIT_BASE_BRANCH"
 fi
 
 step_completed 5
