@@ -36,7 +36,8 @@ from ussclicore.utils import generics_utils
 from ussclicore.utils import printer
 import commands
 from uforge.application import Api, checkUForgeCompatible
-from utils import constants, hammr_utils
+from utils import constants, hammr_utils, credentials
+from utils.credentials import CredentialsException
 
 class CmdBuilder(object):
     @staticmethod
@@ -160,7 +161,7 @@ def generate_base_doc(app, hamm_help):
 def set_globals_cmds(subCmds):
     for cmd in subCmds:
         if hasattr(subCmds[cmd], 'set_globals'):
-            subCmds[cmd].set_globals(api, login, password)
+            subCmds[cmd].set_globals(api, login, cred.password)
             if hasattr(subCmds[cmd], 'subCmds'):
                 set_globals_cmds(subCmds[cmd].subCmds)
 
@@ -202,71 +203,40 @@ if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()
     exit(0)
 
-if mainArgs.url is not None:
-    url=mainArgs.url
-
-if mainArgs.user is not None:
-    if not mainArgs.password:
-        mainArgs.password = getpass.getpass()
-    username=mainArgs.user
-    password=mainArgs.password
-    sslAutosigned=True
-else:
-    if mainArgs.credentials is not None:
-        credfile=mainArgs.credentials
-        credpath=check_credfile(credfile)
-        if credpath is None:
-            printer.out("credentials file '" + credfile + "' not found\n", printer.ERROR)
-            exit(1)
+cred = credentials.Credentials(mainArgs.user, mainArgs.password, mainArgs.url)
+try:
+    if cred.username is not None:
+        if not cred.password:
+            cred.password = getpass.getpass()
     else:
-        credpath=check_default_credfile()
-        if credpath is None:
-            printer.out("credentials file 'credentials.yml' or 'credentials.json' not found\n", printer.ERROR)
-            exit(1)
+        if mainArgs.credentials is not None:
+            credfile = mainArgs.credentials
+            credpath = check_credfile(credfile)
+            if credpath is None:
+                printer.out("credentials file '" + credfile + "' not found\n", printer.ERROR)
+                exit(1)
+        else:
+            credpath = check_default_credfile()
+            if credpath is None:
+                printer.out("credentials file 'credentials.yml' or 'credentials.json' not found\n", printer.ERROR)
+                exit(1)
+        printer.out("no username provided on command line, trying credentials file", printer.INFO)
+        printer.out("Using credentials file: " + credpath, printer.INFO)
+        cred = credentials.Credentials.from_file(credpath)
 
-    printer.out("no username nor password provided on command line, trying credentials file", printer.INFO)
-
-    printer.out("Using credentials file: " + credpath, printer.INFO)
-    try:
-        data = hammr_utils.load_data(credpath)
-        if mainArgs.user:
-            username=mainArgs.user
-        elif "user" in data:
-            username=data["user"]
-        else:
-            printer.out("username not found in credentials file", printer.ERROR)
-        if mainArgs.password:
-            password=mainArgs.password
-        elif "password" in data:
-            password=data["password"]
-        else:
-            printer.out("password not found in credentials file", printer.ERROR)
-        if mainArgs.url:
-            url=mainArgs.url
-        elif "url" in data:
-            url=data["url"]
-        else:
-            printer.out("url not found in credentials file", printer.ERROR)
-        printer.out("Using url " + url, printer.INFO)
-        if "acceptAutoSigned" in data:
-            sslAutosigned=data["acceptAutoSigned"]
-        else:
-            sslAutosigned=True
-    except ValueError as e:
-        printer.out("parsing error in credentials file: "+str(e), printer.ERROR)
-    except IOError as e:
-        printer.out("File error in credentials file: "+str(e), printer.ERROR)
-    except Exception as e:
-        hammr_utils.print_uforge_exception(e)
-        exit(1)
+    cred.validate()
+except CredentialsException as e:
+    printer.out(str(e), printer.ERROR)
+    exit(1)
 
 #UForge API instanciation
-api = Api(url, username = username, password = password, headers = None, disable_ssl_certificate_validation = sslAutosigned, timeout = constants.HTTP_TIMEOUT)
+api = Api(cred.url, username=cred.username, password=cred.password, headers=None,
+          disable_ssl_certificate_validation=cred.sslAutosigned, timeout=constants.HTTP_TIMEOUT)
 
-if generics_utils.is_superviser_mode(username):
-    login = generics_utils.get_target_username(username)
+if generics_utils.is_superviser_mode(cred.username):
+    login = generics_utils.get_target_username(cred.username)
 else:
-    login = username
+    login = cred.username
 
 set_globals_cmds(app.subCmds)
 
