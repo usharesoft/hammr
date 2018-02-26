@@ -13,7 +13,7 @@ Evolutions:
 Bug fixes:
 
 * Fix image publish to Outscale
-* Fix image pulish to Cloudstack
+* Fix image publish to Cloudstack
 
 hammr 3.8.1 (2018-01-22)
 ------------------------
