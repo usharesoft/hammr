@@ -161,7 +161,7 @@ def generate_base_doc(app, hamm_help):
 def set_globals_cmds(subCmds):
     for cmd in subCmds:
         if hasattr(subCmds[cmd], 'set_globals'):
-            subCmds[cmd].set_globals(api, login, cred.password)
+            subCmds[cmd].set_globals(api, login, cred.password, cred.get_api_keys())
             if hasattr(subCmds[cmd], 'subCmds'):
                 set_globals_cmds(subCmds[cmd].subCmds)
 
@@ -192,6 +192,8 @@ CoreArgumentParser.actions=myactions
 mainParser.add_argument('-a', '--url', dest='url', type=str, help='the UForge server URL endpoint to use', required = False)
 mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user name used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
+mainParser.add_argument('-k', '--publickey', dest='publickey', type=str, help='public API key to use for this request. Default: no default', required = False)
+mainParser.add_argument('-s', '--secretkey', dest='secretkey', type=str, help='secret API key to use for this request. Default: no default', required = False)
 mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.yml or ~/.hammr/credentials.json)', required = False)
 mainParser.add_argument('-v', action='version', help='displays the current version of the hammr tool', version="%(prog)s version '"+constants.VERSION+"'")
 mainParser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit', required = False)
@@ -203,12 +205,12 @@ if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()
     exit(0)
 
-cred = credentials.Credentials(mainArgs.user, mainArgs.password, mainArgs.url)
+cred = credentials.Credentials(mainArgs.user, mainArgs.password, mainArgs.publickey, mainArgs.secretkey, mainArgs.url)
 try:
-    if cred.username is not None:
+    if cred.username is not None and cred.publicKey is None and cred.secretKey is None:
         if not cred.password:
             cred.password = getpass.getpass()
-    else:
+    elif cred.publicKey is None and cred.secretKey is None:
         if mainArgs.credentials is not None:
             credfile = mainArgs.credentials
             credpath = check_credfile(credfile)
@@ -230,7 +232,7 @@ except CredentialsException as e:
     exit(1)
 
 #UForge API instanciation
-api = Api(cred.url, username=cred.username, password=cred.password, headers=None,
+api = Api(cred.url, username=cred.username, password=cred.password, headers=None, apikeys=cred.get_api_keys(),
           disable_ssl_certificate_validation=cred.sslAutosigned, timeout=constants.HTTP_TIMEOUT)
 
 if generics_utils.is_superviser_mode(cred.username):
