@@ -157,16 +157,7 @@ def aws(account):
 
 
 def azure(account):
-    if "publishsettings" in account:
-        printer.out("Azure classic account")
-        return azure_classic(account)
-    else:
-        printer.out("Azure Resource Manager account")
-        return azure_arm(account)
-
-
-def azure_arm(account):
-    myCredAccount = CredAccountAzureResourceManager()
+    myCredAccount = CredAccountAzure()
     # doing field verification
     if not "name" in account:
         printer.out("name for azure account not found", printer.ERROR)
@@ -191,40 +182,6 @@ def azure_arm(account):
     myCredAccount.applicationKey = account["applicationKey"]
 
     return myCredAccount
-
-
-def azure_classic(account):
-    myCredAccount = CredAccountAzure()
-    # doing field verification
-    if not "name" in account:
-        printer.out("name for azure account not found", printer.ERROR)
-        return
-    if not "publishsettings" in account:
-        printer.out("publishsettings in azure account not found", printer.ERROR)
-        return
-
-    myCredAccount.name = account["name"]
-    myCredAccount.publishsettings = account["publishsettings"]
-
-    myCredAccount.certificates = pyxb.BIND()
-    # A hack to avoid a toDOM, toXML bug
-    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
-
-    try:
-        cert = certificate()
-        with open(account["publishsettings"], "r") as myfile:
-            cert.content_ = myfile.read()
-        cert.type = "azurePublishSettings"
-        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-        cert.name = ntpath.basename(account["publishsettings"])
-        myCredAccount.certificates.append(cert)
-
-    except IOError as e:
-        printer.out("File error: " + str(e), printer.ERROR)
-        return
-
-    return myCredAccount
-
 
 def eucalyptus(account):
     myCredAccount = CredAccountEws()
