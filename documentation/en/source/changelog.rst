@@ -8,7 +8,7 @@ hammr 3.8.3 (2018-04-16)
 
 Evolutions:
 
-* Remove support for Azure Classic
+* Remove End-Of-Life Microsoft Azure Classic
 
 
 hammr 3.8.1 (2018-01-22)
