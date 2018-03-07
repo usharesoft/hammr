@@ -5,7 +5,7 @@
   "files": [
     {
       "name": "file1of3.txt",
-      "source": "tests/integration/data/directoryTest/file1of3.txt",
+      "source": "data/directoryTest/file1of3.txt",
       "tag": "softwarefile",
       "rights": "755",
       "ownerGroup": "root:root",
@@ -14,7 +14,7 @@
       "files": [
         {
           "name": "file2of3.txt",
-          "source": "tests/integration/data/directoryTest/file2of3.txt",
+          "source": "data/directoryTest/file2of3.txt",
           "tag": "softwarefile",
           "rights": "755",
           "ownerGroup": "root:root",
@@ -27,6 +27,6 @@
   ],
   "license": {
     "name": "license.html",
-    "source": "tests/integration/data/directoryTest/file1of3.txt"
+    "source": "data/directoryTest/file1of3.txt"
   }
 }

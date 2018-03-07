@@ -4,12 +4,12 @@
   "destination": "/tmp/myBundle",
   "files": [
     {
-      "source": "tests/integration/data/directoryTest",
+      "source": "data/directoryTest",
       "destination": "/usr/local/myBundle"
     }
   ],
   "license": {
     "name": "license.html",
-    "source": "tests/integration/data/directoryTest/file1of3.txt"
+    "source": "data/directoryTest/file1of3.txt"
   }
 }

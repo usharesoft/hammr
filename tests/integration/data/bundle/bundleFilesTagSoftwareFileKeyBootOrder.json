@@ -5,7 +5,7 @@
   "files": [
     {
       "name": "directoryTest",
-      "source": "tests/integration/data/directoryTest",
+      "source": "data/directoryTest",
       "tag": "softwarefile",
       "bootOrder": 1,
       "destination": "/usr/local/myBundle"
@@ -13,6 +13,6 @@
   ],
   "license": {
     "name": "license.html",
-    "source": "tests/integration/data/directoryTest/file1of3.txt"
+    "source": "data/directoryTest/file1of3.txt"
   }
 }

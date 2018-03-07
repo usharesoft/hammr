@@ -5,7 +5,7 @@
   "files": [
     {
       "name": "cleanup_tmp.sh",
-      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
+      "source": "data/bootscripts/cleanup_tmp.sh",
       "tag": "bootscript",
       "bootOrder": 1,
       "bootType": "firstboot",
@@ -15,6 +15,6 @@
   ],
   "license": {
     "name": "license.html",
-    "source": "tests/integration/data/directoryTest/file1of3.txt"
+    "source": "data/directoryTest/file1of3.txt"
   }
 }
