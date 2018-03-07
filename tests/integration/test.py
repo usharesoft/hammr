@@ -98,25 +98,25 @@ class TestTemplate(unittest.TestCase):
         def test_02_validate(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_validate("--file data/template.json")
+                r = template.do_validate("--file tests/integration/data/template.json")
                 self.assertEqual(r, 0)
 
         def test_03_create(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_create("--file data/template.json")
+                r = template.do_create("--file tests/integration/data/template.json")
                 self.assertNotEqual(r, None)
 
         def test_04_create_bundle_with_directory(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_create("--file data/templateForBundleDirectoryTest.json")
+                r = template.do_create("--file tests/integration/data/templateForBundleDirectoryTest.json")
                 self.assertEqual(r, 0)
 
         def test_05_build(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_build("--file data/template.json")
+                r = template.do_build("--file tests/integration/data/template.json")
                 self.assertEqual(r, 0)
 
         def test_06_export(self):
@@ -148,7 +148,7 @@ class TestTemplate(unittest.TestCase):
         def test_09_0_templateFull(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_create("--file data/templateFull.json --force")
+                r = template.do_create("--file tests/integration/data/templateFull.json --force")
                 self.assertNotEqual(r, None)
 
         def test_09_1_exportCentOS6(self):
@@ -162,7 +162,7 @@ class TestTemplate(unittest.TestCase):
         def test_10_buildPXE(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_build("--file data/templatePXE.json")
+                r = template.do_build("--file tests/integration/data/templatePXE.json")
                 self.assertEqual(r, 0)
 
 
@@ -261,14 +261,14 @@ class TestAccount(unittest.TestCase):
         def test_03_create(self):
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
-                r = account.do_create("--file data/create-account.json")
+                r = account.do_create("--file tests/integration/data/create-account.json")
                 self.assertEqual(r, 0)
 
         def test_04_japanese_char(self):
                 # ref issue #35
                 account = hammr.commands.account.Account()
                 account.set_globals(api, login, password)
-                r = account.do_create("--file data/create-account-japan-char.json")
+                r = account.do_create("--file tests/integration/data/create-account-japan-char.json")
                 self.assertEqual(r, 0)
 
 
@@ -297,13 +297,13 @@ class TestBundle(unittest.TestCase):
         def test_02_validate(self):
                 bundle = hammr.commands.bundle.Bundle()
                 bundle.set_globals(api, login, password)
-                r = bundle.do_validate("--file data/bundle/bundleFull.json")
+                r = bundle.do_validate("--file tests/integration/data/bundle/bundleFull.json")
                 self.assertEqual(r, 0)
 
         def test_03_create(self):
                 bundle = hammr.commands.bundle.Bundle()
                 bundle.set_globals(api, login, password)
-                r = bundle.do_create("--file data/bundle/bundleFull.json")
+                r = bundle.do_create("--file tests/integration/data/bundle/bundleFull.json")
                 self.assertEqual(r, 0)
 
         def test_04_export(self):
@@ -352,7 +352,7 @@ class TestFilesYam(unittest.TestCase):
         def test_template_create_with_yaml(self):
                 template = hammr.commands.template.Template()
                 template.set_globals(api, login, password)
-                r = template.do_create("--file data/test-parsing.yml --force")
+                r = template.do_create("--file tests/integration/data/test-parsing.yml --force")
                 self.assertEqual(r, 0)
 
 

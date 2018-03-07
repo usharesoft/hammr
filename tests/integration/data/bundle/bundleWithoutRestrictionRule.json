@@ -5,7 +5,7 @@
   "files": [
     {
       "name": "directoryTest",
-      "source": "data/directoryTest",
+      "source": "tests/integration/data/directoryTest",
       "tag": "softwarefile",
       "rights": "755",
       "ownerGroup": "root:root",
@@ -14,7 +14,7 @@
       "files": [
         {
           "name": "file1of3.txt",
-          "source": "data/directoryTest/file1of3.txt",
+          "source": "tests/integration/data/directoryTest/file1of3.txt",
           "tag": "softwarefile",
           "rights": "625",
           "ownerGroup": "test:test",
@@ -26,13 +26,13 @@
     {
       "name": "iotop-0.6-2.el7.noarch.rpm",
       "tag": "ospkg",
-      "source": "data/iotop-0.6-2.el7.noarch.rpm",
+      "source": "tests/integration/data/iotop-0.6-2.el7.noarch.rpm",
       "install": true,
       "files": []
     },
     {
       "name": "cleanup_tmp.sh",
-      "source": "data/bootscripts/cleanup_tmp.sh",
+      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
       "tag": "bootscript",
       "bootOrder": 1,
       "bootType": "firstboot",
@@ -41,6 +41,6 @@
   ],
   "license": {
     "name": "license.html",
-    "source": "data/directoryTest/file1of3.txt"
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
   }
 }

@@ -4,6 +4,6 @@
   "destination": "/tmp/myBundle",
   "license": {
     "name": "license.html",
-    "source": "data/directoryTest/file1of3.txt"
+    "source": "tests/integration/data/directoryTest/file1of3.txt"
   }
 }

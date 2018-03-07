@@ -71,7 +71,7 @@
     "config": [
     {
       "name": "configure-mysql.sh",
-      "source": "data/bootscripts/cleanup_tmp.sh",
+      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
       "type": "bootscript",
       "frequency": "firstboot",
       "order" : "1"
