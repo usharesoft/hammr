@@ -278,15 +278,3 @@ The valid keys are:
 * ``userSshKeyFile`` (optional): a file containing the public ssh key for the user account.
 
 If no ssh key is given, you will have to give a password for the user account.
-
-
-Valid Azure Regions
----------------------
-
-* ``North Central US``
-* ``South Central US``
-* ``East US``
-* ``West US``
-* ``North Europe``
-* ``West Europe``
-* ``East Asia``
