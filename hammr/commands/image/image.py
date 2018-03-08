@@ -28,6 +28,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget, downlo
 from hammr.utils import *
 from hammr.utils.hammr_utils import *
 from hammr.utils.deployment_utils import *
+from hammr.utils.publish_utils import *
 from uforge.objects.uforge import *
 
 #This import and configuration avoid pyxb warnings about xmls
@@ -108,90 +109,36 @@ class Image(Cmd, CoreGlobal):
         doParser.print_help()
 
     def arg_publish(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " publish", add_help=True,
+        do_parser = ArgumentParser(prog=self.cmd_name + " publish", add_help=True,
                                   description="Publish (upload and register) a built machine image to a target environment")
-        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--file', dest='file', required=True,
                                help="yaml/json file providing the cloud account parameters required for upload and registration")
-        optional = doParser.add_argument_group("optional arguments")
+        optional = do_parser.add_argument_group("optional arguments")
         optional.add_argument('--id', dest='id', required=False, help="id of the image to publish")
-        return doParser
+        return do_parser
 
     def do_publish(self, args):
         try:
-            # add arguments
-            doParser = self.arg_publish()
-            doArgs = doParser.parse_args(shlex.split(args))
+            do_args = self.parse_args(args)
+            template = retrieve_template_from_file(do_args.file)
+            if do_args.id:
+                self.do_publish_with_id(do_args, template)
+            else:
+                self.do_publish_without_id(template)
 
-            #if the help command is called, parse_args returns None object
-            if not doArgs:
-                    return 2
-
-            file = generics_utils.get_file(doArgs.file)
-            if file is None:
-                return 2
-            template = validate(file)
-            if template is None:
-                return
-
-            try:
-                if doArgs.id:
-                    images = self.get_all_images()
-                    image = self.get_image(images, str(doArgs.id))
-                    if image is None:
-                        printer.out("Image not found", printer.ERROR)
-                        return 2
-                    if not self.is_image_ready_to_publish(image, None):
-                        printer.out("Image with name '" + image.name + " can not be published", printer.ERROR)
-                        return 2
-                    appliance = self.api.Users(self.login).Appliances(
-                        generics_utils.extract_id(image.applianceUri)).Get()
-                    if appliance is None or not hasattr(appliance, 'dbId'):
-                        printer.out("No template found for image", printer.ERROR)
-                        return
-                    rInstallProfile = self.api.Users(self.login).Appliances(appliance.dbId).Installprofile("").Get()
-                    if rInstallProfile is None:
-                        printer.out("No installation found on the template '" + template["stack"]["name"] + "'",
-                                    printer.ERROR)
-                        return
-                    builder = self.find_builder(image, template)
-                    if builder is None:
-                        # TODO unmap image format
-                        printer.out("No builder part found for image with format type: " + str(template["type"]),
-                                    printer.ERROR)
-                        return 2
-                    self.publish_builder(builder, template, appliance, rInstallProfile, 1, image)
-                else:
-                    # Get template which correpond to the template file
-                    appliances = self.api.Users(self.login).Appliances().Getall(
-                        Query="name=='" + template["stack"]["name"] + "';version=='" + template["stack"][
-                            "version"] + "'")
-                    appliance = appliances.appliances.appliance
-                    if appliance is None or len(appliance) != 1:
-                        printer.out("No template found on the plateform", printer.ERROR)
-                        return 0
-                    appliance = appliance[0]
-                    rInstallProfile = self.api.Users(self.login).Appliances(appliance.dbId).Installprofile("").Get()
-                    if rInstallProfile is None:
-                        printer.out("No installation found on the template '" + template["stack"]["name"] + "'",
-                                    printer.ERROR)
-                        return
-
-                    i = 1
-                    for builder in template["builders"]:
-                        rCode = self.publish_builder(builder, template, appliance, rInstallProfile, i, None)
-                        if rCode >= 2:
-                            return
-                        i += 1
-
-            except KeyError as e:
-                printer.out("unknown error template file, key: " + str(e), printer.ERROR)
-
+        except KeyError as e:
+            printer.out("unknown error template file, key: " + str(e), printer.ERROR)
+            return 2
         except ArgumentParserError as e:
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            return 2
             self.help_publish()
+        except ValueError as e:
+            printer.out("ERROR: " + str(e), printer.ERROR)
+            return 2
         except KeyboardInterrupt:
-            pass
+            return 2
         except Exception as e:
             return handle_uforge_exception(e)
 
@@ -439,6 +386,13 @@ class Image(Cmd, CoreGlobal):
         doParser = self.arg_download()
         doParser.print_help()
 
+    def parse_args(self, args):
+        do_parser = self.arg_publish()
+        do_args = do_parser.parse_args(shlex.split(args))
+        if not do_args:
+            raise ArgumentParserError("No arguments")
+        return do_args
+
     def get_image_status(self, status):
         if (status.complete and not status.error):
             imgStatus = "Done"
@@ -461,70 +415,79 @@ class Image(Cmd, CoreGlobal):
             pubStatus = "In progress (" + str(status.percentage) + "%)"
         return pubStatus
 
-    def publish_builder(self, builder, template, appliance, rInstallProfile, i, comliantImage):
+    def do_publish_with_id(self, do_args, template):
+        images = self.get_all_images()
+        image = self.get_image(images, str(do_args.id))
+        if image is None:
+            raise ValueError("Image not found")
+        if not self.is_image_ready_to_publish(image, None):
+            raise ValueError("Image with name '" + image.name + "' can not be published")
+
+        source = retrieve_source_from_image(self, image)
+        # install_profile = retrieve_install_profile_from_source(self, source)
+        builder = self.find_builder(image, template)
+        self.publish_builder(builder, template, source, 1, image)
+
+    def do_publish_without_id(self, template):
+        if template.has_key("stack") and template["stack"].has_key("name") and template["stack"].has_key("version"):
+            query_string = "name=='" + template["stack"]["name"] + "';version=='" + template["stack"]["version"] + "'"
+            appliance = self.retrieve_appliances_from_name_and_version(query_string)
+            appliance = appliance[0]
+
+            install_profile = self.api.Users(self.login).Appliances(appliance.dbId).Installprofile("").Get()
+            if install_profile is None:
+                raise ValueError("No installation found on the template '" + template["stack"]["name"] + "'")
+
+            self.publish_all_builders(template, appliance, install_profile)
+
+    def publish_builder(self, builder, template, source, counter, image):
         try:
-            if comliantImage is None:
-                comliantImage = self.get_image_to_publish(builder, template, appliance, i)
+            if image is None:
+                image = self.get_image_to_publish(builder, template, source, counter)
 
-            # get target format to define publish method
-            format_type = comliantImage.targetFormat.format.name
-            publishMethod = getattr(publish_utils, "publish_" + generics_utils.remove_special_chars(format_type), None)
-            if publishMethod:
-                mypImage = publishMethod(builder)
-                if mypImage is None:
-                    return 2
-            else:
-                printer.out("Builder type unknown: " + format_type, printer.ERROR)
-                return 2
+            publish_image = self.retrieve_publish_image_with_target_format_builder(image, builder)
+            publish_image.imageUri = image.uri
+            publish_image.applianceUri = source.uri
+            publish_image.credAccount = self.get_account_to_publish(builder)
+            account_name = publish_image.credAccount.name
 
-            mypImage.imageUri = comliantImage.uri
-            mypImage.applianceUri = appliance.uri
-            mypImage.credAccount = self.get_account_to_publish(builder)
-            account_name = mypImage.credAccount.name
-
-            rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(
-                comliantImage.dbId).Pimages().Publish(body=mypImage, element_name="ns1:publishImage")
-
-            status = rpImage.status
-            statusWidget = progressbar_widget.Status()
-            statusWidget.status = status
-            widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
-            progress = ProgressBar(widgets=widgets, maxval=100).start()
-            while not (status.complete or status.error or status.cancelled):
-                statusWidget.status = status
-                progress.update(status.percentage)
-                status = self.api.Users(self.login).Appliances(appliance.dbId).Images(comliantImage.dbId).Pimages(
-                    rpImage.dbId).Status.Get()
-                time.sleep(2)
-            statusWidget.status = status
-            progress.finish()
-            if status.error:
-                printer.out("Publication to '" + builder["account"][
-                    "name"] + "' error: " + status.message + "\n" + status.errorMessage, printer.ERROR)
-                if status.detailedError:
-                    printer.out(status.detailedErrorMsg)
-            elif status.cancelled:
-                printer.out("\nPublication to '" + builder["account"][
-                    "name"] + "' canceled: " + status.message.printer.WARNING)
-            else:
-                printer.out("Publication to " + account_name + " is ok", printer.OK)
-                rpImage = self.api.Users(self.login).Appliances(appliance.dbId).Images(comliantImage.dbId).Pimages(
-                    rpImage.dbId).Get()
-                if rpImage.cloudId is not None and rpImage.cloudId != "":
-                    printer.out("Cloud ID : " + rpImage.cloudId)
+            published_image = call_publish_webservice(self, image, source, publish_image)
+            print_publish_status(self, source, image, published_image, builder, account_name)
             return 0
+
         except KeyboardInterrupt:
             printer.out("\n")
             if generics_utils.query_yes_no("Do you want to cancel the job ?"):
-                if 'appliance' in locals() and 'comliantImage' in locals() and 'rpImage' in locals() \
-                        and hasattr(appliance, 'dbId') and hasattr(comliantImage, 'dbId') and hasattr(rpImage, 'dbId'):
-                    self.api.Users(self.login).Appliances(appliance.dbId).Images(comliantImage.dbId).Pimages(
-                        rpImage.dbId).Cancel.Cancel()
-                else:
-                    printer.out("Impossible to cancel", printer.WARNING)
+                cancel_publish_in_progress(self, source, image, published_image)
             else:
                 printer.out("Exiting command")
             raise KeyboardInterrupt
+
+    def publish_all_builders(self, template, appliance, install_profile):
+        counter = 1
+        for builder in template["builders"]:
+            if self.publish_builder(builder, template, appliance, counter, None) == 0:
+                counter += 1
+            else:
+                raise Exception("Unknown error")
+
+    def retrieve_publish_image_with_target_format_builder(self, image, builder):
+        format_type = image.targetFormat.format.name
+        publish_method = getattr(publish_utils, "publish_" + generics_utils.remove_special_chars(format_type), None)
+        if publish_method:
+            publish_image = publish_method(builder)
+            if publish_image is None:
+                raise ValueError("Could not find the builder")
+        else:
+            raise ValueError("Builder type unknown: " + format_type)
+        return publish_image
+
+    def retrieve_appliances_from_name_and_version(self, query_string):
+        appliances = self.api.Users(self.login).Appliances().Getall(Query=query_string)
+        appliance = appliances.appliances.appliance
+        if appliance is None or len(appliance) != 1:
+            raise ValueError("No template found on the platform")
+        return appliance
 
     def is_image_ready_to_publish(self, image, builder):
         if builder is not None:
@@ -535,11 +498,6 @@ class Image(Cmd, CoreGlobal):
             if ("installation" in builder) and ("swapSize" in builder["installation"]) and (
                     not image.installProfile.swapSize == builder["installation"]["swapSize"]):
                 return False
-                # print str(image.installProfile.swapSize)+"----"+ str(builder["installation"]["swapSize"])
-                # TODO
-                # if ("diskSize" in builder["installation"]) and (not image.installProfile.diskSize == builder["installation"]["diskSize"]):
-                #        isOk = False
-                #        print str(image.installProfile.diskSize)+"----"+ str(builder["installation"]["diskSize"])
 
         if not image.status.complete or image.status.error or image.status.cancelled:
             return False
@@ -552,25 +510,21 @@ class Image(Cmd, CoreGlobal):
 
         return True
 
-
     def find_builder(self, image, template):
         for builder in template["builders"]:
             if image.targetFormat.name == builder["type"]:
                 return builder
+        raise ValueError("No builder part found for image with this format type")
 
-        return None
-
-    def get_image_to_publish(self, builder, template, appliance, i):
+    def get_image_to_publish(self, builder, template, appliance, counter):
         printer.out(
-            "Publishing '" + builder["type"] + "' image (" + str(i) + "/" + str(len(template["builders"])) + ")")
+            "Publishing '" + builder["type"] + "' image (" + str(counter) + "/" + str(len(template["builders"])) + ")")
         images = self.api.Users(self.login).Appliances(appliance.dbId).Images.Getall(
             Query="targetFormat.name=='" + builder["type"] + "'")
         images = images.images.image
         if images is None or len(images) == 0:
-            printer.out(
-                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder[
-                    "type"], printer.ERROR)
-            return 2
+            raise ValueError(
+                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
 
         compliantImages = []
         for image in images:
@@ -579,10 +533,8 @@ class Image(Cmd, CoreGlobal):
                 compliantImages.append(image)
 
         if (len(compliantImages) == 0):
-            printer.out(
-                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder[
-                    "type"], printer.ERROR)
-            return 2
+            raise ValueError(
+                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
         elif (len(compliantImages) == 1):
             comliantImage = compliantImages[0]
         else:
@@ -593,21 +545,18 @@ class Image(Cmd, CoreGlobal):
 
     def get_account_to_publish(self, builder):
         if not "account" in builder:
-            printer.out("Missing account section on builder: [" + builder["type"] + "]", printer.ERROR)
-            return 2
+            raise ValueError("Missing account section on builder: [" + builder["type"] + "]")
         # Get all cloud account on the plateform (for the user)
         accounts = self.api.Users(self.login).Accounts.Getall()
         accounts = accounts.credAccounts.credAccount
         if accounts is None or len(accounts) == 0:
-            printer.out("No accounts available on the plateform.\n You can use the command 'hammr account create' to create an account.", printer.ERROR)
-            return 2
+            raise ValueError("No accounts available on the plateform.\n You can use the command 'hammr account create' to create an account.")
         else:
             for account in accounts:
 
                 builder_name = self.get_account_name_for_publish(builder, account)
                 if builder_name == "":
-                    printer.out("No account name given", printer.ERROR)
-                    return 2
+                    raise ValueError("No account name given")
 
                 if account.name == builder_name:
                     # A hack to avoid a toDOM, toXML bug
@@ -620,8 +569,8 @@ class Image(Cmd, CoreGlobal):
                     return account
                     break
 
-            printer.out("No accounts available with name " + builder["account"]["name"] + ".\nYou can use the command 'hammr account create' to create an account.", printer.ERROR)
-            return 2
+            raise ValueError("No accounts available with name " + builder["account"]["name"] +
+                             ".\nYou can use the command 'hammr account create' to create an account.")
 
     # get the account name from field or from the credential file given in the builder
     def get_account_name_for_publish(self, builder, account):
