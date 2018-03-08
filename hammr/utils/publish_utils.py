@@ -108,3 +108,134 @@ def cancel_publish_in_progress(image_object, source, image, published_image):
 
     else:
         printer.out("Impossible to cancel", printer.WARNING)
+
+def is_image_ready_to_publish(image, builder):
+    if builder is not None:
+        if ("hardwareSettings" in builder) and ("memory" in builder["hardwareSettings"]) and (
+                not image.installProfile.memorySize == builder["hardwareSettings"]["memory"]):
+            return False
+
+        if ("installation" in builder) and ("swapSize" in builder["installation"]) and (
+                not image.installProfile.swapSize == builder["installation"]["swapSize"]):
+            return False
+
+    if not image.status.complete or image.status.error or image.status.cancelled:
+        return False
+
+    return True
+
+def get_publish_status(status):
+    if (status.complete and not status.error):
+        pubStatus = "Done"
+    elif status.error:
+        pubStatus = "Error"
+    elif status.cancelled:
+        pubStatus = "Canceled"
+    else:
+        pubStatus = "In progress (" + str(status.percentage) + "%)"
+    return pubStatus
+
+def get_image_to_publish(image_object, builder, template, appliance, counter):
+    printer.out(
+        "Publishing '" + builder["type"] + "' image (" + str(counter) + "/" + str(len(template["builders"])) + ")")
+    images = image_object.api.Users(image_object.login).Appliances(appliance.dbId).Images.Getall(
+        Query="targetFormat.name=='" + builder["type"] + "'")
+    images = images.images.image
+    if images is None or len(images) == 0:
+        raise ValueError(
+            "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
+
+    images_ready = []
+    for image in images:
+        isOk = is_image_ready_to_publish(image, builder)
+        if isOk:
+            images_ready.append(image)
+
+    if (len(images_ready) == 0):
+        raise ValueError(
+            "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
+    elif (len(images_ready) == 1):
+        image_ready = images_ready[0]
+    else:
+        image_ready = images_ready[0]
+
+    return image_ready
+
+def get_account_to_publish(image_object, builder):
+    if not "account" in builder:
+        raise ValueError("Missing account section on builder: [" + builder["type"] + "]")
+    # Get all cloud account on the plateform (for the user)
+    accounts = image_object.api.Users(image_object.login).Accounts.Getall()
+    accounts = accounts.credAccounts.credAccount
+    if accounts is None or len(accounts) == 0:
+        raise ValueError("No accounts available on the plateform.\n You can use the command 'hammr account create' to create an account.")
+
+    else:
+        for account in accounts:
+            builder_name = get_account_name_for_publish(image_object, builder)
+            if builder_name == "":
+                raise ValueError("No account name given")
+
+            if account.name == builder_name:
+                # A hack to avoid a toDOM, toXML bug
+                account.targetPlatform.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
+                if hasattr(account, 'certificates'):
+                    account.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
+                    for c in account.certificates.certificate:
+                        c.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
+
+                return account
+                break
+
+        raise ValueError("No accounts available with name " + builder["account"]["name"] +
+                         ".\nYou can use the command 'hammr account create' to create an account.")
+
+# get the account name from field or from the credential file given in the builder
+def get_account_name_for_publish(image_object, builder):
+    builder_name = ""
+    if builder["account"].has_key("name"):
+        builder_name = builder["account"]["name"]
+
+    elif builder["account"].has_key("file"):
+
+        file = generics_utils.get_file(builder["account"]["file"])
+        if file is None:
+            return ""
+        template = validate(file)
+        if template is None:
+            return ""
+
+        builder_name = image_object.get_account_name_from_template(template, builder)
+
+    return builder_name
+
+def publish_image_from_builder(image_object, builder, template, source, counter, image):
+    try:
+        if image is None:
+            image = get_image_to_publish(image_object, builder, template, source, counter)
+
+        publish_image = image_object.retrieve_publish_image_with_target_format_builder(image, builder)
+        publish_image.imageUri = image.uri
+        publish_image.applianceUri = source.uri
+        publish_image.credAccount = get_account_to_publish(image_object, builder)
+        account_name = publish_image.credAccount.name
+
+        published_image = call_publish_webservice(image_object, image, source, publish_image)
+        print_publish_status(image_object, source, image, published_image, builder, account_name)
+        return 0
+
+    except KeyboardInterrupt:
+        printer.out("\n")
+        if generics_utils.query_yes_no("Do you want to cancel the job ?"):
+            cancel_publish_in_progress(image_object, source, image, published_image)
+        else:
+            printer.out("Exiting command")
+        raise KeyboardInterrupt
+
+def publish_all_builders(image_object, template, appliance):
+    counter = 1
+    for builder in template["builders"]:
+        if publish_image_from_builder(image_object, builder, template, appliance, counter, None) == 0:
+            counter += 1
+        else:
+            raise Exception("Unknown error")

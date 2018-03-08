@@ -88,7 +88,7 @@ class Image(Cmd, CoreGlobal):
             table.header(["Template name", "Image ID", "Publish ID", "Account name", "Format", "Cloud ID", "Status"])
             publish_images = generics_utils.order_list_object_by(publish_images, "name")
             for publish_image in publish_images:
-                pubStatus = self.get_publish_status(publish_image.status)
+                pubStatus = get_publish_status(publish_image.status)
                 table.add_row([publish_image.name,
                                generics_utils.extract_id(publish_image.imageUri),
                                publish_image.dbId,
@@ -405,72 +405,24 @@ class Image(Cmd, CoreGlobal):
             imgStatus = "In progress (" + str(status.percentage) + "%)"
         return imgStatus
 
-    def get_publish_status(self, status):
-        if (status.complete and not status.error):
-            pubStatus = "Done"
-        elif status.error:
-            pubStatus = "Error"
-        elif status.cancelled:
-            pubStatus = "Canceled"
-        else:
-            pubStatus = "In progress (" + str(status.percentage) + "%)"
-        return pubStatus
-
     def do_publish_with_id(self, do_args, template):
         images = self.get_all_images()
         image = self.get_image(images, str(do_args.id))
         if image is None:
             raise ValueError("Image not found")
-        if not self.is_image_ready_to_publish(image, None):
+        if not is_image_ready_to_publish(image, None):
             raise ValueError("Image with name '" + image.name + "' can not be published")
 
         source = retrieve_source_from_image(self, image)
-        # install_profile = retrieve_install_profile_from_source(self, source)
         builder = self.find_builder(image, template)
-        self.publish_builder(builder, template, source, 1, image)
+        publish_image_from_builder(self, builder, template, source, 1, image)
 
     def do_publish_without_id(self, template):
         if template.has_key("stack") and template["stack"].has_key("name") and template["stack"].has_key("version"):
             query_string = "name=='" + template["stack"]["name"] + "';version=='" + template["stack"]["version"] + "'"
             appliance = self.retrieve_appliances_from_name_and_version(query_string)
             appliance = appliance[0]
-
-            install_profile = self.api.Users(self.login).Appliances(appliance.dbId).Installprofile("").Get()
-            if install_profile is None:
-                raise ValueError("No installation found on the template '" + template["stack"]["name"] + "'")
-
-            self.publish_all_builders(template, appliance, install_profile)
-
-    def publish_builder(self, builder, template, source, counter, image):
-        try:
-            if image is None:
-                image = self.get_image_to_publish(builder, template, source, counter)
-
-            publish_image = self.retrieve_publish_image_with_target_format_builder(image, builder)
-            publish_image.imageUri = image.uri
-            publish_image.applianceUri = source.uri
-            publish_image.credAccount = self.get_account_to_publish(builder)
-            account_name = publish_image.credAccount.name
-
-            published_image = call_publish_webservice(self, image, source, publish_image)
-            print_publish_status(self, source, image, published_image, builder, account_name)
-            return 0
-
-        except KeyboardInterrupt:
-            printer.out("\n")
-            if generics_utils.query_yes_no("Do you want to cancel the job ?"):
-                cancel_publish_in_progress(self, source, image, published_image)
-            else:
-                printer.out("Exiting command")
-            raise KeyboardInterrupt
-
-    def publish_all_builders(self, template, appliance, install_profile):
-        counter = 1
-        for builder in template["builders"]:
-            if self.publish_builder(builder, template, appliance, counter, None) == 0:
-                counter += 1
-            else:
-                raise Exception("Unknown error")
+            publish_all_builders(self, template, appliance)
 
     def retrieve_publish_image_with_target_format_builder(self, image, builder):
         format_type = image.targetFormat.format.name
@@ -490,21 +442,6 @@ class Image(Cmd, CoreGlobal):
             raise ValueError("No template found on the platform")
         return appliance
 
-    def is_image_ready_to_publish(self, image, builder):
-        if builder is not None:
-            if ("hardwareSettings" in builder) and ("memory" in builder["hardwareSettings"]) and (
-                    not image.installProfile.memorySize == builder["hardwareSettings"]["memory"]):
-                return False
-
-            if ("installation" in builder) and ("swapSize" in builder["installation"]) and (
-                    not image.installProfile.swapSize == builder["installation"]["swapSize"]):
-                return False
-
-        if not image.status.complete or image.status.error or image.status.cancelled:
-            return False
-
-        return True
-
     def is_publish_image_ready_to_deploy(self, publishImage):
         if not publishImage.status.complete or publishImage.status.error or publishImage.status.cancelled:
             return False
@@ -516,81 +453,6 @@ class Image(Cmd, CoreGlobal):
             if image.targetFormat.name == builder["type"]:
                 return builder
         raise ValueError("No builder part found for image with this format type")
-
-    def get_image_to_publish(self, builder, template, appliance, counter):
-        printer.out(
-            "Publishing '" + builder["type"] + "' image (" + str(counter) + "/" + str(len(template["builders"])) + ")")
-        images = self.api.Users(self.login).Appliances(appliance.dbId).Images.Getall(
-            Query="targetFormat.name=='" + builder["type"] + "'")
-        images = images.images.image
-        if images is None or len(images) == 0:
-            raise ValueError(
-                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
-
-        compliantImages = []
-        for image in images:
-            isOk = self.is_image_ready_to_publish(image, builder)
-            if isOk:
-                compliantImages.append(image)
-
-        if (len(compliantImages) == 0):
-            raise ValueError(
-                "No images found for the template '" + template["stack"]["name"] + "' with type: " + builder["type"])
-        elif (len(compliantImages) == 1):
-            comliantImage = compliantImages[0]
-        else:
-            # TODO get the last created image
-            comliantImage = compliantImages[0]
-
-        return comliantImage
-
-    def get_account_to_publish(self, builder):
-        if not "account" in builder:
-            raise ValueError("Missing account section on builder: [" + builder["type"] + "]")
-        # Get all cloud account on the plateform (for the user)
-        accounts = self.api.Users(self.login).Accounts.Getall()
-        accounts = accounts.credAccounts.credAccount
-        if accounts is None or len(accounts) == 0:
-            raise ValueError("No accounts available on the plateform.\n You can use the command 'hammr account create' to create an account.")
-        else:
-            for account in accounts:
-
-                builder_name = self.get_account_name_for_publish(builder, account)
-                if builder_name == "":
-                    raise ValueError("No account name given")
-
-                if account.name == builder_name:
-                    # A hack to avoid a toDOM, toXML bug
-                    account.targetPlatform.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-                    if hasattr(account, 'certificates'):
-                        account.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
-                        for c in account.certificates.certificate:
-                            c.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-
-                    return account
-                    break
-
-            raise ValueError("No accounts available with name " + builder["account"]["name"] +
-                             ".\nYou can use the command 'hammr account create' to create an account.")
-
-    # get the account name from field or from the credential file given in the builder
-    def get_account_name_for_publish(self, builder, account):
-        builder_name = ""
-        if builder["account"].has_key("name"):
-            builder_name = builder["account"]["name"]
-
-        elif builder["account"].has_key("file"):
-
-            file = generics_utils.get_file(builder["account"]["file"])
-            if file is None:
-                return ""
-            template = validate(file)
-            if template is None:
-                return ""
-
-            builder_name = self.get_account_name_from_template(template, builder)
-
-        return builder_name
 
     def get_account_name_from_template(self, template, builder):
         account_name = ""
