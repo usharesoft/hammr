@@ -14,8 +14,7 @@
 #    under the License.
 from unittest import TestCase
 
-from hammr.utils.publish_utils import *
-
+from hammr.utils.publish_builders import *
 
 class TestPublishK5(TestCase):
     def test_publish_k5_should_return_publish_image_when_valid_entries(self):

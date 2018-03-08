@@ -29,6 +29,7 @@ from hammr.utils import *
 from hammr.utils.hammr_utils import *
 from hammr.utils.deployment_utils import *
 from hammr.utils.publish_utils import *
+from hammr.utils.publish_builders import
 from uforge.objects.uforge import *
 
 #This import and configuration avoid pyxb warnings about xmls
@@ -473,7 +474,7 @@ class Image(Cmd, CoreGlobal):
 
     def retrieve_publish_image_with_target_format_builder(self, image, builder):
         format_type = image.targetFormat.format.name
-        publish_method = getattr(publish_utils, "publish_" + generics_utils.remove_special_chars(format_type), None)
+        publish_method = getattr(publish_builders, "publish_" + generics_utils.remove_special_chars(format_type), None)
         if publish_method:
             publish_image = publish_method(builder)
             if publish_image is None:
