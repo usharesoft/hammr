@@ -29,8 +29,7 @@ from hammr.utils import *
 from hammr.utils.hammr_utils import *
 from hammr.utils.deployment_utils import *
 from hammr.utils.publish_utils import *
-from hammr.utils.publish_builders import
-from uforge.objects.uforge import *
+from hammr.utils.publish_builders import *
 
 #This import and configuration avoid pyxb warnings about xmls
 import logging

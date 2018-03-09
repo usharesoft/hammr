@@ -20,11 +20,19 @@ from uforge.application import Api
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 from tests.unit.utils.file_utils import findRelativePathFor
+from mock import patch
+import hammr.commands.image
 
 class TestPublishUtils(TestCase):
-    def test_is_image_ready_to_publish_should_return_true_when_memory_and_swap_size_are_defined(self):
+
+    app_uri = 'users/guest/appliances/5/images/1234/'
+    scan_uri = 'users/guest/scannedinstances/5/scans/12/images/1234'
+    published_app_uri = 'users/guest/appliances/5/images/1234/pimages/5678'
+    published_scan_uri = 'users/guest/scannedinstances/5/scans/12/images/1234/pimages/5678'
+
+    def test_is_image_ready_to_publish_returns_true_when_memory_and_swap_size_are_defined(self):
         # given
-        image = self.build_image_to_publish("complete", True)
+        image = self.build_image_to_publish("complete", True, self.app_uri)
         file = findRelativePathFor("tests/integration/data/publish_builder.yml")
         builder = self.build_builder(file)
 
@@ -34,9 +42,9 @@ class TestPublishUtils(TestCase):
         # then
         self.assertEqual(image_ready, True)
 
-    def test_is_image_ready_to_publish_should_return_false_when_status_is_cancelled(self):
+    def test_is_image_ready_to_publish_returns_false_when_status_is_cancelled(self):
         # given
-        image = self.build_image_to_publish("cancelled", False)
+        image = self.build_image_to_publish("cancelled", False, self.app_uri)
         file = findRelativePathFor("tests/integration/data/publish_builder.yml")
         builder = self.build_builder(file)
 
@@ -46,14 +54,57 @@ class TestPublishUtils(TestCase):
         # then
         self.assertEqual(image_ready, False)
 
+    @patch('uforge.application.Api._Users._Scannedinstances._Scans._Images._Pimages.Publish')
+    def test_call_publish_webservice_returns_published_image_for_a_scan_image(self, mock_scan_publish):
+        #given
+        mock_scan_publish.return_value = self.build_published_image(self.published_scan_uri)
+        image = self.build_image_to_publish("complete", True, self.scan_uri)
+        image_object = self.build_image_object()
+        source =self.build_source_scan()
+
+        #when
+        published_image = call_publish_webservice(image_object, image, source, None)
+
+        #then
+        self.assertEqual(type(published_image), type(PublishImageAws()))
+
+    @patch('uforge.application.Api._Users._Appliances._Images._Pimages.Publish')
+    def test_call_publish_webservice_returns_published_image_for_a_template_image(self, mock_template_publish):
+        #given
+        mock_template_publish.return_value = self.build_published_image(self.published_app_uri)
+        image = self.build_image_to_publish("complete", True, self.app_uri)
+        image_object = self.build_image_object()
+        source =self.build_source_template()
+
+        #when
+        published_image = call_publish_webservice(image_object, image, source, None)
+
+        #then
+        self.assertEqual(type(published_image), type(PublishImageAws()))
+
+    def test_call_publish_webservice_raises_execption_for_wrong_image_uri(self):
+        #given
+        image = self.build_image_to_publish("complete", True, 'wrong/uri/')
+        image_object = self.build_image_object()
+        source =self.build_source_template()
+
+        #when
+        try :
+            call_publish_webservice(image_object, image, source, None)
+
+        #then
+            self.assertTrue(False)
+        except :
+            self.assertTrue(True)
+
     def build_builder(self, file):
         builder = retrieve_template_from_file(file)
         return builder
 
-    def build_image_to_publish(self, status, status_complete):
+    def build_image_to_publish(self, status, status_complete, uri):
         image = Image()
         image.dbId = 1234
-        image.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
+        image.uri = uri
         image.status = status
         image.status.complete = status_complete
 
@@ -63,3 +114,27 @@ class TestPublishUtils(TestCase):
 
         image.installProfile = install_profile
         return image
+
+    def build_source_scan(self):
+        source = Scan()
+        source.uri = self.scan_uri
+        return source
+
+    def build_source_template(self):
+        source = Appliance()
+        source.uri = self.app_uri
+        return source
+
+    def build_published_image(self, uri):
+        image = PublishImageAws()
+        image.dbId = 5678
+        image.imageUri = uri
+        return image
+
+    def build_image_object(self):
+        image_object = hammr.commands.image.Image()
+        api = Api(None, username="user", password="pass", headers=None,
+                  disable_ssl_certificate_validation=True, timeout=constants.HTTP_TIMEOUT)
+        image_object.api = api
+        image_object.login = "guest"
+        return image_object
