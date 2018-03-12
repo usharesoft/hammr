@@ -3,6 +3,18 @@
 Changelog
 =========
 
+hammr 3.8.2 (2018-03-05)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp2-1 only
+
+Bug fixes:
+
+* Fix image publish to Outscale
+* Fix image publish to Cloudstack
+
 hammr 3.8.1 (2018-01-22)
 ------------------------
 
