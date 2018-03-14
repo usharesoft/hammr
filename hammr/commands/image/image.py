@@ -99,7 +99,7 @@ class Image(Cmd, CoreGlobal):
 
             return 0
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             self.help_list()
         except Exception as e:
             return handle_uforge_exception(e)
@@ -123,7 +123,7 @@ class Image(Cmd, CoreGlobal):
             do_args = self.parse_args(args)
             template = retrieve_template_from_file(do_args.file)
             if do_args.id:
-                self.do_publish_with_id(do_args, template)
+                self.do_publish_with_id(do_args.id, template)
             else:
                 self.do_publish_without_id(template)
 
@@ -131,11 +131,11 @@ class Image(Cmd, CoreGlobal):
             printer.out("unknown error template file, key: " + str(e), printer.ERROR)
             return 2
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             return 2
             self.help_publish()
         except ValueError as e:
-            printer.out("ERROR: " + str(e), printer.ERROR)
+            printer.out(str(e), printer.ERROR)
             return 2
         except KeyboardInterrupt:
             return 2
@@ -198,7 +198,7 @@ class Image(Cmd, CoreGlobal):
             return 2
 
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             self.help_deploy()
         except KeyboardInterrupt:
             printer.out(
@@ -255,7 +255,7 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Image not found", printer.ERROR)
 
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             self.help_delete()
             return 2
         except ValueError as e:
@@ -312,7 +312,7 @@ class Image(Cmd, CoreGlobal):
                 printer.out("Image not found", printer.ERROR)
 
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             self.help_delete()
             return 2
         except ValueError as e:
@@ -373,7 +373,7 @@ class Image(Cmd, CoreGlobal):
 
 
         except ArgumentParserError as e:
-            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            printer.out("In Arguments: " + str(e), printer.ERROR)
             self.help_download()
             return 2
         except ValueError as e:
@@ -404,9 +404,9 @@ class Image(Cmd, CoreGlobal):
             imgStatus = "In progress (" + str(status.percentage) + "%)"
         return imgStatus
 
-    def do_publish_with_id(self, do_args, template):
+    def do_publish_with_id(self, id, template):
         images = self.get_all_images()
-        image = self.get_image(images, str(do_args.id))
+        image = self.get_image(images, str(id))
         if image is None:
             raise ValueError("Image not found")
         if not is_image_ready_to_publish(image, None):

@@ -112,8 +112,6 @@ def publish_susecloud(pimage, builder):
     pimage.credAccount.tenantName = builder["tenant"]
     if "publicImage" in builder:
         pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
-    # if "paraVirtualMode" in builder:
-    #        pimage.credAccount. = True if (builder["paraVirtualMode"]=="true") else False
     return pimage
 
 

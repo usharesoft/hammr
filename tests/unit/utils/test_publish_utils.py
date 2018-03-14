@@ -82,7 +82,7 @@ class TestPublishUtils(TestCase):
         #then
         self.assertEqual(type(published_image), type(PublishImageAws()))
 
-    def test_call_publish_webservice_raises_execption_for_wrong_image_uri(self):
+    def test_call_publish_webservice_raises_exception_for_wrong_image_uri(self):
         #given
         image = self.build_image_to_publish("complete", True, 'wrong/uri/')
         image_object = self.build_image_object()

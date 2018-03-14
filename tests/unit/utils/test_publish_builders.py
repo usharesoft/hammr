@@ -167,7 +167,7 @@ class TestPublishAzure(TestCase):
 
     def test_publish_azure_should_return_none_when_missing_arm_container(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", None,"myBlob", "myDisplayName", "myResourceGroup")
+        builder = self.build_arm_builder("myStorageAccount", None, "myBlob", "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
