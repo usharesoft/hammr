@@ -1,7 +1,38 @@
-.. Copyright (c) 2007-2016 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 Changelog
 =========
+
+hammr 3.8.2 (2018-03-05)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp2-1 only
+
+Bug fixes:
+
+* Fix image publish to Outscale
+* Fix image publish to Cloudstack
+
+hammr 3.8.1 (2018-01-22)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp1-1 only
+* Compatibility with Python 2.7 only
+* Add Oracle Cloud publish support
+* Add info for using supervisor mode in Hammr
+
+Bug fixes:
+
+* Fix OpenStack doc to fit the retrieval behaviour (use names instead of ids)
+* Remove hardware info for Fujitsu K5 builder section
+* Allowed .yaml file extension
+* Unnecessary traceback displayed when two files with the same source path in the bundles section error occur
+* Fix image list for empty list
+* Set timeout limit to 300 seconds when retrieving from OpenStack
 
 hammr 3.7.8 (2017-10-16)
 --------------------------

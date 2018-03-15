@@ -29,14 +29,14 @@
         "files": [
           {
             "name": "directoryTest",
-            "source": "data/directoryTest",
+            "source": "tests/integration/data/directoryTest",
             "destination": "/usr/local/myBundle",
-            "extract": true
+            "files": []
           }
         ],
         "license": {
           "name": "license.html",
-          "source": "data/directoryTest/file1of3.txt"
+          "source": "tests/integration/data/directoryTest/file1of3.txt"
         }
       }
     ]

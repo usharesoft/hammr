@@ -5,14 +5,15 @@ import json
 import yaml
 from mock import patch
 
+from tests.unit.utils.file_utils import findRelativePathFor
 from hammr.utils import hammr_utils
 
 
 class TestFiles(unittest.TestCase):
     def test_pythonObjectFromYamlParsingShouldBeTheSameAsJsonParsing(self):
         # Given
-        json_path = "tests/integration/data/test-parsing.json"
-        yaml_path = "tests/integration/data/test-parsing.yml"
+        json_path = findRelativePathFor("tests/integration/data/test-parsing.json")
+        yaml_path = findRelativePathFor("tests/integration/data/test-parsing.yml")
         # When
         json_data = json.load(open(json_path))
         yaml_data = yaml.load(open(yaml_path))
@@ -85,6 +86,106 @@ class TestFiles(unittest.TestCase):
         # When
         # Then
         self.assertRaises(Exception, hammr_utils.check_extension_is_json, unsupported_extension_path)
+
+    def test_extract_appliance_id_return_correct_id_for_correct_uri(self):
+        # Given
+        tested_uri = "users/14/appliances/12/whatever/8/testing"
+
+        # When
+        appliance_id = hammr_utils.extract_appliance_id(tested_uri)
+
+        # Then
+        self.assertEqual(12, appliance_id)
+
+    def test_extract_appliance_id_return_none_for_non_appliance_uri(self):
+        # Given
+        tested_uri = "users/myuser/scannedinstances/18/scans/15/testing"
+
+        # When
+        appliance_id = hammr_utils.extract_appliance_id(tested_uri)
+
+        # Then
+        self.assertIsNone(appliance_id)
+
+    def test_extract_scan_id_return_correct_id_for_correct_uri(self):
+        # Given
+        tested_uri = "users/14/scannedinstances/12/scans/108/whatever/18/testing"
+
+        # When
+        scan_id = hammr_utils.extract_scan_id(tested_uri)
+
+        # Then
+        self.assertEqual(108, scan_id)
+
+    def test_extract_scan_id_return_none_for_non_scan_uri(self):
+        # Given
+        tested_uri = "users/14/appliances/12/whatever/8/testing"
+
+        # When
+        scan_id = hammr_utils.extract_scan_id(tested_uri)
+
+        # Then
+        self.assertIsNone(scan_id)
+
+    def test_extract_scannedinstance_id_return_correct_id_for_correct_uri(self):
+        # Given
+        tested_uri = "users/14/scannedinstances/120/scans/108/whatever/18/testing"
+
+        # When
+        scannedinstance_id = hammr_utils.extract_scannedinstance_id(tested_uri)
+
+        # Then
+        self.assertEqual(120, scannedinstance_id)
+
+    def test_extract_scannedinstance_id_return_non_for_nonscan_uri(self):
+        # Given
+        tested_uri = "users/14/appliances/12/whatever/8/testing"
+
+        # When
+        scannedinstance_id = hammr_utils.extract_scannedinstance_id(tested_uri)
+
+        # Then
+        self.assertIsNone(scannedinstance_id)
+
+    def test_is_uri_based_on_scan_return_true_for_scan_uri(self):
+        # Given
+        tested_uri = "users/myuser/scannedinstances/120/scans/108/images/12"
+
+        # When
+        is_scan_uri = hammr_utils.is_uri_based_on_scan(tested_uri)
+
+        # Then
+        self.assertTrue(is_scan_uri)
+
+    def test_is_uri_based_on_scan_return_false_for_appliance_uri(self):
+        # Given
+        tested_uri = "users/14/appliances/102/images/8"
+
+        # When
+        is_scan_uri = hammr_utils.is_uri_based_on_scan(tested_uri)
+
+        # Then
+        self.assertFalse(is_scan_uri)
+
+    def test_is_uri_based_on_appliance_return_true_for_app_uri(self):
+        # Given
+        tested_uri = "users/14/appliances/102/images/8"
+
+        # When
+        is_appliance_uri = hammr_utils.is_uri_based_on_appliance(tested_uri)
+
+        # Then
+        self.assertTrue(is_appliance_uri)
+
+    def test_is_uri_based_on_appliance_return_false_for_scan_uri(self):
+        # Given
+        tested_uri = "users/myuser/scannedinstances/120/scans/108/images/12"
+
+        # When
+        is_appliance_uri = hammr_utils.is_uri_based_on_appliance(tested_uri)
+
+        # Then
+        self.assertFalse(is_appliance_uri)
 
 if __name__ == '__main__':
     unittest.main()

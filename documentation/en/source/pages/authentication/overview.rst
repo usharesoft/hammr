@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2016 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 .. _authentication-methods:
 
@@ -26,7 +26,7 @@ For example
 
 .. code-block:: shell
 
-	$ hammr os list --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr os list --url https://your-uforge.com/api -u username -p password
 
 These parameters need to be passed each time you want to use the command-line.
 

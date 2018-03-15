@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2017 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 .. _install-compatibility:
 
@@ -34,13 +34,17 @@ The following table lists the compatibility between versions of Hammr, UForge_py
 	+-----------------+-----------------------------+------------------+
 	|      3.7.8      |            3.7.8            |      3.7.8       |
 	+-----------------+-----------------------------+------------------+
+	|      3.8.1      |            3.8.1            |      3.8.1       |
+	+-----------------+-----------------------------+------------------+
+        |      3.8.2      |            3.8.2            |      3.8.2       |
+        +-----------------+-----------------------------+------------------+
 
 
 If your hammr version is not compatible with the UForge version that you want to reach, hammr will raise an error message with the UForge version:
 
 .. code-block:: shell
 
-	$ hammr --url https://uforge.usharesoft.com/api -u username -p password
+	$ hammr --url https://your-uforge.com/api -u username -p password
 	ERROR: Sorry but this version of Hammr (version = 'HAMMR_VERSION') is not compatible with the version of UForge (version = 'UFORGE_VERSION').
 	ERROR: Please refer to 'Install Compatibility' section in the documentation to learn how to install a compatible version of Hammr.
 

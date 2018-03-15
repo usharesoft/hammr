@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2016 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 .. _builder-outscale:
 
@@ -20,23 +20,23 @@ The Outscale builder section has the following definition when using YAML:
 
 .. code-block:: yaml
 
-	---
-	builders:
-	- type: Outscale
-		# the rest of the definition goes here.
+    ---
+    builders:
+    - type: Outscale
+        # the rest of the definition goes here.
 
 If you are using JSON:
 
 .. code-block:: javascript
 
-	{
-	  "builders": [
-	    {
-	      "type": "Outscale",
-	      ...the rest of the definition goes here.
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Outscale",
+          ...the rest of the definition goes here.
+        }
+      ]
+    }
 
 Building a Machine Image
 ------------------------
@@ -45,7 +45,7 @@ For building an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Outscale: ``Outscale``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``installation`` (optional): an object providing low-level installation or first boot options. These override any installation options in the :ref:`template-stack` section. The following valid keys for installation are:
-	* ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. If the machine image is to be stored in Amazon S3, the maximum disk size is 10GB, otherwise if this is an EBS-backed machine image the maximum disk size is 1TB.
+    * ``diskSize`` (mandatory): an integer providing the disk size of the machine image to create. Note, this overrides any disk size information in the stack. If the machine image is to be stored in Amazon S3, the maximum disk size is 10GB, otherwise if this is an EBS-backed machine image the maximum disk size is 1TB.
 
 .. note:: When building from a scan, your yaml or json file must contain an ``installation`` section in ``builders``. This is mandatory when you create a new template, but might be missing when you build from a scan. Make sure it is present or your build will fail.
 
@@ -55,21 +55,18 @@ Publishing a Machine Image
 To publish an image, the valid keys are:
 
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Outscale: ``Outscale``. To get the available builder type, please refer to :ref:`command-line-format`
-* ``account`` (mandatory): an object providing the AWS cloud account information required to publish the built machine image.
-* ``zone`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
+* ``account`` (mandatory): an object providing the Cloudstack cloud account information required to publish the built machine image.
+* ``region`` (mandatory): a string providing the region where to publish the machine image. See below for valid regions.
 
 Valid Regions
 -------------
 
 The following regions are supported:
 
-* ``ap-northeast-1``: Asia Pacific (Tokyo) Region
-* ``ap-southeast-1``: Asia Pacific (Singapore) Region
-* ``eu-west-1``: EU (Ireland) Region
-* ``sa-east-1``: South America (Sao Paulo) Region
-* ``us-east-1``: US East (North Virginia) Region
-* ``us-west-1``: US West (North california) Region
-* ``us-west-2``: US West (Oregon) Region
+* ``eu-west-2``: EU (France) Region
+* ``us-east-2``: US East (New Jersey) Region
+* ``us-west-1``: US West (California) Region
+* ``cn-southeast-1``: Asia Pacific (Hong-Kong) Region
 
 Outscale Cloud Account
 ----------------------
@@ -89,47 +86,47 @@ The Outscale cloud account has the following valid keys:
 Example
 -------
 
-The following example shows an amazon builder with all the information to build and publish a machine image to Amazon EC2.
+The following example shows an Outscale builder with all the information to build and publish a machine image to Outscale.
 
 If you are using YAML:
 
 .. code-block:: yaml
 
-	---
-	builders:
-	- type: Outscale
-	  account:
-	    type: Outscale
-	    name: My Outscale Account
-	    accessKey: 789456123ajdiewjd
-	    secretAccessKey: ks30hPeH1xWqilJ04
-	  installation:
-	    diskSize: 10240
-	  zone: eu-west-2
-	  description: centos-template
+    ---
+    builders:
+    - type: Outscale
+      account:
+        type: Outscale
+        name: My Outscale Account
+        accessKey: 789456123ajdiewjd
+        secretAccessKey: ks30hPeH1xWqilJ04
+      installation:
+        diskSize: 10240
+      region: eu-west-2
+      description: centos-template
 
 If you are using JSON:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "Outscale",
-	      "account": {
-	        "type": "Outscale",
-	        "name": "My Outscale Account",
-	        "accessKey": "789456123ajdiewjd",
-	        "secretAccessKey": "ks30hPeH1xWqilJ04"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "zone": "eu-west-2",
-	      "description": "centos-template"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Outscale",
+          "account": {
+            "type": "Outscale",
+            "name": "My Outscale Account",
+            "accessKey": "789456123ajdiewjd",
+            "secretAccessKey": "ks30hPeH1xWqilJ04"
+          },
+          "installation": {
+            "diskSize": 10240
+          },
+          "region": "eu-west-2",
+          "description": "centos-template"
+        }
+      ]
+    }
 
 Referencing the Cloud Account
 -----------------------------
@@ -138,27 +135,27 @@ To help with security, the cloud account information can be referenced by the bu
 
 .. code-block:: yaml
 
-	---
-	accounts:
-	- type: Outscale
-	  name: My Outscale Account
-	  accessKey: 789456123ajdiewjd
-	  secretAccessKey: ks30hPeH1xWqilJ04
+    ---
+    accounts:
+    - type: Outscale
+      name: My Outscale Account
+      accessKey: 789456123ajdiewjd
+      secretAccessKey: ks30hPeH1xWqilJ04
 
 If you are using JSON, create a JSON file ``outscale-account.json``:
 
 .. code-block:: json
 
-	{
-	  "accounts": [
-	    {
-	      "type": "Outscale",
-	      "name": "My Outscale Account",
-	      "accessKey": "789456123ajdiewjd",
-	      "secretAccessKey": "ks30hPeH1xWqilJ04"
-	    }
-	  ]
-	}
+    {
+      "accounts": [
+        {
+          "type": "Outscale",
+          "name": "My Outscale Account",
+          "accessKey": "789456123ajdiewjd",
+          "secretAccessKey": "ks30hPeH1xWqilJ04"
+        }
+      ]
+    }
 
 The builder section can either reference by using ``file`` or ``name``.
 
@@ -168,35 +165,33 @@ If you are using YAML:
 
 .. code-block:: yaml
 
-	---
-	builders:
-	- type: Outscale
-	  account:
-	    file: "/home/joris/accounts/outscale-account.yml"
-	  installation:
-	    diskSize: 10240
-	  region: eu-west-2
-	  s3bucket: centos-template
+    ---
+    builders:
+    - type: Outscale
+      account:
+        file: "/home/joris/accounts/outscale-account.yml"
+      installation:
+        diskSize: 10240
+      region: eu-west-2
 
 If you are using JSON:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "Outscale",
-	      "account": {
-	        "file": "/home/joris/accounts/outscale-account.json"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "region": "eu-west-2",
-	      "s3bucket": "centos-template"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Outscale",
+          "account": {
+            "file": "/home/joris/accounts/outscale-account.json"
+          },
+          "installation": {
+            "diskSize": 10240
+          },
+          "region": "eu-west-2",
+        }
+      ]
+    }
 
 Reference by name, note the cloud account must already be created by using ``account create``.
 
@@ -204,32 +199,30 @@ If you are using YAML:
 
 .. code-block:: yaml
 
-	---
-	builders:
-	- type: Outscale
-	  account:
-	    name: My Outscale Account
-	  installation:
-	    diskSize: 10240
-	  region: eu-west-2
-	  s3bucket: centos-template
+    ---
+    builders:
+    - type: Outscale
+      account:
+        name: My Outscale Account
+      installation:
+        diskSize: 10240
+      region: eu-west-2
 
 If you are using JSON:
 
 .. code-block:: json
 
-	{
-	  "builders": [
-	    {
-	      "type": "Outscale",
-	      "account": {
-	        "name": "My Outscale Account"
-	      },
-	      "installation": {
-	        "diskSize": 10240
-	      },
-	      "region": "eu-west-2",
-	      "s3bucket": "centos-template"
-	    }
-	  ]
-	}
+    {
+      "builders": [
+        {
+          "type": "Outscale",
+          "account": {
+            "name": "My Outscale Account"
+          },
+          "installation": {
+            "diskSize": 10240
+          },
+          "region": "eu-west-2",
+        }
+      ]
+    }

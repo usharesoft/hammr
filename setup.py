@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright (c) 2007-2018 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -22,10 +22,11 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # Declare your packages' dependencies here, for eg:
-# Always put an '==' dependency with uforge_python_sdk
-requires=['uforge_python_sdk==3.7.8',
+# Always put an '==' dependency with uforge_python_sdk during the release
+# During dev we can keep >= in order to get nightly version of sdk for the CI  
+requires=['uforge_python_sdk>=3.8.2',
                     'httplib2==0.9',
-                    'texttable>=0.8.1',
+                    'texttable==0.8.1',
                     'progressbar==2.3',
                     'argparse',
                     'paramiko==1.12',

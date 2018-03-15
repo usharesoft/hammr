@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright (c) 2007-2018 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -266,6 +266,13 @@ def extract_scannedinstance_id(image_uri):
 
 def extract_scan_id(image_uri):
     match = re.match( r'users/[^/]+/scannedinstances/[0-9]+/scans/([0-9]+)($|/)', image_uri)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
+
+def extract_appliance_id(image_uri):
+    match = re.match( r'users/[^/]+/appliances/([0-9]+)($|/)', image_uri)
     if match:
         return int(match.group(1))
     else:
