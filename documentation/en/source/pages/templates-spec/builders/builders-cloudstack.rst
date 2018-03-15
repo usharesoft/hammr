@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2016 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
 
 .. _builder-cloudstack:
 
@@ -62,9 +62,10 @@ To publish an image, the valid keys are:
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for CloudStack: ``CloudStack VMware (OVA)``, ``CloudStack KVM (QCOW2)`` or ``CloudStack Citrix Xen (VHD)``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the CloudStack cloud account information required to publish the built machine image.
 * ``imageName`` (mandatory): a string providing the displayed name of the machine image.
-* ``zone`` (mandatory): a string providing the zone to publish the machine image
-* ``publicImage`` (optional): a boolean flag to determine in the machine image is to be public
-* ``featured`` (optional): a boolean flag to determine in the machine image is to be "featured"
+* ``zone`` (mandatory): a string providing the zone to publish the machine image.
+* ``description`` (mandatory): a string providing a description of what the machine image does.
+* ``publicImage`` (optional): a boolean flag to determine in the machine image is to be public.
+* ``featured`` (optional): a boolean flag to determine in the machine image is to be "featured".
 
 CloudStack Cloud Account
 ------------------------
@@ -103,6 +104,7 @@ If you are using YAML:
       endpointUrl: myendpointurl
     imageName: CentOS Core
     zone: zone1
+    description: my description
 
 If you are using JSON:
 
@@ -120,7 +122,8 @@ If you are using JSON:
           "endpointUrl": "myendpointurl"
         },
         "imageName": "CentOS Core",
-        "zone": "zone1"
+        "zone": "zone1",
+        "description": "my description"
       }
     ]
   }
@@ -171,6 +174,7 @@ If you are using YAML:
       file: "/path/to/cloudstack-account.yml"
     imageName: CentOS Core
     zone: zone1
+    description: my description
 
 If you are using JSON:
 
@@ -184,7 +188,8 @@ If you are using JSON:
           "file": "/path/to/cloudstack-account.json"
         },
         "imageName": "CentOS Core",
-        "zone": "zone1"
+        "zone": "zone1",
+        "description": "my description"
       }
     ]
   }
@@ -202,6 +207,7 @@ If you are using YAML:
       name: My CloudStack Account
     imageName: CentOS Core
     zone: zone1
+    description: my description
 
 If you are using JSON:
 
@@ -215,7 +221,8 @@ If you are using JSON:
           "name": "My CloudStack Account"
         },
         "imageName": "CentOS Core",
-        "zone": "zone1"
+        "zone": "zone1",
+        "description": "my description"
       }
     ]
   }

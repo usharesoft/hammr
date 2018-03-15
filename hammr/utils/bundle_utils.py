@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright (c) 2007-2018 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -87,8 +87,7 @@ def recursivelyAppendToArchive(bundle, files, parentDir, checkList, archive_file
             #changing source path to archive related source path
             files["source"]=file_tar_path
         else:
-            printer.out("found two files with the same source path in the bundles section...", printer.ERROR)
-            return 2
+            raise ValueError("Cannot have identical files in the bundles section: " + filePathBeforeTar)
 
     if "files" in files:
         for subFiles in files["files"]:

@@ -1,6 +1,6 @@
 {
   "stack" : {
-    "source_logo" : "https://www.usharesoft.com/assets/images/usharesoft_logo.png",
+    "source_logo" : "https://www.usharesoft.com/wp-content/uploads/2017/09/fujitsu-logo.png",
     "name" : "templateFull",
     "version" : "1.0",
     "installation" : {
@@ -71,7 +71,7 @@
     "config": [
     {
       "name": "configure-mysql.sh",
-      "source": "data/bootsrcripts/cleanup_tmp.sh",
+      "source": "tests/integration/data/bootscripts/cleanup_tmp.sh",
       "type": "bootscript",
       "frequency": "firstboot",
       "order" : "1"

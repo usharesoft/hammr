@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright (c) 2007-2018 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -18,7 +18,7 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="3.7.8"
+VERSION="3.8.2"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())

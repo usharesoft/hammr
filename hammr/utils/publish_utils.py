@@ -1,4 +1,4 @@
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright (c) 2007-2018 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -61,7 +61,9 @@ def publish_vcenter(builder):
     return pimage
 
 
-def publish_cloudstack(pimage, builder):
+def publish_cloudstack(builder):
+    pimage = PublishImageCloudStack()
+
     # doing field verification
     if not "imageName" in builder:
         printer.out("imageName in cloudstack builder not found", printer.ERROR)
@@ -69,26 +71,28 @@ def publish_cloudstack(pimage, builder):
     if not "zone" in builder:
         printer.out("zone in cloudstack builder not found", printer.ERROR)
         return
-    if "publicImage" in builder:
-        pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
-    if "featured" in builder:
-        pimage.credAccount.featuredEnabled = True if (builder["featured"] == "true") else False
+    if not "description" in builder:
+        printer.out("description in cloudstack builder not found", printer.ERROR)
+        return
 
-    pimage.credAccount.displayName = builder["imageName"]
-    pimage.credAccount.zoneName = builder["zone"]
+    if "publicImage" in builder:
+        pimage.publicImage = True if (builder["publicImage"] == "true") else False
+    if "featured" in builder:
+        pimage.featuredEnabled = True if (builder["featured"] == "true") else False
+
+    pimage.displayName = builder["imageName"]
+    pimage.zoneName = builder["zone"]
+    pimage.description = builder["description"]
     return pimage
 
+def publish_cloudstackqcow2(builder):
+    return publish_cloudstack(builder)
 
-def publish_cloudstack_qcow2(pimage, builder):
-    return publish_cloudstack(pimage, builder)
+def publish_cloudstackvhd(builder):
+    return publish_cloudstack(builder)
 
-
-def publish_cloudstack_vhd(pimage, builder):
-    return publish_cloudstack(pimage, builder)
-
-
-def publish_cloudstack_ova(pimage, builder):
-    return publish_cloudstack(pimage, builder)
+def publish_cloudstackova(builder):
+    return publish_cloudstack(builder)
 
 
 def publish_susecloud(pimage, builder):
@@ -140,16 +144,16 @@ def publish_openstackqcow2(builder):
     return publish_openstack(builder)
 
 
-def publish_openstackvhd(pimage, builder):
-    return publish_openstack(pimage, builder)
+def publish_openstackvhd(builder):
+    return publish_openstack(builder)
 
 
-def publish_openstackvmdk(pimage, builder):
-    return publish_openstack(pimage, builder)
+def publish_openstackvmdk(builder):
+    return publish_openstack(builder)
 
 
-def publish_openstackvdi(pimage, builder):
-    return publish_openstack(pimage, builder)
+def publish_openstackvdi(builder):
+    return publish_openstack(builder)
 
 
 def publish_aws(builder):
@@ -242,12 +246,12 @@ def publish_flexiant(builder):
     return pimage
 
 
-def publish_flexiant_kvm(pimage, builder):
-    return publish_flexiant(pimage, builder)
+def publish_flexiant_kvm(builder):
+    return publish_flexiant(builder)
 
 
-def publish_flexiant_ova(pimage, builder):
-    return publish_flexiant(pimage, builder)
+def publish_flexiant_ova(builder):
+    return publish_flexiant(builder)
 
 
 def publish_flexiantraw(builder):
@@ -371,15 +375,15 @@ def publish_gce(pimage, builder):
     return pimage
 
 
-def publish_outscale(pimage, builder):
-    # doing field verification
-    if not "zone" in builder:
-        printer.out("zone in outscale builder not found", printer.ERROR)
-        return
-    if not "description" in builder:
-        pimage.credAccount.description = builder["description"]
+def publish_outscale(builder):
+    pimage = PublishImageOutscale()
 
-    pimage.credAccount.zoneName = builder["zone"]
+    # doing field verification
+    if not "region" in builder:
+        printer.out("region in cloudstack builder not found", printer.ERROR)
+        return
+
+    pimage.region = builder["region"]
     return pimage
 
 
