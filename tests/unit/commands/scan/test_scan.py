@@ -27,11 +27,11 @@ from hammr.utils import constants
 
 class TestScan(TestCase):
 
-    @patch("ussclicore.utils.download_utils.Download")
-    @patch.object(Scan, "deploy_and_launch_agent")
+    @patch("hammr.utils.hammr_utils.download_binary_in_local_temp_dir")
+    @patch.object(Scan, "upload_and_launch_scan_binary")
     @patch('uforge.application.Api._Users._Scannedinstances.Getall')
     @patch("ussclicore.utils.printer.out")
-    def test_do_run_return_error_when_regular_scan_and_overlay_option(self, mock_out, mock_api_getall, mock_agent, mock_download):
+    def test_do_run_return_error_when_regular_scan_and_overlay_option(self, mock_out, mock_api_getall, mock_upload_and_launch_scan_binary, mock_download_binary):
         # given
         name = "RegularScan"
         s, args = self.prepare_scan_run_command(name, "--overlay")
@@ -44,15 +44,14 @@ class TestScan(TestCase):
         # then
         self.assertEqual(s.check_overlay_option_is_allowed(name, True), False)
         mock_out.assert_called_with("Performing scan with overlay into the scanned instance [RegularScan] is not allowed. Please retry with another one.", "ERROR")
-        self.assertEquals(mock_download.call_count, 0)
-        self.assertEquals(mock_agent.call_count, 0)
+        self.assertEquals(mock_download_binary.call_count, 0)
+        self.assertEquals(mock_upload_and_launch_scan_binary.call_count, 0)
 
-
-    @patch("ussclicore.utils.download_utils.Download")
-    @patch.object(Scan, "deploy_and_launch_agent")
+    @patch("hammr.utils.hammr_utils.download_binary_in_local_temp_dir")
+    @patch.object(Scan, "upload_and_launch_scan_binary")
     @patch('uforge.application.Api._Users._Scannedinstances.Getall')
     @patch("ussclicore.utils.printer.out")
-    def test_do_run_return_error_when_scan_with_overlay_and_no_overlay_option(self, mock_out, mock_api_getall, mock_agent, mock_download):
+    def test_do_run_return_error_when_scan_with_overlay_and_no_overlay_option(self, mock_out, mock_api_getall, mock_upload_and_launch_scan_binary, mock_download_binary):
         # given
         name = "ScanWithOverlay"
         s, args = self.prepare_scan_run_command(name, "")
@@ -67,46 +66,47 @@ class TestScan(TestCase):
         mock_out.assert_called_with(
             "Performing regular scan into the scanned instance [ScanWithOverlay] is not allowed. Please retry with another one.",
             "ERROR")
-        self.assertEquals(mock_download.call_count, 0)
-        self.assertEquals(mock_agent.call_count, 0)
+        self.assertEquals(mock_download_binary.call_count, 0)
+        self.assertEquals(mock_upload_and_launch_scan_binary.call_count, 0)
 
-    @patch("ussclicore.utils.download_utils.Download")
-    @patch.object(Scan, "deploy_and_launch_agent")
+    @patch("hammr.utils.hammr_utils.download_binary_in_local_temp_dir")
+    @patch.object(Scan, "upload_and_launch_scan_binary")
     @patch('uforge.application.Api._Users._Scannedinstances.Getall')
-    def test_do_run_succeed_when_scan_with_overlay_and_overlay_option(self, mock_api_getall, mock_agent, mock_download):
+    def test_do_run_succeed_when_scan_with_overlay_and_overlay_option(self, mock_api_getall, mock_upload_and_launch_scan_binary, mock_download_binary):
         #given
         name = "ScanWithOverlay"
         s, args = self.prepare_scan_run_command(name, "--overlay")
 
         self.create_scanned_instances(name, True, mock_api_getall)
-        mock_download.start.return_value = ''
+        mock_upload_and_launch_scan_binary.return_value(0)
 
         # when
         s.do_run(args)
 
         # then
         self.assertEqual(s.check_overlay_option_is_allowed(name,True), True)
-        self.assertEquals(mock_download.call_count, 1)
-        self.assertEquals(mock_agent.call_count, 1)
+        self.assertEquals(mock_download_binary.call_count, 1)
+        self.assertEquals(mock_upload_and_launch_scan_binary.call_count, 1)
 
-    @patch("ussclicore.utils.download_utils.Download")
-    @patch.object(Scan, "deploy_and_launch_agent")
+    @patch("hammr.utils.hammr_utils.download_binary_in_local_temp_dir")
+    @patch.object(Scan, "upload_and_launch_scan_binary")
     @patch('uforge.application.Api._Users._Scannedinstances.Getall')
-    def test_do_run_succeed_when_regular_scan_and_no_overlay_option(self, mock_api_getall, mock_agent, mock_download):
+    def test_do_run_succeed_when_regular_scan_and_no_overlay_option(self, mock_api_getall, mock_upload_and_launch_scan_binary, mock_download_binary):
         # given
         name = "RegularScan"
         s, args = self.prepare_scan_run_command(name, "")
 
         self.create_scanned_instances(name, False, mock_api_getall)
-        mock_download.start.return_value = ''
+        mock_download_binary.return_value = ''
+        mock_upload_and_launch_scan_binary.return_value(0)
 
         # when
         s.do_run(args)
 
         # then
         self.assertEqual(s.check_overlay_option_is_allowed(name, False), True)
-        self.assertEquals(mock_download.call_count, 1)
-        self.assertEquals(mock_agent.call_count, 1)
+        self.assertEquals(mock_download_binary.call_count, 1)
+        self.assertEquals(mock_upload_and_launch_scan_binary.call_count, 1)
 
     def create_scanned_instances(self, name, overlay, mock_api_getall):
         scanned_instances = scannedInstances()

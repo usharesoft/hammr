@@ -103,7 +103,7 @@ class TestDeployAzure(TestCase):
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        instance = InstanceAzureResourceManager()
+        instance = InstanceAzure()
         instance.cores = "1"
         instance.memory = "1024"
         instance.hostname = "example.com"
@@ -113,7 +113,7 @@ class TestDeployAzure(TestCase):
         location = Location()
         location.provider = "myprovider"
         instance.location = location
-        instance.cloudProvider = "azurearm"
+        instance.cloudProvider = "azure"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
@@ -129,7 +129,7 @@ class TestDeployAzure(TestCase):
         publish_images = uforge.publishImages()
         publish_images.publishImages = pyxb.BIND()
 
-        publish_image = PublishImageAzureResourceManager()
+        publish_image = PublishImageAzure()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/appliances/5/images/1234'
         publish_image.applianceUri = 'users/guest/appliances/5'
@@ -146,7 +146,7 @@ class TestDeployAzure(TestCase):
         publish_images = uforge.publishImages()
         publish_images.publishImages = pyxb.BIND()
 
-        publish_image = PublishImageAzureResourceManager()
+        publish_image = PublishImageAzure()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
         publish_image.status = "complete"

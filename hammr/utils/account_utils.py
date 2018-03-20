@@ -20,8 +20,11 @@ from ussclicore.utils import generics_utils, printer
 from pyxb.utils import domutils
 
 
-def openstack(account):
-    myCredAccount = CredAccountOpenStack()
+def openstack():
+    return CredAccountOpenStack()
+
+def fill_openstack(account):
+    myCredAccount = openstack()
     # doing field verification
     if not "name" in account:
         printer.out("name for openstack account not found", printer.ERROR)
@@ -51,8 +54,11 @@ def openstack(account):
     return myCredAccount
 
 
-def susecloud(account):
-    myCredAccount = SuseCloud()
+def susecloud():
+    return SuseCloud()
+
+def fill_suseCloud(account):
+    myCredAccount = susecloud()
     # doing field verification
     if not "username" in account:
         printer.out("username in susecloud account not found", printer.ERROR)
@@ -78,8 +84,11 @@ def susecloud(account):
     return myCredAccount
 
 
-def cloudstack(account):
-    myCredAccount = CredAccountCloudStack()
+def cloudstack():
+    return CredAccountCloudStack()
+
+def fill_cloudstack(account):
+    myCredAccount = cloudstack()
     # doing field verification
     if not "name" in account:
         printer.out("name for cloudstack account not found", printer.ERROR)
@@ -101,8 +110,11 @@ def cloudstack(account):
     return myCredAccount
 
 
-def aws(account):
-    myCredAccount = CredAccountAws()
+def aws():
+    return CredAccountAws()
+
+def fill_aws(account):
+    myCredAccount = aws()
     # doing field verification
     if not "accountNumber" in account:
         printer.out("accountNumber for ami account not found", printer.ERROR)
@@ -156,17 +168,11 @@ def aws(account):
     return myCredAccount
 
 
-def azure(account):
-    if "publishsettings" in account:
-        printer.out("Azure classic account")
-        return azure_classic(account)
-    else:
-        printer.out("Azure Resource Manager account")
-        return azure_arm(account)
+def azure():
+    return CredAccountAzure()
 
-
-def azure_arm(account):
-    myCredAccount = CredAccountAzureResourceManager()
+def fill_azure(account):
+    myCredAccount = azure()
     # doing field verification
     if not "name" in account:
         printer.out("name for azure account not found", printer.ERROR)
@@ -192,42 +198,11 @@ def azure_arm(account):
 
     return myCredAccount
 
+def eucalyptus():
+    return CredAccountEws()
 
-def azure_classic(account):
-    myCredAccount = CredAccountAzure()
-    # doing field verification
-    if not "name" in account:
-        printer.out("name for azure account not found", printer.ERROR)
-        return
-    if not "publishsettings" in account:
-        printer.out("publishsettings in azure account not found", printer.ERROR)
-        return
-
-    myCredAccount.name = account["name"]
-    myCredAccount.publishsettings = account["publishsettings"]
-
-    myCredAccount.certificates = pyxb.BIND()
-    # A hack to avoid a toDOM, toXML bug
-    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
-
-    try:
-        cert = certificate()
-        with open(account["publishsettings"], "r") as myfile:
-            cert.content_ = myfile.read()
-        cert.type = "azurePublishSettings"
-        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-        cert.name = ntpath.basename(account["publishsettings"])
-        myCredAccount.certificates.append(cert)
-
-    except IOError as e:
-        printer.out("File error: " + str(e), printer.ERROR)
-        return
-
-    return myCredAccount
-
-
-def eucalyptus(account):
-    myCredAccount = CredAccountEws()
+def fill_eucalyptus(account):
+    myCredAccount = eucalyptus()
     # doing field verification
     if not "secretKey" in account:
         printer.out("secretKey in eucalyptus account not found", printer.ERROR)
@@ -290,9 +265,11 @@ def eucalyptus(account):
 
     return myCredAccount
 
+def abiquo():
+    return CredAccountAbiquo()
 
-def abiquo(account):
-    myCredAccount = CredAccountAbiquo()
+def fill_abiquo(account):
+    myCredAccount = abiquo()
     # doing field verification
     if not "password" in account:
         printer.out("password in abiquo account not found", printer.ERROR)
@@ -313,9 +290,11 @@ def abiquo(account):
     myCredAccount.name = account["name"]
     return myCredAccount
 
+def nimbula():
+    return CredAccountNimbula()
 
-def nimbula(account):
-    myCredAccount = CredAccountNimbula()
+def fill_nimbula(account):
+    myCredAccount = nimbula()
     # doing field verification
     if not "password" in account:
         printer.out("password in nimbula account not found", printer.ERROR)
@@ -336,9 +315,11 @@ def nimbula(account):
     myCredAccount.name = account["name"]
     return myCredAccount
 
+def flexiant():
+    return CredAccountFlexiant()
 
-def flexiant(account):
-    myCredAccount = CredAccountFlexiant()
+def fill_flexiant(account):
+    myCredAccount = flexiant()
     # doing field verification
     if not "apiUsername" in account:
         printer.out("apiUsername in flexiant account not found", printer.ERROR)
@@ -366,9 +347,11 @@ def flexiant(account):
 
     return myCredAccount
 
+def vclouddirector():
+    return CredAccountVCloudDirector()
 
-def vclouddirector(account):
-    myCredAccount = CredAccountVCloudDirector()
+def fill_vclouddirector(account):
+    myCredAccount = vclouddirector()
     # doing field verification
     if not "name" in account:
         printer.out("name in vcd account not found", printer.ERROR)
@@ -400,9 +383,11 @@ def vclouddirector(account):
 
     return myCredAccount
 
+def vsphere():
+    return CredAccountVSphere()
 
-def vsphere(account):
-    myCredAccount = CredAccountVSphere()
+def fill_vsphere(account):
+    myCredAccount = vsphere()
     # doing field verification
     if not "name" in account:
         printer.out("name in vcenter account not found", printer.ERROR)
@@ -432,9 +417,11 @@ def vsphere(account):
     myCredAccount.port = port
     return myCredAccount
 
+def gce():
+    return CredAccountGoogle()
 
-def gce(account):
-    myCredAccount = CredAccountGoogle()
+def fill_gce(account):
+    myCredAccount = gce()
     # doing field verification
     if not "username" in account:
         printer.out("username in gce account not found", printer.ERROR)
@@ -471,9 +458,11 @@ def gce(account):
 
     return myCredAccount
 
+def outscale():
+    return CredAccountOutscale()
 
-def outscale(account):
-    myCredAccount = CredAccountOutscale()
+def fill_outscale(account):
+    myCredAccount = outscale()
     # doing field verification
     if not "name" in account:
         printer.out("name for outscale account not found", printer.ERROR)
@@ -490,8 +479,11 @@ def outscale(account):
     myCredAccount.name = account["name"]
     return myCredAccount
 
-def k5(account):
-    myCredAccount = CredAccountK5()
+def k5():
+    return CredAccountK5()
+
+def fill_k5(account):
+    myCredAccount = k5()
     # doing field verification
     if not "name" in account:
         printer.out("name for K5 account not found", printer.ERROR)
@@ -508,8 +500,11 @@ def k5(account):
     myCredAccount.password = account["password"]
     return myCredAccount
 
-def docker(account):
-    myCredAccount = CredAccountDocker()
+def docker():
+    return CredAccountDocker()
+
+def fill_docker(account):
+    myCredAccount = docker()
 
     if not "name" in account:
         printer.out("name for Docker account is missing", printer.ERROR)
@@ -530,8 +525,11 @@ def docker(account):
     myCredAccount.password = account["password"]
     return myCredAccount
 
-def oracle(account):
-    myCredAccount = CredAccountOracle()
+def oracle():
+    return CredAccountOracle()
+
+def fill_oracle(account):
+    myCredAccount = oracle()
 
     if not "name" in account:
         printer.out("name for Oracle account is missing", printer.ERROR)

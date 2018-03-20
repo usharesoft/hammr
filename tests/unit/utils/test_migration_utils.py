@@ -17,7 +17,10 @@ import unittest
 
 import pyxb
 from mock import patch
+from uforge.application import Api
 from uforge.objects import uforge
+
+from hammr.utils import constants
 from hammr.utils import migration_utils
 
 
@@ -85,17 +88,367 @@ class TestMigrationTable(unittest.TestCase):
         self.assertEquals(mock_table_add_row.call_count, 1)
         mock_table_add_row.assert_any_call([1, "a migration", "Cancelled"])
 
+    @patch("ussclicore.utils.generics_utils.get_file")
+    def test_retrieve_migration_configuration_raise_exception_if_no_file_is_retrieved(self, mock_get_file):
+        # given
+        args_file = "file_no_present.json"
+        mock_get_file.return_value = None
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_migration_configuration(args_file)
+
+        # then
+        self.assertTrue("No such file or directory: " + args_file in e.exception)
+
+    @patch("ussclicore.utils.generics_utils.get_file")
+    @patch("hammr.utils.hammr_utils.load_data")
+    def test_retrieve_migration_configuration_raise_exception_if_file_contain_no_migration(self, mock_load_data, mock_get_file):
+        # given
+        args_file = "file_present.json"
+        mock_get_file.return_value = "a file"
+        mock_load_data.return_value = self.get_migration_config(migration_key="noMigration")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_migration_configuration(args_file)
+
+        # then
+        self.assertTrue("no migration section found" in e.exception)
+
+    @patch("ussclicore.utils.generics_utils.get_file")
+    @patch("hammr.utils.hammr_utils.load_data")
+    @patch("hammr.utils.migration_utils.check_mandatory_migrate")
+    def test_retrieve_migration_configuration_check_mandatory_migrate_if_file_contain_migration(self, mock_check_mandatory_migrate, mock_load_data, mock_get_file):
+        # given
+        args_file = "file_present.json"
+        mock_get_file.return_value = "a file"
+        data = self.get_migration_config()
+        mock_load_data.return_value = data
+
+        # when
+        migration_utils.retrieve_migration_configuration(args_file)
+
+        #  then
+        mock_check_mandatory_migrate.assert_called_with(data["migration"])
+
+    def test_check_mandatory_migrate_raise_exception_if_not_contain_name(self):
+        # given
+        data = self.get_migration_config(name_key="noName")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_migrate(data["migration"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [name] for [migration]" in e.exception)
+
+    def test_check_mandatory_migrate_raise_exception_if_not_contain_os(self):
+        # given
+        data = self.get_migration_config(os_key="noOS")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_migrate(data["migration"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [os] for [migration]" in e.exception)
+
+    def test_check_mandatory_migrate_raise_exception_if_not_contain_source(self):
+        # given
+        data = self.get_migration_config(source_key="noSource")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_migrate(data["migration"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [source] for [migration]" in e.exception)
+
+    def test_check_mandatory_migrate_raise_exception_if_not_contain_target(self):
+        # given
+        data = self.get_migration_config(target_key="noTarget")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_migrate(data["migration"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [target] for [migration]" in e.exception)
+
+    @patch("hammr.utils.migration_utils.check_mandatory_target")
+    @patch("hammr.utils.migration_utils.check_mandatory_source")
+    def test_check_mandatory_migrate_check_mandatory_source_target_if_contain_source_target(self, mock_check_mandatory_source, mock_check_mandatory_target):
+        # given
+        data = self.get_migration_config()
+
+        # when
+        migration_utils.check_mandatory_migrate(data["migration"])
+
+        #  then
+        mock_check_mandatory_source.assert_called_with(data["migration"]["source"])
+        mock_check_mandatory_target.assert_called_with(data["migration"]["target"])
+
+    def test_check_mandatory_source_raise_exception_if_not_contain_host(self):
+        # given
+        data = self.get_migration_config(host_key="noHost")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_source(data["migration"]["source"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [host] for [migration][source]" in e.exception)
+
+    def test_check_mandatory_source_raise_exception_if_not_contain_user(self):
+        # given
+        data = self.get_migration_config(user_key="noUser")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_source(data["migration"]["source"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [user] for [migration][source]" in e.exception)
+
+    def test_check_mandatory_target_raise_exception_if_not_contain_builder(self):
+        # given
+        data = self.get_migration_config(builder_key="noBuilder")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_target(data["migration"]["target"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [builder] for [migration][target]" in e.exception)
+
+    @patch("hammr.utils.migration_utils.check_mandatory_builder")
+    def test_check_mandatory_target_check_mandatory_builder_if_contain_builder(self, mock_check_mandatory_builder):
+        # given
+        data = self.get_migration_config()
+
+        # when
+        migration_utils.check_mandatory_target(data["migration"]["target"])
+
+        #  then
+        mock_check_mandatory_builder.assert_called_with(data["migration"]["target"]["builder"])
+
+    def test_check_mandatory_builder_raise_exception_if_not_contain_type(self):
+        # given
+        data = self.get_migration_config(type_key="noType")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_builder(data["migration"]["target"]["builder"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [type] for [migration][target][builder]" in e.exception)
+
+    def test_check_mandatory_builder_raise_exception_if_not_contain_account(self):
+        # given
+        data = self.get_migration_config(account_key="noAccount")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_builder(data["migration"]["target"]["builder"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [account] for [migration][target][builder]" in e.exception)
+
+    @patch("hammr.utils.migration_utils.check_mandatory_account")
+    def test_check_mandatory_builder_check_mandatory_account_if_contain_account(self, mock_check_mandatory_account):
+        # given
+        data = self.get_migration_config()
+
+        # when
+        migration_utils.check_mandatory_builder(data["migration"]["target"]["builder"])
+
+        #  then
+        mock_check_mandatory_account.assert_called_with(data["migration"]["target"]["builder"]["account"])
+
+    def test_check_mandatory_account_raise_exception_if_not_contain_name(self):
+        # given
+        data = self.get_migration_config(account_name_key="noAccountName")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_account(data["migration"]["target"]["builder"]["account"])
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [name] for [migration][target][builder][account]" in e.exception)
+
+    @patch("hammr.utils.generate_utils.get_target_format_object")
+    def test_retrieve_target_format_return_the_target_format_found(self, mock_get_target_format_object):
+        # given
+        api = Api("url", username="username", password="password", headers=None,
+                  disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        target_format = uforge.TargetFormat()
+        mock_get_target_format_object.return_value = target_format
+
+
+        # when
+        target_format_retrieved = migration_utils.retrieve_target_format(api, "login", "targetFormatName")
+
+        # then
+        self.assertEqual(target_format_retrieved, target_format)
+
+    @patch("hammr.utils.generate_utils.get_target_format_object")
+    def test_retrieve_target_format_raise_exception_when_the_target_format_not_found(self, mock_get_target_format_object):
+        # given
+        api = Api("url", username="username", password="password", headers=None,
+                  disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        mock_get_target_format_object.return_value = None
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_target_format(api, "login", "targetFormatName")
+
+        # then
+        self.assertTrue("TargetFormat type unknown: targetFormatName" in e.exception)
+
+    def test_retrieve_publish_image_return_the_publish_image_created(self):
+        # given
+        target_format = uforge.TargetFormat()
+        image_format = uforge.ImageFormat()
+        image_format.name = "vcenter"
+        target_format.format = image_format
+
+        builder = {
+            "displayName": "vcenter-vm-name",
+            "esxHost": "esxhost_vcenter",
+            "datastore": "datastore_vcenter",
+            "network": "network_vcenter"
+        }
+
+        # when
+        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, target_format)
+
+        # then
+        self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
+        self.assertEqual(publish_image_retrieved.esxHost, builder["esxHost"])
+        self.assertEqual(publish_image_retrieved.datastore, builder["datastore"])
+        self.assertEqual(publish_image_retrieved.network, builder["network"])
+
+    @patch("ussclicore.utils.generics_utils.remove_special_chars")
+    def test_retrieve_publish_image_raise_exception_when_format_name_not_found(self, mock_remove_special_chars):
+        # given
+        target_format = uforge.TargetFormat()
+        image_format = uforge.ImageFormat()
+        image_format.name = "vcenter"
+        target_format.format = image_format
+
+        builder = {
+            "displayName": "vcenter-vm-name",
+            "esxHost": "esxhost_vcenter",
+            "datastore": "datastore_vcenter",
+            "network": "network_vcenter"
+        }
+
+        mock_remove_special_chars.return_value = "vcenternotfound"
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_publish_image(builder, target_format)
+
+        # then
+        self.assertTrue("TargetFormat type is unsupported: vcenter" in e.exception)
+
+    @patch("uforge.application.Api._Users._Accounts.Getall")
+    def test_retrieve_account_return_the_cred_account_found(self, mock_api_get_all):
+        # given
+        api = Api("url", username="username", password="password", headers=None, disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        cred_account = uforge.CredAccountVSphere()
+        cred_account.name = "accountName"
+        cred_account.uri = "/uri/credAccount"
+        cred_accounts = self.create_accounts(cred_account, "vsphere")
+        mock_api_get_all.return_value = cred_accounts
+
+        # when
+        cred_account_retrieved = migration_utils.retrieve_account(api, "login", cred_account.name)
+
+        # then
+        self.assertEqual(cred_account_retrieved.name, cred_account.name)
+        self.assertEqual(cred_account_retrieved.uri, cred_account.uri)
+
+    @patch("uforge.application.Api._Users._Accounts.Getall")
+    def test_retrieve_account_from_platform_raise_exception_when_no_accounts(self, mock_api_get_all):
+        # given
+        api = Api("url", username="username", password="password", headers=None,
+                  disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        accounts = uforge.CredAccounts()
+        accounts.credAccounts = pyxb.BIND()
+        mock_api_get_all.return_value = accounts
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_account(api, "login", "account")
+
+        # then
+        self.assertTrue("No CredAccounts available.\n You can use the command 'hammr account create' to create an account." in e.exception)
+
+    @patch("uforge.application.Api._Users._Accounts.Getall")
+    def test_retrieve_account_from_platform_raise_exception_when_account_not_found(self, mock_api_get_all):
+        # given
+        api = Api("url", username="username", password="password", headers=None, disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        cred_account = uforge.CredAccountVSphere()
+        cred_account.name = "accountName"
+        cred_account.uri = "/uri/credAccount"
+        cred_accounts = self.create_accounts(cred_account, "vsphere")
+        mock_api_get_all.return_value = cred_accounts
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_account(api, "login", "accountNotFound")
+
+        # then
+        self.assertTrue("CredAccount unknown: accountNotFound\n You can use the command 'hammr account create' to create an account." in e.exception)
+
     def create_migration(self, id, name, percentage, statusMessage, complete, error, cancelled):
-            newMigration = uforge.migration()
-            newMigration.dbId = id
-            newMigration.name = name
+        newMigration = uforge.migration()
+        newMigration.dbId = id
+        newMigration.name = name
 
-            status = uforge.status()
-            status.message = statusMessage
-            status.percentage = percentage
-            status.complete = complete
-            status.error = error
-            status.cancelled = cancelled
+        status = uforge.status()
+        status.message = statusMessage
+        status.percentage = percentage
+        status.complete = complete
+        status.error = error
+        status.cancelled = cancelled
 
-            newMigration.status = status
-            return newMigration
+        newMigration.status = status
+        return newMigration
+
+    def create_accounts(self, account, target_platform_type):
+        target_platform = uforge.TargetPlatform()
+        target_platform.name = "targetPlatformName"
+        target_platform.type = target_platform_type
+
+        account.targetPlatform = target_platform
+
+        accounts = uforge.CredAccounts()
+        accounts.credAccounts = pyxb.BIND()
+        accounts.credAccounts.append(account)
+        return accounts
+
+    def get_migration_config(self, migration_key="migration", name_key="name", os_key="os",
+                             source_key="source", host_key="host", user_key="user",
+                             target_key="target", builder_key="builder", type_key="type", account_key="account", account_name_key="name"):
+        migration_config = {
+            migration_key: {
+                name_key: "myMigration",
+                os_key: "linux",
+                source_key: {
+                    host_key: "127.0.0.1",
+                    user_key: "root",
+                },
+                target_key: {
+                    builder_key: {
+                        type_key: "VMware vCenter format",
+                        account_key: {
+                            account_name_key: "credAccountTest"
+                        }
+                    }
+                }
+            }
+        }
+        return migration_config

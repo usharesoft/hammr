@@ -12,15 +12,23 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import getpass
+import shlex
+import shutil
 
+import pyxb
 from ussclicore.argumentParser import ArgumentParser, ArgumentParserError
 from ussclicore.cmd import Cmd, CoreGlobal
-from hammr.utils.hammr_utils import *
+from ussclicore.utils import printer
+
+from hammr.utils import constants
+from hammr.utils import hammr_utils
 from hammr.utils import migration_utils
 
+from uforge.objects.uforge import *
 
 class Migration(Cmd, CoreGlobal):
-    """List existing migrations"""
+    """List existing migrations, launch the migration of a live system"""
 
     cmd_name = "migration"
 
@@ -48,8 +56,109 @@ class Migration(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_list()
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_list(self):
         doParser = self.arg_list()
         doParser.print_help()
+
+    def arg_launch(self):
+        do_parser = ArgumentParser(prog=self.cmd_name + " launch", add_help=True,
+                                  description="Launches a migration")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--file', dest='file', required=True,
+                               help="yaml/json file providing the migration configuration")
+        return do_parser
+
+    def do_launch(self, args):
+        try:
+            # add arguments
+            do_parser = self.arg_launch()
+            do_args = do_parser.parse_args(shlex.split(args))
+
+            # if the help command is called, parse_args returns None object
+            if not do_args:
+                return 2
+
+            migration_config = migration_utils.retrieve_migration_configuration(do_args.file)
+            target_format = migration_utils.retrieve_target_format(self.api, self.login, migration_config["target"]["builder"]["type"])
+            publish_image = migration_utils.retrieve_publish_image(migration_config["target"]["builder"], target_format)
+            if publish_image is None:
+                return 2
+            cred_account = migration_utils.retrieve_account(self.api, self.login, migration_config["target"]["builder"]["account"]["name"])
+
+            migration = self.create_migration(migration_config["name"], target_format.name, cred_account, publish_image)
+            self.api.Users(self.login).Migrations.Create(body=migration, element_name="ns1:migration")
+
+            local_uforge_migration_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_MIGRATION_BINARY, constants.MIGRATION_BINARY_NAME)
+
+            self.upload_and_launch_migration_binary(self.login, self.password, migration_config, local_uforge_migration_path, self.api.getUrl())
+
+            # delete temp dir
+            shutil.rmtree(constants.TMP_WORKING_DIR)
+
+            printer.out("Migration launched successfully, please go to the platform to follow steps of the migration.", printer.OK)
+
+        except ArgumentParserError as e:
+            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            self.help_launch()
+        except Exception as e:
+            if hammr_utils.is_uforge_exception(e):
+                return hammr_utils.handle_uforge_exception(e)
+            printer.out(str(e), printer.ERROR)
+
+        return 0
+
+    def help_launch(self):
+        do_parser = self.arg_launch()
+        do_parser.print_help()
+
+    def upload_and_launch_migration_binary(self, uforge_login, uforge_password, migration_config, file_src_path, uforge_url):
+        hostname = migration_config["source"]["host"]
+        username = migration_config["source"]["user"]
+
+        if not "password" in migration_config["source"]:
+            password = getpass.getpass('Password for %s@%s: ' % (username, hostname))
+        else:
+            password = migration_config["source"]["password"]
+
+        if not "ssh-port" in migration_config["source"]:
+            port = 22
+        else:
+            port = migration_config["source"]["ssh-port"]
+
+        dir = "/tmp"
+
+        binary_path = dir + "/" + constants.MIGRATION_BINARY_NAME
+        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
+
+        command_launch = 'chmod +x ' + dir + '/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + dir + '/' + constants.MIGRATION_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n \'' + migration_config["name"] + '\' ' + ' >/dev/null 2>&1 &'
+        hammr_utils.launch_binary(client, command_launch)
+        client.close()
+
+        return 0
+
+    def create_migration(self, migration_name, target_format_name, cred_account, publish_image):
+        migration_created = migration()
+        migration_created.name = migration_name
+
+        migration_created.stages = pyxb.BIND()
+        migration_created.stages._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Stages')
+
+        scan_stage = scanStage()
+        migration_created.stages.append(scan_stage)
+
+        target_format = TargetFormat()
+        target_format.name = target_format_name
+
+        generation_stage = generationStage()
+        generation_stage.targetFormat = target_format
+        migration_created.stages.append(generation_stage)
+
+        publication_stage = publicationStage()
+        publish_image.targetFormat = target_format
+        publish_image.credAccount = cred_account
+        publication_stage.publishImage = publish_image
+        migration_created.stages.append(publication_stage)
+
+        return migration_created
