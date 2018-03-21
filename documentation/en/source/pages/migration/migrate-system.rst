@@ -11,7 +11,80 @@ Hammr allows you to migrate a live system. The key steps in migrating your syste
 2. From the scan report, build and publish a machine image
 3. Finally provision an instance from the published machine image (effectively migrating the system)
 
-Optionally, at step #2, you can import the scan report to create a template. This allows you to change the content prior to building a machine image.
+Optionally, at step 2, you can import the scan report to create a template. This allows you to change the content prior to building a machine image.
+
+Automated Migration
+-------------------
+
+Hammr allows you to automated the migration steps listed above by using a yaml or json file.
+
+.. note:: Automated migration is only supported for Linux and for the following target platforms: K5, Microsoft Azure, OpenStack, SUSE Cloud, VMware Vcenter.
+
+.. note:: You will not be able to import the scan and modify the content of the appliance.
+
+In order to launch an automated migration you will need to launch the following command:
+
+.. code-block:: shell
+
+	migration launch --file migration.yml
+
+The same command can be launched with json by replacing the ``--file`` with a json file.
+
+The file should have the following format in yaml:
+
+.. code-block:: yaml
+
+	---
+	migration:
+	  name:              myMigration
+	  os:                linux
+	  source:
+	    host:            10.1.2.42
+	    ssh-port:        22
+	    user:            root
+	    password:        welcome
+	  target:
+	    builder:
+	      type:        VMware vCenter
+	      displayName:     weasel-vcenter
+	      esxHost:         esx4dev.hq.usharesoft.com
+	      datastore:       esx4dev_data1_secure
+	      network:         VM Network
+	      account:
+	        name:          weasel
+
+In JSON:
+
+.. code-block:: json
+
+	{
+	  "migration": {
+	    "name": "myMigration",
+	    "os": "linux",
+	    "source": {
+	      "host": "10.0.0.211",
+	      "ssh-port": 22,
+	      "user": "<user>",
+	      "password": "<password>"
+	    },
+	    "target": {
+	      "builder": {
+	        "type": "VMware vCenter",
+	        "displayName": "weasel-vcenter",
+	        "esxHost": "esx4dev.hq.usharesoft.com",
+	        "datastore": "esx4dev_data1_secure",
+	        "network": "VM Network",
+	        "account": {
+	          "name": "weasel"
+	        }
+	      }
+	    }
+	  }
+	}
+
+
+Manual Migration
+----------------
 
 First, scan the system you wish to migrate by running ``scan run``. This "deep scans" the live system, reporting back the meta-data of every file and package that makes up the running workload. The following is an example of a scan of a live system:
 
