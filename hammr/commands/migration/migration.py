@@ -24,11 +24,12 @@ from ussclicore.utils import printer
 from hammr.utils import constants
 from hammr.utils import hammr_utils
 from hammr.utils import migration_utils
+from ussclicore.utils import generics_utils
 
 from uforge.objects.uforge import *
 
 class Migration(Cmd, CoreGlobal):
-    """List existing migrations, launch the migration of a live system"""
+    """List existing migrations, launch the migration of a live system, delete a complete migration."""
 
     cmd_name = "migration"
 
@@ -113,7 +114,55 @@ class Migration(Cmd, CoreGlobal):
         do_parser = self.arg_launch()
         do_parser.print_help()
 
-    def upload_and_launch_migration_binary(self, uforge_login, uforge_password, migration_config, file_src_path, uforge_url):
+    def arg_delete(self):
+        doParser = ArgumentParser(prog=self.cmd_name + " delete", add_help=True,
+                                  description="Deletes a complete migration")
+        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--id', dest='id', required=True,
+                               help="the ID of the migration to delete")
+        optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--no-confirm', dest='no_confirm', action='store_true', required=False,
+                              help="do not ask before deleting the migration")
+
+        return doParser
+
+    def do_delete(self, args):
+        try:
+            doParser = self.arg_delete()
+            doArgs = doParser.parse_args(shlex.split(args))
+
+            if not doArgs:
+                return 2
+
+            # call UForge API
+            printer.out("Retrieving migration with id [" + doArgs.id + "]...")
+
+            migration = self.api.Users(self.login).Migrations(doArgs.id).Get()
+
+            if migration is None:
+                printer.out("No migration available with id " + doArgs.id)
+                return 2
+
+            print migration_utils.migration_table([migration]).draw() + "\n"
+
+            if doArgs.no_confirm or generics_utils.query_yes_no(
+                                    "Do you really want to delete migration with id " + doArgs.id + "?"):
+                printer.out("Please wait...")
+                self.api.Users(self.login).Migrations(doArgs.id).Delete()
+                printer.out("Migration deleted", printer.OK)
+
+        except ArgumentParserError as e:
+            printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
+            self.help_delete()
+        except Exception as e:
+            return hammr_utils.handle_uforge_exception(e)
+
+    def help_delete(self):
+        doParser = self.arg_delete()
+        doParser.print_help()
+
+    def upload_and_launch_migration_binary(self, uforge_login, uforge_password, migration_config, file_src_path,
+                                           uforge_url):
         hostname = migration_config["source"]["host"]
         username = migration_config["source"]["user"]
 
@@ -132,7 +181,8 @@ class Migration(Cmd, CoreGlobal):
         binary_path = dir + "/" + constants.MIGRATION_BINARY_NAME
         client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
 
-        command_launch = 'chmod +x ' + dir + '/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + dir + '/' + constants.MIGRATION_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n \'' + migration_config["name"] + '\' ' + ' >/dev/null 2>&1 &'
+        command_launch = 'chmod +x ' + dir + '/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + dir + '/' + constants.MIGRATION_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n \'' + \
+                         migration_config["name"] + '\' ' + ' >/dev/null 2>&1 &'
         hammr_utils.launch_binary(client, command_launch)
         client.close()
 
@@ -162,3 +212,4 @@ class Migration(Cmd, CoreGlobal):
         migration_created.stages.append(publication_stage)
 
         return migration_created
+

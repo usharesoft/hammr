@@ -187,6 +187,60 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(my_migration.stages.stage[2].publishImage.targetFormat.name, targetFormat.name)
         self.assertEqual(my_migration.stages.stage[2].publishImage.credAccount, credAccount)
 
+    @patch('hammr.utils.migration_utils.migration_table')
+    @patch('uforge.application.Api._Users._Migrations.Get')
+    @patch("ussclicore.utils.printer.out")
+    def test_do_delete_not_launch_migration_table_when_the_migration_does_not_exist(self, mock_message, mock_api_get,
+                                                                                    mock_migration_table):
+        # given
+        m, args = self.prepare_migrate_run_command("100")
+        mock_api_get.return_value = None
+
+        # when
+        m.do_delete(args)
+
+        # then
+        mock_migration_table(ANY).assert_not_called()
+        mock_message.assert_called_with("No migration available with id 100")
+
+    @patch('hammr.utils.migration_utils.migration_table')
+    @patch('uforge.application.Api._Users._Migrations.Delete')
+    @patch('uforge.application.Api._Users._Migrations.Get')
+    @patch('ussclicore.utils.generics_utils.query_yes_no')
+    @patch("ussclicore.utils.printer.out")
+    def test_do_delete_launch_migration_table_when_the_migration_does_exist(self, mock_message, mock_query_yes_no, mock_api_get,
+                                                                            mock_api_delete, mock_migration_table):
+        # given
+        m, args = self.prepare_migrate_run_command("100")
+        migration = self.create_migration(1, "a migration", 50, "In Progress", False, False, False)
+        mock_api_get.return_value = migration
+        mock_query_yes_no.return_value = True
+
+        # when
+        m.do_delete(args)
+
+        # then
+        mock_message.assert_called_with("Migration deleted", "OK")
+        mock_migration_table.assert_called_with([migration])
+        mock_api_delete.assert_called_with()
+
+    @patch('hammr.utils.migration_utils.migration_table')
+    @patch('uforge.application.Api._Users._Migrations.Delete')
+    @patch('uforge.application.Api._Users._Migrations.Get')
+    @patch('ussclicore.utils.generics_utils.query_yes_no')
+    def test_do_delete_do_not_ask_to_confirm_delete_migration_when_the_command_contain_no_confirm_argument(self, mock_query_yes_no, mock_api_get, mock_api_delete, mock_migration_table):
+        # given
+        m, args = self.prepare_migrate_run_command("100", no_confirm = True)
+        migration = self.create_migration(1, "a migration", 50, "In Progress", False, False, False)
+        mock_api_get.return_value = migration
+
+        # when
+        m.do_delete(args)
+
+        # then
+        mock_query_yes_no.assert_not_called()
+        mock_api_delete.assert_called_with()
+
     def create_migration(self, id, name, percentage, statusMessage, complete, error, cancelled):
         migration = uforge.migration()
         migration.dbId = id
@@ -201,6 +255,19 @@ class TestMigration(unittest.TestCase):
 
         migration.status = status
         return migration
+
+    def prepare_migrate_run_command(self, id, no_confirm=False):
+        m = migration.Migration()
+        m.api = Api("url", username="username", password="password", headers=None,
+                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        m.login = "login"
+        m.password = "password"
+
+        args = "--id " + id
+        if no_confirm:
+            args = "--id " + id + " --no-confirm"
+
+        return m, args
 
     def createAccounts(self, account):
         target_platform = uforge.targetPlatform()
