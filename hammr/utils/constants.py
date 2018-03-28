@@ -18,7 +18,7 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="3.8.0.2"
+VERSION="3.8.0.3-RC2"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
