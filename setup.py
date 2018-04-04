@@ -24,7 +24,7 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 # Declare your packages' dependencies here, for eg:
 # Always put an '==' dependency with uforge_python_sdk during the release
 # During dev we can keep >= in order to get nightly version of sdk for the CI  
-requires=['uforge_python_sdk>=3.8.2',
+requires=['uforge_python_sdk==3.8.3-RC1',
                     'httplib2==0.9',
                     'texttable==0.8.1',
                     'progressbar==2.3',

@@ -117,10 +117,10 @@ class Scan(Cmd, CoreGlobal):
                 dlUtils.start()
             except Exception, e:
                 return 2
-
-            r_code = self.deploy_and_launch_agent(self.login, self.password, doArgs, local_uforge_scan_path,
-                                                  self.api.getUrl())
-
+            try:
+                r_code = self.deploy_and_launch_agent(self.login, self.password, None, doArgs, local_uforge_scan_path, self.api.getUrl())
+            except AttributeError:
+                r_code = self.deploy_and_launch_agent(self.login, None, self.apikeys, doArgs, local_uforge_scan_path, self.api.getUrl())
             if r_code != 0:
                 return
 
@@ -504,7 +504,7 @@ class Scan(Cmd, CoreGlobal):
         doParser = self.arg_delete()
         doParser.print_help()
 
-    def deploy_and_launch_agent(self, uforge_login, uforge_password, args, file_src_path, uforge_url):
+    def deploy_and_launch_agent(self, uforge_login, uforge_password, uforge_apikeys, args, file_src_path, uforge_url):
         hostname = args.ip
         username = args.login
         if not args.password:
@@ -558,7 +558,7 @@ class Scan(Cmd, CoreGlobal):
 
             # test service
             stdin, stdout, stderr = client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -P')
+                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P')
             for line in stdout:
                 print '... ' + line.strip('\n')
             # launch scan
@@ -570,7 +570,7 @@ class Scan(Cmd, CoreGlobal):
             if args.overlay:
                 overlay = "-o"
             client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &')
+                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &')
             client.close()
 
         except paramiko.AuthenticationException as e:
@@ -587,3 +587,9 @@ class Scan(Cmd, CoreGlobal):
             return 2
 
         return 0
+
+    def get_uforge_auth(self, uforge_apikeys, uforge_password):
+        if uforge_apikeys is None:
+            return ' -p ' + uforge_password
+        else:
+            return ' -a ' + uforge_apikeys['publickey'] + ' -s ' + uforge_apikeys['secretkey']

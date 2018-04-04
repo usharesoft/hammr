@@ -89,7 +89,7 @@ If you are using JSON:
 Adding a Version and Release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By adding ``version``, ``release`` and ``arch`` or ``fullName``, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called making the package "sticky".
+By adding ``version``, ``release`` and ``arch`` or ``fullName``, during the build this specific version is used regardless of any build date (``updateTo``) set in the ``os`` section. This is called a "pinned" package (previously referred to as "sticky").
 
 If you are using YAML:
 

@@ -15,8 +15,8 @@
       "name": "unittest2",
       "accessKeyId": "789456123oidftunr",
       "secretAccessKeyId": "is40hPeH1xWppoJ05",
-      "x509Cert": "data/cert.pem",
-      "x509PrivateKey": "data/pk.pem"
+      "x509Cert": "tests/integration/data/cert.pem",
+      "x509PrivateKey": "tests/integration/data/pk.pem"
     },
     {
       "type": "VMware vCenter",
