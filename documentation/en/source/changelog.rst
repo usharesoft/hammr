@@ -3,6 +3,14 @@
 Changelog
 =========
 
+hammr 3.8.3 (2018-04-16)
+------------------------
+
+Evolutions:
+
+* Add support for UForge API Keys
+
+
 hammr 3.8.2 (2018-03-05)
 ------------------------
 
