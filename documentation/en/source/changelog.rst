@@ -8,7 +8,7 @@ hammr 3.8.3 (2018-04-16)
 
 Evolutions:
 
-
+* hammr image publish now works for images coming from scans
 * Remove End-Of-Life Microsoft Azure Classic
 * Add support for UForge API Keys
 
