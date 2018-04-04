@@ -14,136 +14,130 @@
 #    under the License.
 from unittest import TestCase
 
-from hammr.utils.publish_utils import *
-from hammr.utils.hammr_utils import *
-from uforge.application import Api
-from uforge.objects.uforge import *
-from uforge.objects import uforge
-from tests.unit.utils.file_utils import findRelativePathFor
-from mock import patch
-import hammr.commands.image
+from hammr.utils.publish_builders import *
 
-class TestPublishUtils(TestCase):
-
-    app_uri = 'users/guest/appliances/5/images/1234/'
-    scan_uri = 'users/guest/scannedinstances/5/scans/12/images/1234'
-    published_app_uri = 'users/guest/appliances/5/images/1234/pimages/5678'
-    published_scan_uri = 'users/guest/scannedinstances/5/scans/12/images/1234/pimages/5678'
-
-    def test_is_image_ready_to_publish_returns_true_when_memory_and_swap_size_are_defined(self):
+class TestPublishK5(TestCase):
+    def test_publish_k5_should_return_publish_image_when_valid_entries(self):
         # given
-        image = self.build_image_to_publish("complete", True, self.app_uri)
-        file = findRelativePathFor("tests/integration/data/publish_builder.yml")
-        builder = self.build_builder(file)
+        builder = self.build_builder("testName", "testDomain", "testProject", "testRegion")
 
         # when
-        image_ready = is_image_ready_to_publish(image, builder)
+        pimage = publish_k5vmdk(builder)
 
         # then
-        self.assertEqual(image_ready, True)
+        self.assertEqual(pimage.displayName, builder["displayName"])
+        self.assertEqual(pimage.keystoneDomain, builder["domain"])
+        self.assertEqual(pimage.keystoneProject, builder["project"])
+        self.assertEqual(pimage.publishLocation, builder["region"])
 
-    def test_is_image_ready_to_publish_returns_false_when_status_is_cancelled(self):
+
+    def test_publish_k5_should_return_none_when_missing_name(self):
         # given
-        image = self.build_image_to_publish("cancelled", False, self.app_uri)
-        file = findRelativePathFor("tests/integration/data/publish_builder.yml")
-        builder = self.build_builder(file)
+        builder = self.build_builder(None, "testDomain", "testProject", "testRegion")
 
         # when
-        image_ready = is_image_ready_to_publish(image, builder)
+        pimage = publish_k5vmdk(builder)
 
         # then
-        self.assertEqual(image_ready, False)
+        self.assertEqual(pimage, None)
 
-    @patch('uforge.application.Api._Users._Scannedinstances._Scans._Images._Pimages.Publish')
-    def test_call_publish_webservice_returns_published_image_for_a_scan_image(self, mock_scan_publish):
-        #given
-        mock_scan_publish.return_value = self.build_published_image(self.published_scan_uri)
-        image = self.build_image_to_publish("complete", True, self.scan_uri)
-        image_object = self.build_image_object()
-        source =self.build_source_scan()
 
-        #when
-        published_image = call_publish_webservice(image_object, image, source, None)
+    def test_publish_k5_should_return_none_when_missing_domain(self):
+        # given
+        builder = self.build_builder("testName", None, "testProject", "testRegion")
 
-        #then
-        self.assertEqual(type(published_image), type(PublishImageAws()))
+        # when
+        pimage = publish_k5vmdk(builder)
 
-    @patch('uforge.application.Api._Users._Appliances._Images._Pimages.Publish')
-    def test_call_publish_webservice_returns_published_image_for_a_template_image(self, mock_template_publish):
-        #given
-        mock_template_publish.return_value = self.build_published_image(self.published_app_uri)
-        image = self.build_image_to_publish("complete", True, self.app_uri)
-        image_object = self.build_image_object()
-        source =self.build_source_template()
+        # then
+        self.assertEqual(pimage, None)
 
-        #when
-        published_image = call_publish_webservice(image_object, image, source, None)
 
-        #then
-        self.assertEqual(type(published_image), type(PublishImageAws()))
+    def test_publish_k5_should_return_none_when_missing_project(self):
+        # given
+        builder = self.build_builder("testName", "testDomain", None, "testRegion")
 
-    def test_call_publish_webservice_raises_exception_for_wrong_image_uri(self):
-        #given
-        image = self.build_image_to_publish("complete", True, 'wrong/uri/')
-        image_object = self.build_image_object()
-        source =self.build_source_template()
+        # when
+        pimage = publish_k5vmdk(builder)
 
-        #when
-        try :
-            call_publish_webservice(image_object, image, source, None)
+        # then
+        self.assertEqual(pimage, None)
 
-        #then
-            self.assertTrue(False)
-        except :
-            self.assertTrue(True)
 
-    def build_builder(self, file):
-        builder = retrieve_template_from_file(file)
+    def test_publish_k5_should_return_none_when_missing_region(self):
+        # given
+        builder = self.build_builder("testName", "testDomain", "testProject", None)
+
+        # when
+        pimage = publish_k5vmdk(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+
+    def build_builder(self, name, domain, project, region):
+        builder = {}
+        if name is not None: builder["displayName"] = name
+        if domain is not None: builder["domain"] = domain
+        if project is not None: builder["project"] = project
+        if region is not None: builder["region"] = region
         return builder
 
-    def build_image_to_publish(self, status, status_complete, uri):
-        image = Image()
-        image.dbId = 1234
-        image.uri = uri
-        image.status = status
-        image.status.complete = status_complete
+class TestPublishDocker(TestCase):
+    def test_publish_docker_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_builder("testNamespace", "testRepositoryName", "testTagName")
 
-        install_profile = InstallProfile()
-        install_profile.memorySize = 1024
-        install_profile.swapSize = 1024
+        # when
+        pimage = publish_docker(builder)
 
-        image.installProfile = install_profile
-        return image
+        # then
+        self.assertEqual(pimage.namespace, builder["namespace"])
+        self.assertEqual(pimage.repositoryName, builder["repositoryName"])
+        self.assertEqual(pimage.tagName, builder["tagName"])
 
-    def build_source_scan(self):
-        source = Scan()
-        source.uri = self.scan_uri
-        return source
+    def test_publish_docker_should_return_none_when_missing_namespace(self):
+        # given
+        builder = self.build_builder(None, "testRepositoryName", "testTagName")
 
-    def build_source_template(self):
-        source = Appliance()
-        source.uri = self.app_uri
-        return source
+        # when
+        pimage = publish_docker(builder)
 
-    def build_published_image(self, uri):
-        image = PublishImageAws()
-        image.dbId = 5678
-        image.imageUri = uri
-        return image
+        # then
+        self.assertEqual(pimage, None)
 
-    def build_image_object(self):
-        image_object = hammr.commands.image.Image()
-        api = Api(None, username="user", password="pass", headers=None,
-                  disable_ssl_certificate_validation=True, timeout=constants.HTTP_TIMEOUT)
-        image_object.api = api
-        image_object.login = "guest"
-        return image_object
+    def test_publish_docker_should_return_none_when_missing_repository_name(self):
+        # given
+        builder = self.build_builder("testNamespace", None, "testTagName")
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_docker_should_return_none_when_missing_tag_name(self):
+        # given
+        builder = self.build_builder("testNamespace", "testRepositoryName", None)
+
+        # when
+        pimage = publish_docker(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_builder(self, namespace, repository_name, tag_name):
+        builder = {}
+        if namespace is not None: builder["namespace"] = namespace
+        if repository_name is not None: builder["repositoryName"] = repository_name
+        if tag_name is not None: builder["tagName"] = tag_name
+        return builder
 
 class TestPublishAzure(TestCase):
 
-    def test_publish_azure_should_return_publish_image_when_valid_entries_withResourceGroup(self):
+    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_withResourceGroup(self):
         # given
-        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
+        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -156,9 +150,9 @@ class TestPublishAzure(TestCase):
         self.assertEqual(pimage.displayName, builder["displayName"])
         self.assertEqual(pimage.resourceGroup, builder["resourceGroup"])
 
-    def test_publish_azure_should_return_publish_image_when_valid_entries_withoutResourceGroup(self):
+    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_withoutResourceGroup(self):
         # given
-        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", None)
+        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", None)
 
         # when
         pimage = publish_azure(builder)
@@ -171,9 +165,9 @@ class TestPublishAzure(TestCase):
         self.assertEqual(pimage.displayName, builder["displayName"])
         self.assertEqual(pimage.resourceGroup, None)
 
-    def test_publish_azure_should_return_none_when_missing_container(self):
+    def test_publish_azure_should_return_none_when_missing_arm_container(self):
         # given
-        builder = self.build_azure_builder("myStorageAccount", None, "myBlob", "myDisplayName", "myResourceGroup")
+        builder = self.build_arm_builder("myStorageAccount", None, "myBlob", "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -181,9 +175,9 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_azure_should_return_none_when_missing_blob(self):
+    def test_publish_azure_should_return_none_when_missing_arm_blob(self):
         # given
-        builder = self.build_azure_builder("myStorageAccount", "myContainer", None, "myDisplayName", "myResourceGroup")
+        builder = self.build_arm_builder("myStorageAccount", "myContainer", None, "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -191,9 +185,9 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_azure_should_return_none_when_missing_displayName(self):
+    def test_publish_azure_should_return_none_when_missing_arm_displayName(self):
         # given
-        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", None, "myResourceGroup")
+        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", None, "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -201,13 +195,51 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def build_azure_builder(self, storageAccount, container, blob, displayName, resourceGroup):
+    def build_arm_builder(self, storageAccount, container, blob, displayName, resourceGroup):
         builder = {}
         if storageAccount is not None: builder["storageAccount"] = storageAccount
         if container is not None: builder["container"] = container
         if blob is not None: builder["blob"] = blob
         if displayName is not None: builder["displayName"] = displayName
         if resourceGroup is not None: builder["resourceGroup"] = resourceGroup
+        return builder
+
+    def test_publish_azure_should_return_publish_image_when_valid_azure_classic_entries_witResourceGroup(self):
+        # given
+        builder = self.build_azure_classic_builder("myStorageAccount", "myRegion")
+
+        # when
+        pimage = publish_azure(builder)
+
+        # then
+        self.assertNotEqual(pimage, None)
+        self.assertEqual(pimage.storageAccount, builder["storageAccount"])
+        self.assertEqual(pimage.region, builder["region"])
+
+    def test_publish_azure_should_return_none_when_missing_azure_classic_storageAccount(self):
+        # given
+        builder = self.build_azure_classic_builder(None, "myRegion")
+
+        # when
+        pimage = publish_azure(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_azure_should_return_none_when_missing_azure_classic_region(self):
+        # given
+        builder = self.build_azure_classic_builder("myStorageAccount", None)
+
+        # when
+        pimage = publish_azure(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_azure_classic_builder(self, storageAccount, region):
+        builder = {}
+        if storageAccount is not None: builder["storageAccount"] = storageAccount
+        if region is not None: builder["region"] = region
         return builder
 
 class TestPublishCloudStack(TestCase):

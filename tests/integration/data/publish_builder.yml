@@ -1,0 +1,9 @@
+---
+builders:
+- type: OpenStack QCOW2
+  account:
+    type: OpenStack
+    name: OVH OpenStack
+  displayName: test_hammr_publish_builder
+  tenantName: "mytenant"
+
