@@ -103,7 +103,7 @@ def build_deployment_aws(attributes):
 
 def build_deployment_azure(attributes):
     deployment = Deployment()
-    my_instance = InstanceAzureResourceManager()
+    my_instance = InstanceAzure()
 
     deployment.name = attributes["name"]
     my_instance.userName = attributes["userName"]
