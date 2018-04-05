@@ -18,7 +18,7 @@ Automated Migration
 
 Hammr allows you to automated the migration steps listed above by using a yaml or json file.
 
-.. note:: Automated migration is only supported for Linux and for the following target platforms: K5, Microsoft Azure, OpenStack, SUSE Cloud, VMware Vcenter.
+.. note:: Automated migration is only supported for Linux.
 
 .. note:: You will not be able to import the scan and modify the content of the appliance.
 
@@ -93,7 +93,7 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 .. code-block:: shell
 
 	$ hammr scan run --ip 192.0.2.0 --scan-login root --name scan-name
-	Password for root@192.0.2.0: 
+	Password for root@192.0.2.0:
 	... uforge-scan v2.54 (Feb 18 2014 13:16:37) (SVN Revision: 21664)
 	... Distribution:        Debian / 6.0.9 / x86_64
 	... Current System Name: Linux
@@ -106,8 +106,8 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 	... User: root
 	... Testing connection to the service...
 	...                                     SUCCESS!
-	... 
-	... 
+	...
+	...
 	Searching scan on uforge ...
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Successfully scanned |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Scan successfully
@@ -198,5 +198,3 @@ Once this template is created, you can now update it. In this release, hammr doe
 3. Update the configuration file (JSON or YAML) with the required changes, you will need to change either the template name or version so you do not get a conflict when you create the new template.
 4. Create a new template – see section :ref:`creating-managing-templates`.
 5. Build and publish the machine image (which effectively migrates the workload with the changes) – see section :ref:`machine-images`
-
-
