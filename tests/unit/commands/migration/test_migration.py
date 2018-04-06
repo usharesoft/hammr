@@ -74,6 +74,7 @@ class TestMigration(unittest.TestCase):
     @patch("hammr.utils.hammr_utils.download_binary_in_local_temp_dir")
     @patch("hammr.utils.migration_utils.retrieve_migration_configuration")
     @patch("hammr.utils.migration_utils.retrieve_target_format")
+    @patch("hammr.utils.migration_utils.retrieve_image")
     @patch("hammr.utils.migration_utils.retrieve_publish_image")
     @patch("hammr.utils.migration_utils.retrieve_account")
     @patch("hammr.commands.migration.Migration.create_migration")
@@ -81,7 +82,7 @@ class TestMigration(unittest.TestCase):
     @patch("uforge.application.Api._Users._Migrations.Create")
     @patch("ussclicore.utils.printer.out")
     @patch("shutil.rmtree")
-    def test_do_launch_succeed_when_all_parameters_are_ok(self, mock_rmtree, mock_out, mock_api_create, mock_upload_and_launch_migration_binary, mock_create_migration, mock_retrieve_account, mock_retrieve_publish_image, mock_retrieve_target_format, mock_retrieve_migration_configuration, mock_download_binary):
+    def test_do_launch_succeed_when_all_parameters_are_ok(self, mock_rmtree, mock_out, mock_api_create, mock_upload_and_launch_migration_binary, mock_create_migration, mock_retrieve_account, mock_retrieve_publish_image, mock_retrieve_image, mock_retrieve_target_format, mock_retrieve_migration_configuration, mock_download_binary):
         # given
         m = migration.Migration()
         m.api = Api("url", username="username", password="password", headers=None,
@@ -91,6 +92,7 @@ class TestMigration(unittest.TestCase):
 
         mock_retrieve_migration_configuration.return_value = self.get_migration_config()
         mock_retrieve_target_format.return_value = self.create_targetFormat("targetFormatRetrieved")
+        mock_retrieve_image.return_value = uforge.Image()
         mock_retrieve_publish_image.return_value = uforge.PublishImageVSphere()
         mock_retrieve_account.return_value = uforge.CredAccountVSphere()
         migration_to_create = uforge.migration()
@@ -172,20 +174,28 @@ class TestMigration(unittest.TestCase):
         m = migration.Migration()
         data = {
             "migration": {
-                "name": "myMigrationTest"
+                "name": "myMigrationTest",
+                "os": "linux"
             }
         }
-        targetFormat = self.create_targetFormat("nameTargetFormat")
-        credAccount = uforge.CredAccountVSphere()
-        publishImage = uforge.PublishImageVSphere()
+        target_format = self.create_targetFormat("nameTargetFormat")
+        cred_account = uforge.CredAccountVSphere()
+        install_profile = uforge.InstallProfile()
+        image = uforge.Image()
+        image.installProfile = install_profile
+        publish_image = uforge.PublishImageVSphere()
+        publish_image.credAccount = cred_account
 
         # when
-        my_migration = m.create_migration(data["migration"]["name"], targetFormat.name, credAccount, publishImage)
+        my_migration = m.create_migration(data["migration"]["name"], data["migration"]["os"], target_format.name, image, publish_image)
 
         # then
         self.assertEqual(my_migration.name, "myMigrationTest")
-        self.assertEqual(my_migration.stages.stage[2].publishImage.targetFormat.name, targetFormat.name)
-        self.assertEqual(my_migration.stages.stage[2].publishImage.credAccount, credAccount)
+        self.assertEqual(my_migration.stages.stage[0].family, data["migration"]["os"])
+        self.assertEqual(my_migration.stages.stage[1].image.targetFormat.name, target_format.name)
+        self.assertEqual(my_migration.stages.stage[1].image.installProfile, install_profile)
+        self.assertEqual(my_migration.stages.stage[2].publishImage.targetFormat.name, target_format.name)
+        self.assertEqual(my_migration.stages.stage[2].publishImage.credAccount, cred_account)
 
     @patch('hammr.utils.migration_utils.migration_table')
     @patch('uforge.application.Api._Users._Migrations.Get')

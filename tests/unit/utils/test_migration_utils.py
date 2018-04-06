@@ -154,6 +154,17 @@ class TestMigrationTable(unittest.TestCase):
         # then
         self.assertTrue("check yours parameters in file, no attribute [os] for [migration]" in e.exception)
 
+    def test_check_mandatory_migrate_raise_exception_if_os_value_not_valid(self):
+        # given
+        data = self.get_migration_config(os_value="Windows")
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_migrate(data["migration"])
+
+        # then
+        self.assertTrue("check yours parameters in file, attribute [os] for [migration] is not correct. Only 'linux' is supported" in e.exception)
+
     def test_check_mandatory_migrate_raise_exception_if_not_contain_source(self):
         # given
         data = self.get_migration_config(source_key="noSource")
@@ -306,6 +317,123 @@ class TestMigrationTable(unittest.TestCase):
         # then
         self.assertTrue("TargetFormat type unknown: targetFormatName" in e.exception)
 
+    def test_retrieve_image_return_the_image_created(self):
+        # given
+        api = Api("url", username="username", password="password", headers=None,
+                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        target_format = uforge.TargetFormat()
+        image_format = uforge.ImageFormat()
+        image_format.name = "vcenter"
+        target_format.format = image_format
+
+        builder = {
+            "hardwareSettings": {
+                "memory": 512,
+                "hwType": 4
+            }
+        }
+
+        # when
+        image_retrieved = migration_utils.retrieve_image(builder, target_format, api, "login")
+
+        # then
+        self.assertEqual(image_retrieved.installProfile.memorySize, 512)
+        self.assertEqual(image_retrieved.installProfile.hwType, "4")
+        self.assertFalse(image_retrieved.compress)
+
+    @patch("ussclicore.utils.generics_utils.remove_special_chars")
+    def test_retrieve_image_raise_exception_when_format_name_not_found(self, mock_remove_special_chars):
+        # given
+        api = Api("url", username="username", password="password", headers=None,
+                  disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        target_format = uforge.TargetFormat()
+        image_format = uforge.ImageFormat()
+        image_format.name = "vcenter"
+        target_format.format = image_format
+
+        builder = {
+            "hardwareSettings": {
+                "memory": 512,
+                "hwType": 4
+            }
+        }
+
+        mock_remove_special_chars.return_value = "vcenternotfound"
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.retrieve_image(builder, target_format, api, "login")
+
+        # then
+        self.assertTrue("TargetFormat type is unsupported: vcenter" in e.exception)
+
+    def test_check_mandatory_installation_raise_exception_when_no_installation_for_format_aws(self):
+        # given
+        install_profile = uforge.InstallProfile()
+        install_profile.diskSize = 0
+
+        builder = {
+            "type": "Amazon AWS"
+        }
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.check_mandatory_installation("aws", builder)
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [installation] for [migration][target][builder], mandatory to migrate to [Amazon AWS]" in e.exception)
+
+    def test_set_install_profile_disk_size_set_disk_size_when_format_aws(self):
+        # given
+        install_profile = uforge.InstallProfile()
+        install_profile.diskSize = 0
+
+        builder = {
+            "installation": {
+                "diskSize": 12
+            }
+        }
+
+        # when
+        install_profile = migration_utils.set_install_profile_disk_size(install_profile, builder, "aws")
+
+        # then
+        self.assertEqual(install_profile.diskSize, 12)
+
+    def test_set_install_profile_disk_size_not_set_disk_size_when_format_vcenter(self):
+        # given
+        install_profile = uforge.InstallProfile()
+        install_profile.diskSize = 0
+
+        builder = {
+            "installation": {
+                "diskSize": 12
+            }
+        }
+
+        # when
+        install_profile = migration_utils.set_install_profile_disk_size(install_profile, builder, "vcenter")
+
+        # then
+        self.assertEqual(install_profile.diskSize, 0)
+
+    def test_set_install_profile_disk_size_raise_exception_when_no_diskSize(self):
+        # given
+        install_profile = uforge.InstallProfile()
+        install_profile.diskSize = 0
+
+        builder = {
+            "type": "Amazon AWS",
+            "installation": {}
+        }
+
+        # when
+        with self.assertRaises(Exception) as e:
+            migration_utils.set_install_profile_disk_size(install_profile, builder, "aws")
+
+        # then
+        self.assertTrue("check yours parameters in file, no attribute [disksize] for [migration][target][builder][installation], mandatory to migrate to [Amazon AWS]" in e.exception)
+
     def test_retrieve_publish_image_return_the_publish_image_created(self):
         # given
         target_format = uforge.TargetFormat()
@@ -430,13 +558,13 @@ class TestMigrationTable(unittest.TestCase):
         accounts.credAccounts.append(account)
         return accounts
 
-    def get_migration_config(self, migration_key="migration", name_key="name", os_key="os",
+    def get_migration_config(self, migration_key="migration", name_key="name", os_key="os", os_value="linux",
                              source_key="source", host_key="host", user_key="user",
                              target_key="target", builder_key="builder", type_key="type", account_key="account", account_name_key="name"):
         migration_config = {
             migration_key: {
                 name_key: "myMigration",
-                os_key: "linux",
+                os_key: os_value,
                 source_key: {
                     host_key: "127.0.0.1",
                     user_key: "root",

@@ -19,6 +19,7 @@ from ussclicore.utils import generics_utils
 from hammr.utils import hammr_utils, generate_utils, account_utils
 from hammr.utils import publish_utils
 
+from uforge.objects import uforge
 
 def migration_table(migrations):
     table = Texttable(800)
@@ -54,6 +55,8 @@ def check_mandatory_migrate(migration):
         raise Exception("check yours parameters in file, no attribute [name] for [migration]")
     if not "os" in migration:
         raise Exception("check yours parameters in file, no attribute [os] for [migration]")
+    elif migration["os"] != "linux":
+        raise Exception("check yours parameters in file, attribute [os] for [migration] is not correct. Only 'linux' is supported")
     if "source" in migration:
         check_mandatory_source(migration["source"])
     else:
@@ -97,6 +100,34 @@ def retrieve_target_format(api, login, target_format_name):
     if target_format is None:
         raise Exception("TargetFormat type unknown: " + target_format_name)
     return target_format
+
+def retrieve_image(builder, target_format, api, login):
+    image_format_name = target_format.format.name
+    check_mandatory_installation(image_format_name, builder)
+    create_image_method = getattr(generate_utils, "generate_" + generics_utils.remove_special_chars(image_format_name), None)
+    if create_image_method:
+        install_profile = uforge.installProfile()
+        install_profile.diskSize = 0
+        image, install_profile = create_image_method(uforge.Image(), builder, install_profile, api, login)
+        install_profile = set_install_profile_disk_size(install_profile, builder, image_format_name)
+        image.installProfile = install_profile
+        return image
+
+    raise Exception("TargetFormat type is unsupported: " + target_format.format.name)
+
+def check_mandatory_installation(image_format_name, builder):
+    if image_format_name == "aws" or image_format_name == "outscale":
+        if not "installation" in builder:
+            raise Exception("check yours parameters in file, no attribute [installation] for [migration][target][builder], mandatory to migrate to [" + builder["type"] +"]")
+
+def set_install_profile_disk_size(install_profile, builder, image_format_name):
+    if image_format_name == "aws" or image_format_name == "outscale" or image_format_name == "gce":
+        if "installation" in builder:
+            if "diskSize" in builder["installation"]:
+                install_profile.diskSize = builder["installation"]["diskSize"]
+            else:
+                raise Exception("check yours parameters in file, no attribute [disksize] for [migration][target][builder][installation], mandatory to migrate to [" + builder["type"] +"]")
+    return install_profile
 
 def retrieve_publish_image(builder, target_format):
     create_publish_image_method = getattr(publish_utils, "publish_" + generics_utils.remove_special_chars(target_format.format.name), None)

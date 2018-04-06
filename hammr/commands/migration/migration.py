@@ -26,7 +26,7 @@ from hammr.utils import hammr_utils
 from hammr.utils import migration_utils
 from ussclicore.utils import generics_utils
 
-from uforge.objects.uforge import *
+from uforge.objects import uforge
 
 class Migration(Cmd, CoreGlobal):
     """List existing migrations, launch the migration of a live system, delete a complete migration."""
@@ -83,12 +83,16 @@ class Migration(Cmd, CoreGlobal):
 
             migration_config = migration_utils.retrieve_migration_configuration(do_args.file)
             target_format = migration_utils.retrieve_target_format(self.api, self.login, migration_config["target"]["builder"]["type"])
+            image = migration_utils.retrieve_image(migration_config["target"]["builder"], target_format, self.api, self.login)
+            if image is None:
+                return 2
             publish_image = migration_utils.retrieve_publish_image(migration_config["target"]["builder"], target_format)
             if publish_image is None:
                 return 2
             cred_account = migration_utils.retrieve_account(self.api, self.login, migration_config["target"]["builder"]["account"]["name"])
+            publish_image.credAccount = cred_account
 
-            migration = self.create_migration(migration_config["name"], target_format.name, cred_account, publish_image)
+            migration = self.create_migration(migration_config["name"], migration_config["os"], target_format.name, image, publish_image)
             self.api.Users(self.login).Migrations.Create(body=migration, element_name="ns1:migration")
 
             local_uforge_migration_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_MIGRATION_BINARY, constants.MIGRATION_BINARY_NAME)
@@ -188,26 +192,28 @@ class Migration(Cmd, CoreGlobal):
 
         return 0
 
-    def create_migration(self, migration_name, target_format_name, cred_account, publish_image):
-        migration_created = migration()
+    def create_migration(self, migration_name, migration_family, target_format_name, image, publish_image):
+        migration_created = uforge.Migration()
         migration_created.name = migration_name
 
         migration_created.stages = pyxb.BIND()
-        migration_created.stages._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Stages')
+        migration_created.stages._ExpandedName = pyxb.namespace.ExpandedName(uforge.Namespace, 'Stages')
 
-        scan_stage = scanStage()
+        scan_stage = uforge.ScanStage()
+        scan_stage.family = migration_family
+        scan_stage.family._ExpandedName = pyxb.namespace.ExpandedName(uforge.Namespace, 'family')
         migration_created.stages.append(scan_stage)
 
-        target_format = TargetFormat()
+        target_format = uforge.TargetFormat()
         target_format.name = target_format_name
 
-        generation_stage = generationStage()
-        generation_stage.targetFormat = target_format
+        generation_stage = uforge.GenerationStage()
+        image.targetFormat = target_format
+        generation_stage.image = image
         migration_created.stages.append(generation_stage)
 
-        publication_stage = publicationStage()
+        publication_stage = uforge.PublicationStage()
         publish_image.targetFormat = target_format
-        publish_image.credAccount = cred_account
         publication_stage.publishImage = publish_image
         migration_created.stages.append(publication_stage)
 
