@@ -135,9 +135,9 @@ class TestPublishDocker(TestCase):
 
 class TestPublishAzure(TestCase):
 
-    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_withResourceGroup(self):
+    def test_publish_azure_should_return_publish_image_when_valid_entries_withResourceGroup(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
+        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -150,9 +150,9 @@ class TestPublishAzure(TestCase):
         self.assertEqual(pimage.displayName, builder["displayName"])
         self.assertEqual(pimage.resourceGroup, builder["resourceGroup"])
 
-    def test_publish_azure_should_return_publish_image_when_valid_arm_entries_withoutResourceGroup(self):
+    def test_publish_azure_should_return_publish_image_when_valid_entries_withoutResourceGroup(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", None)
+        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", None)
 
         # when
         pimage = publish_azure(builder)
@@ -165,9 +165,9 @@ class TestPublishAzure(TestCase):
         self.assertEqual(pimage.displayName, builder["displayName"])
         self.assertEqual(pimage.resourceGroup, None)
 
-    def test_publish_azure_should_return_none_when_missing_arm_container(self):
+    def test_publish_azure_should_return_none_when_missing_container(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", None, "myBlob", "myDisplayName", "myResourceGroup")
+        builder = self.build_azure_builder("myStorageAccount", None,"myBlob", "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -175,9 +175,9 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_azure_should_return_none_when_missing_arm_blob(self):
+    def test_publish_azure_should_return_none_when_missing_blob(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", "myContainer", None, "myDisplayName", "myResourceGroup")
+        builder = self.build_azure_builder("myStorageAccount", "myContainer", None, "myDisplayName", "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -185,9 +185,9 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_azure_should_return_none_when_missing_arm_displayName(self):
+    def test_publish_azure_should_return_none_when_missing_displayName(self):
         # given
-        builder = self.build_arm_builder("myStorageAccount", "myContainer", "myBlob", None, "myResourceGroup")
+        builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", None, "myResourceGroup")
 
         # when
         pimage = publish_azure(builder)
@@ -195,51 +195,13 @@ class TestPublishAzure(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def build_arm_builder(self, storageAccount, container, blob, displayName, resourceGroup):
+    def build_azure_builder(self, storageAccount, container, blob, displayName, resourceGroup):
         builder = {}
         if storageAccount is not None: builder["storageAccount"] = storageAccount
         if container is not None: builder["container"] = container
         if blob is not None: builder["blob"] = blob
         if displayName is not None: builder["displayName"] = displayName
         if resourceGroup is not None: builder["resourceGroup"] = resourceGroup
-        return builder
-
-    def test_publish_azure_should_return_publish_image_when_valid_azure_classic_entries_witResourceGroup(self):
-        # given
-        builder = self.build_azure_classic_builder("myStorageAccount", "myRegion")
-
-        # when
-        pimage = publish_azure(builder)
-
-        # then
-        self.assertNotEqual(pimage, None)
-        self.assertEqual(pimage.storageAccount, builder["storageAccount"])
-        self.assertEqual(pimage.region, builder["region"])
-
-    def test_publish_azure_should_return_none_when_missing_azure_classic_storageAccount(self):
-        # given
-        builder = self.build_azure_classic_builder(None, "myRegion")
-
-        # when
-        pimage = publish_azure(builder)
-
-        # then
-        self.assertEqual(pimage, None)
-
-    def test_publish_azure_should_return_none_when_missing_azure_classic_region(self):
-        # given
-        builder = self.build_azure_classic_builder("myStorageAccount", None)
-
-        # when
-        pimage = publish_azure(builder)
-
-        # then
-        self.assertEqual(pimage, None)
-
-    def build_azure_classic_builder(self, storageAccount, region):
-        builder = {}
-        if storageAccount is not None: builder["storageAccount"] = storageAccount
-        if region is not None: builder["region"] = region
         return builder
 
 class TestPublishCloudStack(TestCase):
