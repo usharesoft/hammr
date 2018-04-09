@@ -110,6 +110,21 @@ class TestMigration(unittest.TestCase):
         mock_out.assert_called_with("Migration launched successfully, please go to the platform to follow steps of the migration.", "OK")
 
     @patch("ussclicore.utils.printer.out")
+    def test_do_launch_display_message_error_when_apikeys_given(self, mock_out):
+        # given
+        m = migration.Migration()
+        m.api = Api("url", username="username", password="password", headers=None,
+                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        m.login = "login"
+        m.apikeys = {"publickey": "the_public_key", "secretkey": "the_secret_key"}
+
+        # when
+        m.do_launch("--file config.json")
+
+        # then
+        mock_out.assert_called_with("Using API keys with command 'hammr migration launch' is not yet supported. Please use password.", "ERROR")
+
+    @patch("ussclicore.utils.printer.out")
     def test_do_launch_display_message_error_when_file_not_given(self, mock_out):
         # given
         m = migration.Migration()

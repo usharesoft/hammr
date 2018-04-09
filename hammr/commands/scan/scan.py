@@ -105,8 +105,11 @@ class Scan(Cmd, CoreGlobal):
 
             local_uforge_scan_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_SCAN_BINARY, constants.SCAN_BINARY_NAME)
 
-            self.upload_and_launch_scan_binary(self.login, self.password, doArgs, local_uforge_scan_path,
-                                               self.api.getUrl())
+            try:
+                self.upload_and_launch_scan_binary(self.login, self.password, None, doArgs, local_uforge_scan_path, self.api.getUrl())
+            except AttributeError:
+                self.upload_and_launch_scan_binary(self.login, None, self.apikeys, doArgs, local_uforge_scan_path, self.api.getUrl())
+
             # delete tmp dir
             shutil.rmtree(constants.TMP_WORKING_DIR)
 
@@ -487,7 +490,7 @@ class Scan(Cmd, CoreGlobal):
         doParser = self.arg_delete()
         doParser.print_help()
 
-    def upload_and_launch_scan_binary(self, uforge_login, uforge_password, args, file_src_path, uforge_url):
+    def upload_and_launch_scan_binary(self, uforge_login, uforge_password, uforge_apikeys, args, file_src_path, uforge_url):
         hostname = args.ip
         username = args.login
 
@@ -518,12 +521,18 @@ class Scan(Cmd, CoreGlobal):
         binary_path = dir + "/" + constants.SCAN_BINARY_NAME
         client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
 
-        command_test_service = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -P'
+        command_test_service = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P'
         summary = hammr_utils.launch_binary(client, command_test_service)
         print summary
 
-        command_run = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &'
+        command_run = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &'
         hammr_utils.launch_binary(client, command_run)
         client.close()
 
         return 0
+
+    def get_uforge_auth(self, uforge_apikeys, uforge_password):
+        if uforge_apikeys is None:
+            return ' -p ' + uforge_password
+        else:
+            return ' -a ' + uforge_apikeys['publickey'] + ' -s ' + uforge_apikeys['secretkey']

@@ -129,4 +129,26 @@ class TestScan(TestCase):
         args = "--ip 10.0.0.1 --scan-login login --scan-password password %s --name '%s'" % (overlay_option, name)
         return s, args
 
+    def test_get_uforge_auth_return_password(self):
+        # given
+        password = "my_password"
+        s = scan.Scan()
+
+        # when
+        auth = s.get_uforge_auth(None, password)
+
+        # then
+        self.assertEqual(" -p " + password, auth)
+
+    def test_get_uforge_auth_return_api_keys(self):
+        # given
+        publicKey = "my_pub"
+        secretKey = "my_secret"
+        s = scan.Scan()
+
+        # when
+        auth = s.get_uforge_auth({"publickey": publicKey, "secretkey": secretKey}, None)
+
+        # then
+        self.assertEqual(" -a " + publicKey + " -s " + secretKey, auth)
 

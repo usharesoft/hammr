@@ -81,6 +81,12 @@ class Migration(Cmd, CoreGlobal):
             if not do_args:
                 return 2
 
+            try:
+                uforge_password = self.password
+            except AttributeError:
+                printer.out("Using API keys with command 'hammr migration launch' is not yet supported. Please use password.", printer.ERROR)
+                return 2
+
             migration_config = migration_utils.retrieve_migration_configuration(do_args.file)
             target_format = migration_utils.retrieve_target_format(self.api, self.login, migration_config["target"]["builder"]["type"])
             image = migration_utils.retrieve_image(migration_config["target"]["builder"], target_format, self.api, self.login)
@@ -97,7 +103,7 @@ class Migration(Cmd, CoreGlobal):
 
             local_uforge_migration_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_MIGRATION_BINARY, constants.MIGRATION_BINARY_NAME)
 
-            self.upload_and_launch_migration_binary(self.login, self.password, migration_config, local_uforge_migration_path, self.api.getUrl())
+            self.upload_and_launch_migration_binary(self.login, uforge_password, migration_config, local_uforge_migration_path, self.api.getUrl())
 
             # delete temp dir
             shutil.rmtree(constants.TMP_WORKING_DIR)
