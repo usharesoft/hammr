@@ -17,7 +17,7 @@ from texttable import Texttable
 from ussclicore.utils import generics_utils
 
 from hammr.utils import hammr_utils, generate_utils, account_utils
-from hammr.utils import publish_utils
+from hammr.utils import publish_builders
 
 from uforge.objects import uforge
 
@@ -130,7 +130,7 @@ def set_install_profile_disk_size(install_profile, builder, image_format_name):
     return install_profile
 
 def retrieve_publish_image(builder, target_format):
-    create_publish_image_method = getattr(publish_utils, "publish_" + generics_utils.remove_special_chars(target_format.format.name), None)
+    create_publish_image_method = getattr(publish_builders, "publish_" + generics_utils.remove_special_chars(target_format.format.name), None)
     if create_publish_image_method:
         return create_publish_image_method(builder)
 

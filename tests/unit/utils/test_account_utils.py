@@ -152,7 +152,7 @@ class TestDocker(TestCase):
 class TestAzure(TestCase):
 
     @patch("hammr.utils.account_utils.azure")
-    def test_fill_azure_should_return_cred_account_when_valid_arm_entries(self, mock_azure):
+    def test_fill_azure_should_return_cred_account_when_valid_entries(self, mock_azure):
         # given
         account_given = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
@@ -168,7 +168,7 @@ class TestAzure(TestCase):
         self.assertEqual(account.applicationId, account_given["applicationId"])
         self.assertEqual(account.applicationKey, account_given["applicationKey"])
 
-    def test_fill_azure_should_return_none_when_missing_arm_name(self):
+    def test_fill_azure_should_return_none_when_missing_name(self):
         # given
         accountMocked = self.build_azure_account(None, "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
@@ -178,7 +178,7 @@ class TestAzure(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_azure_should_return_none_when_missing_arm_tenantId(self):
+    def test_fill_azure_should_return_none_when_missing_tenantId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", None, "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
@@ -188,7 +188,7 @@ class TestAzure(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_azure_should_return_none_when_missing_arm_subscriptionId(self):
+    def test_fill_azure_should_return_none_when_missing_subscriptionId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", "MyTenantId", None, "MyApplicationId", "MyApplicationKey")
 
@@ -198,7 +198,7 @@ class TestAzure(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_azure_should_return_none_when_missing_arm_applicationId(self):
+    def test_fill_azure_should_return_none_when_missing_applicationId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", None, "MyApplicationKey")
 
@@ -208,9 +208,9 @@ class TestAzure(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_azure_should_return_none_when_missing_arm_applicationKey(self):
+    def test_fill_azure_should_return_none_when_missing_applicationKey(self):
         # given
-        accountMocked = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId",  "MyApplicationId", None)
+        accountMocked = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", "MyApplicationId", None)
 
         # when
         account = fill_azure(accountMocked)
