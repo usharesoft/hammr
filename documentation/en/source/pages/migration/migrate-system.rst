@@ -52,6 +52,8 @@ The file should have the following format in yaml:
 	      network:         VM Network
 	      account:
 	        name:          weasel
+	      hardwareSettings:
+	        memory:          1024
 
 In JSON:
 
@@ -76,7 +78,10 @@ In JSON:
 	        "network": "VM Network",
 	        "account": {
 	          "name": "weasel"
-	        }
+	        },
+            "hardwareSettings": {
+              "memory": 1024
+            }
 	      }
 	    }
 	  }
