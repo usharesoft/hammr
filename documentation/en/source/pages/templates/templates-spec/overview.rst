@@ -16,4 +16,4 @@ A template has two main parts:
    :titlesonly:
 
    stack
-   builders/overview
+   ../../machine-images/builders/overview

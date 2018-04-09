@@ -21,8 +21,7 @@ Contents:
    pages/machine-images/overview
    pages/deployments/overview
    pages/importing/overview
-   pages/templates-spec/overview
-   pages/migration/migrate-system.rst
+   pages/migration/overview
       
    changelog
    
