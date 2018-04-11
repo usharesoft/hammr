@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.4 (2018-05-28)
+------------------------
+
+Evolutions:
+
+* The migration process (scan, generate and publish) can now be automated by using hammr migration launch command
+
 hammr 3.8.3 (2018-04-16)
 ------------------------
 
