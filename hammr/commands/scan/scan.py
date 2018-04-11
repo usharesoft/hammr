@@ -16,7 +16,6 @@
 import urllib
 import os.path
 import shutil
-import paramiko
 import getpass
 import shlex
 import sys
@@ -29,9 +28,11 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     ProgressBar, ReverseBar, RotatingMarker, \
     SimpleProgress, Timer
 from ussclicore.utils import generics_utils, printer, progressbar_widget, download_utils
-from hammr.utils import *
 from uforge.objects.uforge import *
-from hammr.utils.hammr_utils import *
+from hammr.utils import generate_utils
+from hammr.utils import scan_utils
+from hammr.utils import constants
+from hammr.utils import hammr_utils
 
 
 class Scan(Cmd, CoreGlobal):
@@ -62,7 +63,7 @@ class Scan(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_list()
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_list(self):
         doParser = self.arg_list()
@@ -102,27 +103,12 @@ class Scan(Cmd, CoreGlobal):
             if not self.check_overlay_option_is_allowed(doArgs.name, doArgs.overlay):
                 return 2
 
-            # download scan binary
-            uri = generics_utils.get_uforge_url_from_ws_url(self.api.getUrl())
-            download_url = uri + constants.URI_SCAN_BINARY
+            local_uforge_scan_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_SCAN_BINARY, constants.SCAN_BINARY_NAME)
 
-            if os.path.isdir(constants.TMP_WORKING_DIR):
-                # delete tmp dir
-                shutil.rmtree(constants.TMP_WORKING_DIR)
-            os.mkdir(constants.TMP_WORKING_DIR)
-            local_uforge_scan_path = constants.TMP_WORKING_DIR + os.sep + constants.SCAN_BINARY_NAME
-
-            dlUtils = download_utils.Download(download_url, local_uforge_scan_path, not self.api.getDisableSslCertificateValidation())
             try:
-                dlUtils.start()
-            except Exception, e:
-                return 2
-            try:
-                r_code = self.deploy_and_launch_agent(self.login, self.password, None, doArgs, local_uforge_scan_path, self.api.getUrl())
+                self.upload_and_launch_scan_binary(self.login, self.password, None, doArgs, local_uforge_scan_path, self.api.getUrl())
             except AttributeError:
-                r_code = self.deploy_and_launch_agent(self.login, None, self.apikeys, doArgs, local_uforge_scan_path, self.api.getUrl())
-            if r_code != 0:
-                return
+                self.upload_and_launch_scan_binary(self.login, None, self.apikeys, doArgs, local_uforge_scan_path, self.api.getUrl())
 
             # delete tmp dir
             shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -177,7 +163,7 @@ class Scan(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_run()
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_run(self):
         doParser = self.arg_run()
@@ -220,7 +206,7 @@ class Scan(Cmd, CoreGlobal):
             file = generics_utils.get_file(doArgs.file)
             if file is None:
                 return 2
-            data = load_data(file)
+            data = hammr_utils.load_data(file)
             if "builders" in data:
                 builders = hammr_utils.check_mandatory_builders(data["builders"])
                 builders = hammr_utils.check_mandatory_generate_scan(builders)
@@ -321,7 +307,7 @@ class Scan(Cmd, CoreGlobal):
             else:
                 print "Exiting command"
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_build(self):
         doParser = self.arg_build()
@@ -407,7 +393,7 @@ class Scan(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_import()
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_import(self):
         doParser = self.arg_import()
@@ -498,93 +484,50 @@ class Scan(Cmd, CoreGlobal):
             printer.out("ERROR: In Arguments: " + str(e), printer.ERROR)
             self.help_delete()
         except Exception as e:
-            return handle_uforge_exception(e)
+            return hammr_utils.handle_uforge_exception(e)
 
     def help_delete(self):
         doParser = self.arg_delete()
         doParser.print_help()
 
-    def deploy_and_launch_agent(self, uforge_login, uforge_password, uforge_apikeys, args, file_src_path, uforge_url):
+    def upload_and_launch_scan_binary(self, uforge_login, uforge_password, uforge_apikeys, args, file_src_path, uforge_url):
         hostname = args.ip
         username = args.login
+
         if not args.password:
-            passW = getpass.getpass('Password for %s@%s: ' % (username, hostname))
+            password = getpass.getpass('Password for %s@%s: ' % (username, hostname))
         else:
-            passW = args.password
+            password = args.password
+
         if not args.port:
             port = 22
         else:
             port = int(args.port)
 
-        # paramiko.util.log_to_file('/tmp/ssh.log') # sets up logging
+        if not args.dir:
+            dir = "/tmp"
+        else:
+            dir = args.dir
 
-        # get host key, if we know one
-        hostkeytype = None
-        hostkey = None
-        try:
-            host_keys = paramiko.util.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
-        except IOError:
-            try:
-                # try ~/ssh/ too, because windows can't have a folder named ~/.ssh/
-                host_keys = paramiko.util.load_host_keys(os.path.expanduser('~/ssh/known_hosts'))
-            except IOError:
-                printer.out("Unable to open host keys file", printer.ERROR)
-                host_keys = {}
+        exclude = ""
+        if args.exclude:
+            for ex in args.exclude:
+                exclude += "-e " + ex + " "
 
+        overlay = ""
+        if args.overlay:
+            overlay = "-o"
 
-        # if host_keys.has_key(hostname):
-        #        hostkeytype = host_keys[hostname].keys()[0]
-        #        hostkey = host_keys[hostname][hostkeytype]
-        #        print 'Using host key of type %s' % hostkeytype
+        binary_path = dir + "/" + constants.SCAN_BINARY_NAME
+        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
 
-        # now, connect and use paramiko Transport to negotiate SSH2 across the connection
-        try:
-            if not args.dir:
-                dir = "/tmp"
-            else:
-                dir = args.dir
-            t = paramiko.Transport((hostname, port))
-            t.connect(username=username, password=passW, hostkey=hostkey)
-            sftp = paramiko.SFTPClient.from_transport(t)
+        command_test_service = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P'
+        summary = hammr_utils.launch_binary(client, command_test_service)
+        print summary
 
-            # upload uforge scan binary
-            sftp.put(file_src_path, dir + "/" + constants.SCAN_BINARY_NAME)
-            t.close()
-
-            client = paramiko.SSHClient()
-            client.load_system_host_keys()
-            client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
-            client.connect(hostname, port, username, passW)
-
-            # test service
-            stdin, stdout, stderr = client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P')
-            for line in stdout:
-                print '... ' + line.strip('\n')
-            # launch scan
-            exclude = ""
-            if args.exclude:
-                for ex in args.exclude:
-                    exclude += "-e " + ex + " "
-            overlay = ""
-            if args.overlay:
-                overlay = "-o"
-            client.exec_command(
-                'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &')
-            client.close()
-
-        except paramiko.AuthenticationException as e:
-            printer.out("Authentification error: " + e[0], printer.ERROR)
-            return 2
-        except Exception, e:
-            printer.out("Caught exception: " + str(e), printer.ERROR)
-            # traceback.print_exc()
-            try:
-                t.close()
-                client.close()
-            except:
-                pass
-            return 2
+        command_run = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; nohup ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' ' + overlay + ' -n \'' + args.name + '\' ' + exclude + ' >/dev/null 2>&1 &'
+        hammr_utils.launch_binary(client, command_run)
+        client.close()
 
         return 0
 

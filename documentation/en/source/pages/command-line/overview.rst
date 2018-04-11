@@ -31,9 +31,10 @@ Below provides a list of the available ``commands``:
    bundle
    deploy
    format
-   platform
    image
+   migrate
    os
+   platform
    quota
    scan
    template

@@ -19,3 +19,4 @@ You should refer to the section for all the possible parameters you can add to d
    pkgs-update
    pkg-deps/overview
    partitioning/overview
+   templates-spec/overview

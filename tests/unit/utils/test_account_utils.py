@@ -14,52 +14,57 @@
 #    under the License.
 from unittest import TestCase
 
+from mock import patch
+
 from hammr.utils.account_utils import *
 
 from file_utils import *
 
 class TestK5(TestCase):
-    def test_k5_should_return_cred_account_when_valid_entries(self):
+
+    @patch("hammr.utils.account_utils.k5")
+    def test_fill_k5_should_return_cred_account_when_valid_entries(self, mock_k5):
         # given
         account_given = self.build_account("testName", "testLogin", "testPassword")
 
         # when
-        account = k5(account_given)
+        account = fill_k5(account_given)
 
         # then
+        self.assertEquals(mock_k5.call_count, 1)
         self.assertEqual(account.name, account_given["name"])
         self.assertEqual(account.login, account_given["login"])
         self.assertEqual(account.password, account_given["password"])
 
 
-    def test_k5_should_return_none_when_missing_name(self):
+    def test_fill_k5_should_return_none_when_missing_name(self):
         # given
         account_given = self.build_account(None, "testLogin", "testPassword")
 
         # when
-        account = k5(account_given)
+        account = fill_k5(account_given)
 
         # then
         self.assertEqual(None, account)
 
 
-    def test_k5_should_return_none_when_missing_login(self):
+    def test_fill_k5_should_return_none_when_missing_login(self):
         # given
         account_given = self.build_account("testName", None, "testPassword")
 
         # when
-        account = k5(account_given)
+        account = fill_k5(account_given)
 
         # then
         self.assertEqual(None, account)
 
 
-    def test_k5_should_return_none_when_missing_password(self):
+    def test_fill_k5_should_return_none_when_missing_password(self):
         # given
         account_given = self.build_account("testName", "testLogin", None)
 
         # when
-        account = k5(account_given)
+        account = fill_k5(account_given)
 
         # then
         self.assertEqual(None, account)
@@ -74,59 +79,62 @@ class TestK5(TestCase):
 
 
 class TestDocker(TestCase):
-    def test_docker_should_return_cred_account_when_valid_entries(self):
+
+    @patch("hammr.utils.account_utils.docker")
+    def test_fill_docker_should_return_cred_account_when_valid_entries(self, mock_docker):
         # given
         account_given = self.build_account("testName", "testUrl", "testLogin", "testPassword")
 
         # when
-        account = docker(account_given)
+        account = fill_docker(account_given)
 
         # then
+        self.assertEquals(mock_docker.call_count, 1)
         self.assertEqual(account.name, account_given["name"])
         self.assertEqual(account.endpointUrl, account_given["endpointUrl"])
         self.assertEqual(account.login, account_given["login"])
         self.assertEqual(account.password, account_given["password"])
 
 
-    def test_docker_should_return_none_when_missing_name(self):
+    def test_fill_docker_should_return_none_when_missing_name(self):
         # given
         accountMocked = self.build_account(None, "testUrl", "testLogin", "testPassword")
 
         # when
-        account = docker(accountMocked)
+        account = fill_docker(accountMocked)
 
         # then
         self.assertEqual(None, account)
 
 
-    def test_docker_should_return_none_when_missing_url(self):
+    def test_fill_docker_should_return_none_when_missing_url(self):
         # given
         accountMocked = self.build_account("testName", None, "testLogin", "testPassword")
 
         # when
-        account = docker(accountMocked)
+        account = fill_docker(accountMocked)
 
         # then
         self.assertEqual(None, account)
 
 
-    def test_docker_should_return_none_when_missing_login(self):
+    def test_fill_docker_should_return_none_when_missing_login(self):
         # given
         accountMocked = self.build_account("testName", "testUrl", None, "testPassword")
 
         # when
-        account = docker(accountMocked)
+        account = fill_docker(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
 
-    def test_docker_should_return_none_when_missing_password(self):
+    def test_fill_docker_should_return_none_when_missing_password(self):
         # given
         accountMocked = self.build_account("testName", "testUrl", "testLogin", None)
 
         # when
-        account = docker(accountMocked)
+        account = fill_docker(accountMocked)
 
         # then
         self.assertEqual(account, None)
@@ -141,16 +149,18 @@ class TestDocker(TestCase):
         return account
 
 
-class TestAzureManager(TestCase):
+class TestAzure(TestCase):
 
-    def test_azure_should_return_cred_account_when_valid_entries(self):
+    @patch("hammr.utils.account_utils.azure")
+    def test_fill_azure_should_return_cred_account_when_valid_entries(self, mock_azure):
         # given
         account_given = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
         # when
-        account = azure(account_given)
+        account = fill_azure(account_given)
 
         # then
+        self.assertEquals(mock_azure.call_count, 1)
         self.assertNotEqual(account, None)
         self.assertEqual(account.name, account_given["name"])
         self.assertEqual(account.tenantId, account_given["tenantId"])
@@ -158,52 +168,52 @@ class TestAzureManager(TestCase):
         self.assertEqual(account.applicationId, account_given["applicationId"])
         self.assertEqual(account.applicationKey, account_given["applicationKey"])
 
-    def test_azure_should_return_none_when_missing_name(self):
+    def test_fill_azure_should_return_none_when_missing_name(self):
         # given
         accountMocked = self.build_azure_account(None, "MyTenantId", "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
         # when
-        account = azure(accountMocked)
+        account = fill_azure(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_azure_should_return_none_when_missing_tenantId(self):
+    def test_fill_azure_should_return_none_when_missing_tenantId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", None, "MySubscriptionId", "MyApplicationId", "MyApplicationKey")
 
         # when
-        account = azure(accountMocked)
+        account = fill_azure(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_azure_should_return_none_when_missing_subscriptionId(self):
+    def test_fill_azure_should_return_none_when_missing_subscriptionId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", "MyTenantId", None, "MyApplicationId", "MyApplicationKey")
 
         # when
-        account = azure(accountMocked)
+        account = fill_azure(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_azure_should_return_none_when_missing_applicationId(self):
+    def test_fill_azure_should_return_none_when_missing_applicationId(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", None, "MyApplicationKey")
 
         # when
-        account = azure(accountMocked)
+        account = fill_azure(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_azure_should_return_none_when_missing_applicationKey(self):
+    def test_fill_azure_should_return_none_when_missing_applicationKey(self):
         # given
         accountMocked = self.build_azure_account("MyAccount", "MyTenantId", "MySubscriptionId", "MyApplicationId", None)
 
         # when
-        account = azure(accountMocked)
+        account = fill_azure(accountMocked)
 
         # then
         self.assertEqual(account, None)
@@ -218,55 +228,58 @@ class TestAzureManager(TestCase):
         return account
 
 class TestOracle(TestCase):
-    def test_oracle_should_return_cred_account_when_valid_entries(self):
+
+    @patch("hammr.utils.account_utils.oracle")
+    def test_fill_oracle_should_return_cred_account_when_valid_entries(self, mock_oracle):
         # given
         account_given = self.build_account("testName", "testDomainName", "testLogin", "testPassword")
 
         # when
-        account = oracle(account_given)
+        account = fill_oracle(account_given)
 
         # then
+        self.assertEquals(mock_oracle.call_count, 1)
         self.assertEqual(account.name, account_given["name"])
         self.assertEqual(account.domainName, account_given["domainName"])
         self.assertEqual(account.login, account_given["login"])
         self.assertEqual(account.password, account_given["password"])
 
-    def test_oracle_should_return_none_when_missing_name(self):
+    def test_fill_oracle_should_return_none_when_missing_name(self):
         # given
         accountMocked = self.build_account(None, "testDomainName", "testLogin", "testPassword")
 
         # when
-        account = oracle(accountMocked)
+        account = fill_oracle(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_oracle_should_return_none_when_missing_domain_name(self):
+    def test_fill_oracle_should_return_none_when_missing_domain_name(self):
         # given
         accountMocked = self.build_account("testName", None, "testLogin", "testPassword")
 
         # when
-        account = oracle(accountMocked)
+        account = fill_oracle(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_oracle_should_return_none_when_missing_login(self):
+    def test_fill_oracle_should_return_none_when_missing_login(self):
         # given
         accountMocked = self.build_account("testName", "testDomainName", None, "testPassword")
 
         # when
-        account = oracle(accountMocked)
+        account = fill_oracle(accountMocked)
 
         # then
         self.assertEqual(account, None)
 
-    def test_oracle_should_return_none_when_missing_password(self):
+    def test_fill_oracle_should_return_none_when_missing_password(self):
         # given
         accountMocked = self.build_account("testName", "testDomainName", "testLogin", None)
 
         # when
-        account = oracle(accountMocked)
+        account = fill_oracle(accountMocked)
 
         # then
         self.assertEqual(account, None)

@@ -42,6 +42,9 @@ FOLDER_LOGO = "logo";
 URI_SCAN_BINARY="/resources/uforge-scan.bin"
 SCAN_BINARY_NAME="uforge-scan.bin"
 
+URI_MIGRATION_BINARY="/resources/uforge-migrate.bin"
+MIGRATION_BINARY_NAME="uforge-migrate.bin"
+
 QUOTAS_SCAN="scan"
 QUOTAS_TEMPLATE="appliance"
 QUOTAS_GENERATION="generation"

@@ -11,7 +11,85 @@ Hammr allows you to migrate a live system. The key steps in migrating your syste
 2. From the scan report, build and publish a machine image
 3. Finally provision an instance from the published machine image (effectively migrating the system)
 
-Optionally, at step #2, you can import the scan report to create a template. This allows you to change the content prior to building a machine image.
+Optionally, at step 2, you can import the scan report to create a template. This allows you to change the content prior to building a machine image.
+
+Automated Migration
+-------------------
+
+Hammr allows you to automated the migration steps listed above by using a yaml or json file.
+
+.. note:: Automated migration is only supported for Linux.
+
+.. note:: You will not be able to import the scan and modify the content of the appliance.
+
+In order to launch an automated migration you will need to launch the following command:
+
+.. code-block:: shell
+
+	migration launch --file migration.yml
+
+The same command can be launched with json by replacing the ``--file`` with a json file.
+
+The file should have the following format in yaml:
+
+.. code-block:: yaml
+
+	---
+	migration:
+	  name:              myMigration
+	  os:                linux
+	  source:
+	    host:            10.1.2.42
+	    ssh-port:        22
+	    user:            root
+	    password:        welcome
+	  target:
+	    builder:
+	      type:        VMware vCenter
+	      displayName:     weasel-vcenter
+	      esxHost:         esx4dev.hq.usharesoft.com
+	      datastore:       esx4dev_data1_secure
+	      network:         VM Network
+	      account:
+	        name:          weasel
+	      hardwareSettings:
+	        memory:          1024
+
+In JSON:
+
+.. code-block:: json
+
+	{
+	  "migration": {
+	    "name": "myMigration",
+	    "os": "linux",
+	    "source": {
+	      "host": "10.0.0.211",
+	      "ssh-port": 22,
+	      "user": "<user>",
+	      "password": "<password>"
+	    },
+	    "target": {
+	      "builder": {
+	        "type": "VMware vCenter",
+	        "displayName": "weasel-vcenter",
+	        "esxHost": "esx4dev.hq.usharesoft.com",
+	        "datastore": "esx4dev_data1_secure",
+	        "network": "VM Network",
+	        "account": {
+	          "name": "weasel"
+	        },
+            "hardwareSettings": {
+              "memory": 1024
+            }
+	      }
+	    }
+	  }
+	}
+
+
+Manual Migration
+----------------
 
 First, scan the system you wish to migrate by running ``scan run``. This "deep scans" the live system, reporting back the meta-data of every file and package that makes up the running workload. The following is an example of a scan of a live system:
 
@@ -20,7 +98,7 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 .. code-block:: shell
 
 	$ hammr scan run --ip 192.0.2.0 --scan-login root --name scan-name
-	Password for root@192.0.2.0: 
+	Password for root@192.0.2.0:
 	... uforge-scan v2.54 (Feb 18 2014 13:16:37) (SVN Revision: 21664)
 	... Distribution:        Debian / 6.0.9 / x86_64
 	... Current System Name: Linux
@@ -33,8 +111,8 @@ First, scan the system you wish to migrate by running ``scan run``. This "deep s
 	... User: root
 	... Testing connection to the service...
 	...                                     SUCCESS!
-	... 
-	... 
+	...
+	...
 	Searching scan on uforge ...
 	|>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| 100%: Successfully scanned |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|
 	OK: Scan successfully
@@ -125,5 +203,3 @@ Once this template is created, you can now update it. In this release, hammr doe
 3. Update the configuration file (JSON or YAML) with the required changes, you will need to change either the template name or version so you do not get a conflict when you create the new template.
 4. Create a new template – see section :ref:`creating-managing-templates`.
 5. Build and publish the machine image (which effectively migrates the workload with the changes) – see section :ref:`machine-images`
-
-
