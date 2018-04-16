@@ -314,7 +314,9 @@ def publish_eucalyptus_xen(pimage, builder):
     return publish_eucalyptus(pimage, builder)
 
 
-def publish_gce(pimage, builder):
+def publish_google(builder):
+    pimage = PublishImageGoogle()
+
     # doing field verification
     if not "computeZone" in builder:
         printer.out("computeZone in GCE builder not found", printer.ERROR)
@@ -336,14 +338,14 @@ def publish_gce(pimage, builder):
         return
 
     if "description" in builder:
-        pimage.credAccount.description = builder["description"]
+        pimage.description = builder["description"]
 
-    pimage.credAccount.bucket = builder["bucket"]
-    pimage.credAccount.tenantName = builder["projectId"]
-    pimage.credAccount.category = builder["storageClass"]
-    pimage.credAccount.displayName = builder["diskNamePrefix"]
-    pimage.credAccount.zoneName = builder["computeZone"]
-    pimage.publishLocation = builder["bucketLocation"]
+    pimage.bucket = builder["bucket"]
+    pimage.bucketLocation = builder["bucketLocation"]
+    pimage.projectId = builder["projectId"]
+    pimage.storageClass = builder["storageClass"]
+    pimage.diskNamePrefix = builder["diskNamePrefix"]
+    pimage.zoneName = builder["computeZone"]
     return pimage
 
 
