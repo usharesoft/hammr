@@ -99,21 +99,30 @@ def publish_cloudstackova(builder):
     return publish_cloudstack(builder)
 
 
-def publish_susecloud(pimage, builder):
-    # doing field verification
-    if not "imageName" in builder:
-        printer.out("imageName in susecloud builder not found", printer.ERROR)
-        return
-    if not "tenant" in builder:
-        printer.out("tenant in susecloud builder not found", printer.ERROR)
-        return
-    if "description" in builder:
-        pimage.credAccount.description = builder["description"]
+def publish_susecloud(builder):
+    pimage = PublishImageSuseCloud()
 
-    pimage.credAccount.displayName = builder["imageName"]
-    pimage.credAccount.tenantName = builder["tenant"]
+    # doing field verification
+    if not "keystoneDomain" in builder:
+        printer.out("keystoneDomain in susecloud builder not found", printer.ERROR)
+        return
+    if not "keystoneProject" in builder:
+        printer.out("keystoneProject in susecloud builder not found", printer.ERROR)
+        return
+    if not "displayName" in builder:
+        printer.out("displayName in susecloud builder not found", printer.ERROR)
+        return
+    if not "tenantName" in builder:
+        printer.out("tenantName in susecloud builder not found", printer.ERROR)
+        return
+
+    pimage.keystoneDomain = builder["keystoneDomain"]
+    pimage.keystoneProject = builder["keystoneProject"]
+    pimage.displayName = builder["displayName"]
+    pimage.tenantName = builder["tenantName"]
+
     if "publicImage" in builder:
-        pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
+        pimage.publicImage = True if (builder["publicImage"] == "true") else False
     return pimage
 
 
