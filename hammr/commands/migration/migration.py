@@ -186,13 +186,18 @@ class Migration(Cmd, CoreGlobal):
         else:
             port = migration_config["source"]["ssh-port"]
 
+        exclude = ""
+        if "exclude" in migration_config["source"]:
+            for ex in migration_config["source"]["exclude"]:
+                exclude += "-e '" + ex + "' "
+
         dir = "/tmp"
 
         binary_path = dir + "/" + constants.MIGRATION_BINARY_NAME
         client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
 
         command_launch = 'chmod +x ' + dir + '/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + dir + '/' + constants.MIGRATION_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n \'' + \
-                         migration_config["name"] + '\' ' + ' >/dev/null 2>&1 &'
+                         migration_config["name"] + '\' ' + exclude + ' >/dev/null 2>&1 &'
         hammr_utils.launch_binary(client, command_launch)
         client.close()
 

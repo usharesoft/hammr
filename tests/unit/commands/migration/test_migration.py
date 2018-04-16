@@ -139,7 +139,7 @@ class TestMigration(unittest.TestCase):
     @patch("ussclicore.utils.printer.out")
     def test_do_launch_display_message_error_when_file_is_not_found(self, mock_out, mock_get_file):
         # given
-        m = migration.Migration()
+        m = self.prepare_migrate_command()
         mock_get_file.return_value = None
 
         # when
@@ -153,7 +153,7 @@ class TestMigration(unittest.TestCase):
     @patch("hammr.utils.hammr_utils.load_data")
     def test_do_launch_display_message_error_when_configuration_file_do_not_contain_migration_parameter(self, mock_load_data, mock_out, mock_get_file):
         # given
-        m = migration.Migration()
+        m = self.prepare_migrate_command()
         mock_get_file.return_value = "a file"
         mock_load_data.return_value = "something wrong"
 
@@ -165,7 +165,7 @@ class TestMigration(unittest.TestCase):
 
     @patch("hammr.utils.hammr_utils.launch_binary")
     @patch("hammr.utils.hammr_utils.upload_binary_to_client")
-    def test_upload_and_launch_migration_binary_succeed(self, mock_upload_binary, mock_launch_binary):
+    def test_upload_and_launch_migration_binary_succeed_empty_exclude(self, mock_upload_binary, mock_launch_binary):
         # given
         m = migration.Migration()
         m.api = Api("url", username="username", password="password", headers=None,
@@ -182,6 +182,34 @@ class TestMigration(unittest.TestCase):
         mock_upload_binary.assert_called_with(migration_config["source"]["host"], migration_config["source"]["ssh-port"], migration_config["source"]["user"], migration_config["source"]["password"], "local_uforge_migration_path", "/tmp/" + constants.MIGRATION_BINARY_NAME)
 
         command_launch = 'chmod +x ' + '/tmp/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + '/tmp/' + constants.MIGRATION_BINARY_NAME + ' -u login -p password -U url -n \'' +  migration_config["name"] + '\' ' + ' >/dev/null 2>&1 &'
+        mock_launch_binary.assert_called_with(ANY, command_launch)
+
+    @patch("hammr.utils.hammr_utils.launch_binary")
+    @patch("hammr.utils.hammr_utils.upload_binary_to_client")
+    def test_upload_and_launch_migration_binary_succeed_with_exclude(self, mock_upload_binary, mock_launch_binary):
+        # given
+        m = migration.Migration()
+        m.api = Api("url", username="username", password="password", headers=None,
+                    disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
+        m.login = "login"
+        m.password = "password"
+
+        migration_config = self.get_migration_config(["/folder_to_exclude", "/folder/file_to_exclude.txt", "/folder/file to exclude with space.txt"])
+
+        # when
+        m.upload_and_launch_migration_binary(m.login, m.password, migration_config, "local_uforge_migration_path",
+                                             m.api.getUrl())
+
+        # then
+        mock_upload_binary.assert_called_with(migration_config["source"]["host"],
+                                              migration_config["source"]["ssh-port"],
+                                              migration_config["source"]["user"],
+                                              migration_config["source"]["password"], "local_uforge_migration_path",
+                                              "/tmp/" + constants.MIGRATION_BINARY_NAME)
+
+        exclude_parameter = "-e '/folder_to_exclude' -e '/folder/file_to_exclude.txt' -e '/folder/file to exclude with space.txt' "
+        command_launch = 'chmod +x ' + '/tmp/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + '/tmp/' + constants.MIGRATION_BINARY_NAME + ' -u login -p password -U url -n \'' + \
+                         migration_config["name"] + '\' ' + exclude_parameter + ' >/dev/null 2>&1 &'
         mock_launch_binary.assert_called_with(ANY, command_launch)
 
     def test_create_migration_create_a_migration_with_all_stages(self):
@@ -281,12 +309,17 @@ class TestMigration(unittest.TestCase):
         migration.status = status
         return migration
 
-    def prepare_migrate_run_command(self, id, no_confirm=False):
+    def prepare_migrate_command(self):
         m = migration.Migration()
         m.api = Api("url", username="username", password="password", headers=None,
                     disable_ssl_certificate_validation=False, timeout=constants.HTTP_TIMEOUT)
         m.login = "login"
         m.password = "password"
+
+        return m
+
+    def prepare_migrate_run_command(self, id=0, no_confirm=False):
+        m = self.prepare_migrate_command()
 
         args = "--id " + id
         if no_confirm:
@@ -309,7 +342,7 @@ class TestMigration(unittest.TestCase):
         target_format.name = name
         return target_format
 
-    def get_migration_config(self):
+    def get_migration_config(self, exclude_list=[]):
         migration_config = {
             "migration": {
                 "name": "myMigration",
@@ -318,7 +351,8 @@ class TestMigration(unittest.TestCase):
                     "host": "127.0.0.1",
                     "ssh-port": 22,
                     "user": "root",
-                    "password": "password"
+                    "password": "password",
+                    "exclude": exclude_list
                 },
                 "target": {
                     "builder": {
