@@ -19,21 +19,23 @@ from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
 from ussclicore.utils import generics_utils, printer
 
-def publish_vcd(pimage, builder):
+def publish_vcd(builder):
+    pimage = PublishImageVCloudDirector()
+
     # doing field verification
-    if not "orgName" in builder:
-        printer.out("orgName in vcd builder not found", printer.ERROR)
+    if not "displayName" in builder:
+        printer.out("displayName in vcd builder not found", printer.ERROR)
         return
     if not "catalogName" in builder:
         printer.out("catalogName in vcd builder not found", printer.ERROR)
         return
-    if not "imageName" in builder:
-        printer.out("imageName in vcd builder not found", printer.ERROR)
+    if not "vdcName" in builder:
+        printer.out("vdcName in vcd builder not found", printer.ERROR)
         return
 
-    pimage.credAccount.organizationName = builder["orgName"]
-    pimage.credAccount.catalogId = builder["catalogName"]
-    pimage.credAccount.displayName = builder["imageName"]
+    pimage.displayName = builder["displayName"]
+    pimage.catalogName = builder["catalogName"]
+    pimage.vdcName = builder["vdcName"]
     return pimage
 
 
