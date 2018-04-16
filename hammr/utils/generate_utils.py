@@ -29,23 +29,6 @@ def generate_vcd(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
-
-def generate_nimbula(image, builder, installProfile, api, login):
-    installProfile = get_memory_amount(builder, installProfile, True)
-    if installProfile == 2:
-        return None, None, None
-    image.compress = True
-    return image, installProfile
-
-
-def generate_nimbulaesx(image, builder, installProfile, api, login):
-    return generate_nimbula(image, builder, installProfile, api, login)
-
-
-def generate_nimbulakvm(image, builder, installProfile, api, login):
-    return generate_nimbula(image, builder, installProfile, api, login)
-
-
 def generate_openstackqcow2(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
@@ -65,69 +48,9 @@ def generate_openstackvdi(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
-
 def generate_susecloud(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
-
-
-def generate_eucalyptus(image, builder, installProfile, api, login):
-    if not "account" in builder:
-        printer.out("Account not found in builder", printer.ERROR)
-        return None, None, None
-
-    accounts = api.Users(login).Accounts.Getall()
-    if accounts is None or not accounts.get_credAccount():
-        printer.out("No accounts available", printer.ERROR)
-        return None, None, None
-    else:
-        for account in accounts.get_credAccount():
-            if account.name == builder["account"]["name"]:
-                image.credAccount = account
-                break
-
-    if "disableRootLogin" in builder:
-        myrootUser = osUser()
-        if builder["disableRootLogin"] == "true":
-            val = True
-        elif builder["disableRootLogin"] == "false":
-            val = False
-        else:
-            printer.out("Unknown value for 'disableRootLogin' in builder [ami]", printer.ERROR)
-            return None, None, None
-        myrootUser.disablePasswordLogin = val
-        installProfile.rootUser = myrootUser
-
-    image.compress = False
-    return image, installProfile
-
-
-def generate_eucalyptusxen(image, builder, installProfile, api, login):
-    return generate_eucalyptus(image, builder, installProfile, api, login)
-
-
-def generate_eucalyptuskvm(image, builder, installProfile, api, login):
-    return generate_eucalyptus(image, builder, installProfile, api, login)
-
-
-def generate_flexiant(image, builder, installProfile, api, login):
-    installProfile = get_memory_amount(builder, installProfile, True)
-    # Compress is mandatory
-    image.compress = True
-    return image, installProfile
-
-
-def generate_flexiantraw(image, builder, installProfile, api, login):
-    return generate_flexiant(image, builder, installProfile, api, login)
-
-
-def generate_flexiantova(image, builder, installProfile, api, login):
-    return generate_flexiant(image, builder, installProfile, api, login)
-
-
-def generate_flexiantkvm(image, builder, installProfile, api, login):
-    return generate_flexiant(image, builder, installProfile, api, login)
-
 
 def generate_cloudstackqcow2(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
@@ -136,7 +59,6 @@ def generate_cloudstackqcow2(image, builder, installProfile, api, login):
     image.compress = True
     return image, installProfile
 
-
 def generate_cloudstackvhd(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
@@ -144,24 +66,12 @@ def generate_cloudstackvhd(image, builder, installProfile, api, login):
     image.compress = True
     return image, installProfile
 
-
 def generate_cloudstackova(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
     image.compress = True
     return image, installProfile
-
-
-def generate_abiquo(image, builder, installProfile, api, login):
-    installProfile = get_memory_amount(builder, installProfile, True)
-    if installProfile == 2:
-        return None, None, None
-    if "hwType" in builder["hardwareSettings"]:
-        installProfile.hwType = builder["hardwareSettings"]["hwType"]
-    image.compress = False
-    return image, installProfile
-
 
 def generate_azure(image, builder, installProfile, api, login):
     image.compress = False
