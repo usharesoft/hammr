@@ -38,6 +38,8 @@ import commands
 from uforge.application import Api, checkUForgeCompatible
 from utils import constants, hammr_utils, credentials
 from utils.credentials import CredentialsException
+from xml.sax import SAXParseException
+from requests.exceptions import RequestException
 
 class CmdBuilder(object):
     @staticmethod
@@ -131,6 +133,9 @@ class Hammr(Cmd):
                     printer.ERROR)
                 sys.exit(2)
 
+        except (SAXParseException, RequestException):
+            printer.out("Cannot reached the UForge server. Please check the provided URL.", printer.ERROR)
+            sys.exit(2)
         except Exception as e:
             hammr_utils.print_uforge_exception(e)
             sys.exit(2)
