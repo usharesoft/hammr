@@ -19,21 +19,23 @@ from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
 from ussclicore.utils import generics_utils, printer
 
-def publish_vcd(pimage, builder):
+def publish_vcd(builder):
+    pimage = PublishImageVCloudDirector()
+
     # doing field verification
-    if not "orgName" in builder:
-        printer.out("orgName in vcd builder not found", printer.ERROR)
+    if not "displayName" in builder:
+        printer.out("displayName in vcd builder not found", printer.ERROR)
         return
     if not "catalogName" in builder:
         printer.out("catalogName in vcd builder not found", printer.ERROR)
         return
-    if not "imageName" in builder:
-        printer.out("imageName in vcd builder not found", printer.ERROR)
+    if not "vdcName" in builder:
+        printer.out("vdcName in vcd builder not found", printer.ERROR)
         return
 
-    pimage.credAccount.organizationName = builder["orgName"]
-    pimage.credAccount.catalogId = builder["catalogName"]
-    pimage.credAccount.displayName = builder["imageName"]
+    pimage.displayName = builder["displayName"]
+    pimage.catalogName = builder["catalogName"]
+    pimage.vdcName = builder["vdcName"]
     return pimage
 
 
@@ -97,21 +99,30 @@ def publish_cloudstackova(builder):
     return publish_cloudstack(builder)
 
 
-def publish_susecloud(pimage, builder):
-    # doing field verification
-    if not "imageName" in builder:
-        printer.out("imageName in susecloud builder not found", printer.ERROR)
-        return
-    if not "tenant" in builder:
-        printer.out("tenant in susecloud builder not found", printer.ERROR)
-        return
-    if "description" in builder:
-        pimage.credAccount.description = builder["description"]
+def publish_susecloud(builder):
+    pimage = PublishImageSuseCloud()
 
-    pimage.credAccount.displayName = builder["imageName"]
-    pimage.credAccount.tenantName = builder["tenant"]
+    # doing field verification
+    if not "keystoneDomain" in builder:
+        printer.out("keystoneDomain in susecloud builder not found", printer.ERROR)
+        return
+    if not "keystoneProject" in builder:
+        printer.out("keystoneProject in susecloud builder not found", printer.ERROR)
+        return
+    if not "displayName" in builder:
+        printer.out("displayName in susecloud builder not found", printer.ERROR)
+        return
+    if not "tenantName" in builder:
+        printer.out("tenantName in susecloud builder not found", printer.ERROR)
+        return
+
+    pimage.keystoneDomain = builder["keystoneDomain"]
+    pimage.keystoneProject = builder["keystoneProject"]
+    pimage.displayName = builder["displayName"]
+    pimage.tenantName = builder["tenantName"]
+
     if "publicImage" in builder:
-        pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
+        pimage.publicImage = True if (builder["publicImage"] == "true") else False
     return pimage
 
 
@@ -197,7 +208,9 @@ def publish_azure(builder):
 
     return pimage
 
-def publish_gce(pimage, builder):
+def publish_google(builder):
+    pimage = PublishImageGoogle()
+
     # doing field verification
     if not "computeZone" in builder:
         printer.out("computeZone in GCE builder not found", printer.ERROR)
@@ -219,14 +232,14 @@ def publish_gce(pimage, builder):
         return
 
     if "description" in builder:
-        pimage.credAccount.description = builder["description"]
+        pimage.description = builder["description"]
 
-    pimage.credAccount.bucket = builder["bucket"]
-    pimage.credAccount.tenantName = builder["projectId"]
-    pimage.credAccount.category = builder["storageClass"]
-    pimage.credAccount.displayName = builder["diskNamePrefix"]
-    pimage.credAccount.zoneName = builder["computeZone"]
-    pimage.publishLocation = builder["bucketLocation"]
+    pimage.bucket = builder["bucket"]
+    pimage.bucketLocation = builder["bucketLocation"]
+    pimage.projectId = builder["projectId"]
+    pimage.storageClass = builder["storageClass"]
+    pimage.diskNamePrefix = builder["diskNamePrefix"]
+    pimage.zoneName = builder["computeZone"]
     return pimage
 
 
