@@ -11,13 +11,9 @@ Hammr supports the following platforms and machine image formats:
 * Docker
 * Google Compute Engine
 * Fujitsu K5
-* Flexiant
 * SuseCloud
 * CloudStack
 * OpenStack - para-virt and full-girt images
-* Eucalyptus (EMI)
-* Abiquo
-* Nimbula
 * Citrix Xen Server
 * Hyper-V
 * ISO
