@@ -260,7 +260,7 @@ class TestPublishCloudStack(TestCase):
 class TestPublishOracle(TestCase):
     def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
         # given
-        builder = self.build_builder("displayName", "computeEndPoint")
+        builder = self.build_oracle_builder("displayName", "computeEndPoint")
 
         # when
         pimage = publish_oracleraw(builder)
@@ -271,7 +271,7 @@ class TestPublishOracle(TestCase):
 
     def test_publish_oracle_should_return_none_when_missing_display_name(self):
         # given
-        builder = self.build_builder(None, "computeEndPoint")
+        builder = self.build_oracle_builder(None, "computeEndPoint")
 
         # when
         pimage = publish_oracleraw(builder)
@@ -281,7 +281,7 @@ class TestPublishOracle(TestCase):
 
     def test_publish_oracle_should_return_none_when_missing_compute_end_point(self):
         # given
-        builder = self.build_builder("displayName", None)
+        builder = self.build_oracle_builder("displayName", None)
 
         # when
         pimage = publish_oracleraw(builder)
@@ -289,7 +289,7 @@ class TestPublishOracle(TestCase):
         # then
         self.assertEqual(pimage, None)
 
-    def build_builder(self, display_name, compute_end_point):
+    def build_oracle_builder(self, display_name, compute_end_point):
         builder = {}
         if display_name is not None: builder["displayName"] = display_name
         if compute_end_point is not None: builder["computeEndPoint"] = compute_end_point
@@ -323,4 +323,52 @@ class TestPublishOutscale(TestCase):
         builder = {}
         if region is not None:
             builder["region"] = region
+        return builder
+
+class TestPublishGoogle(TestCase):
+    def test_publish_google_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_google_builder("computeZone", "bucketLocation", "bucket", "projectId", "storageClass", "diskNamePrefix")
+        print(builder)
+
+        # when
+        pimage = publish_google(builder)
+
+        # then
+        self.assertEqual(pimage.zoneName, builder["computeZone"])
+        self.assertEqual(pimage.bucketLocation, builder["bucketLocation"])
+        self.assertEqual(pimage.bucket, builder["bucket"])
+        self.assertEqual(pimage.projectId, builder["projectId"])
+        self.assertEqual(pimage.storageClass, builder["storageClass"])
+        self.assertEqual(pimage.diskNamePrefix, builder["diskNamePrefix"])
+
+    def test_publish_google_should_return_none_when_missing_bucket(self):
+        # given
+        builder = self.build_google_builder("computeZone", "bucketLocation", None, "projectId", "storageClass", "diskNamePrefix")
+
+        # when
+        pimage = publish_google(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_google_should_return_none_when_missing_project_id(self):
+        # given
+        builder = self.build_google_builder("computeZone", "bucketLocation", "bucket", None, "storageClass", "diskNamePrefix")
+
+        # when
+        pimage = publish_google(builder)
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_google_builder(self, compute_zone, bucket_location, bucket, project_id, storage_class, disk_name_prefix):
+        builder = {}
+        if compute_zone is not None: builder["computeZone"] = compute_zone
+        if bucket_location is not None: builder["bucketLocation"] = bucket_location
+        if bucket is not None: builder["bucket"] = bucket
+        if project_id is not None: builder["projectId"] = project_id
+        if storage_class is not None: builder["storageClass"] = storage_class
+        if disk_name_prefix is not None: builder["diskNamePrefix"] = disk_name_prefix
+
         return builder
