@@ -163,7 +163,7 @@ HAMMR_REPO="usharesoft/hammr"
 GIT_ADDRESS="https://github.com"
 GIT_API_ADDRESS="https://api.github.com"
 NB_STEPS=5
-HAMMR_RELEASE_BRANCH="release-$HAMMR_VERSION"
+HAMMR_RELEASE_BRANCH="release-script-$HAMMR_VERSION"
 
 #Verifying pre-requisite
 #Mandatory arguments
