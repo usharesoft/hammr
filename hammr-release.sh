@@ -306,5 +306,5 @@ terminated
 
 echo "Tag created on github : $HAMMR_VERSION"
 echo "Please draft a new release at $GIT_ADDRESS/$HAMMR_REPO/releases/new"
-echo "Hammr $HAMMR_VERSION should be available at https://pypi.org/pypi/$HAMMR_VERSION"
+echo "Hammr $HAMMR_VERSION should be available at https://pypi.org/project/hammr/"
 exit 0
