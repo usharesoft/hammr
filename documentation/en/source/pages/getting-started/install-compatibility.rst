@@ -40,6 +40,8 @@ The following table lists the compatibility between versions of Hammr, UForge_py
 	+-----------------+-----------------------------+------------------+
 	|      3.8.3      |            3.8.3            |      3.8.3       |
 	+-----------------+-----------------------------+------------------+
+	|      3.8.4      |            3.8.4            |      3.8.4       |
+	+-----------------+-----------------------------+------------------+
 
 
 If your hammr version is not compatible with the UForge version that you want to reach, hammr will raise an error message with the UForge version:
@@ -54,6 +56,5 @@ If your hammr version is not compatible with the UForge version that you want to
 To install the correct version of Hammr, please run the command below indicating HAMMR-VERSION you want:
 
 .. code-block:: shell
-	
-	$ pip install hammr==HAMMR-VERSION
 
+	$ pip install hammr==HAMMR-VERSION
