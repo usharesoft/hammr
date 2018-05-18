@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.5 (2018-07-09)
+------------------------
+
+Evolutions:
+
+* Add support for OpenShift Online generation and publication
+
 hammr 3.8.4 (2018-05-02)
 ------------------------
 
