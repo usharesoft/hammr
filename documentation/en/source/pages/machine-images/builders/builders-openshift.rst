@@ -38,13 +38,6 @@ If you are using JSON:
 	  ]
 	}
 
-Building a Machine Image
-------------------------
-
-For building an image, the valid keys are:
-
-* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for OpenShift: ``OpenShift``. To get the available builder type, please refer to :ref:`command-line-format`.
-
 Publishing a Machine Image
 --------------------------
 
@@ -91,7 +84,7 @@ If you are using YAML:
       registryUrl: https://myopenshiftregistry.com
       token: mytoken
     namespace: mynamespace
-    repositoryName: myrepositoryName
+    repositoryName: myrepositoryname
     tagName: latest
 
 If you are using JSON:
@@ -109,7 +102,7 @@ If you are using JSON:
           "token:": "mytoken:"
         },
         "namespace": "mynamespace",
-        "repositoryName": "myrepositoryName",
+        "repositoryName": "myrepositoryname",
         "tagName": "latest"
       }
     ]
@@ -158,8 +151,8 @@ If you are using YAML:
   - type: OpenShift
     account:
       file: "/path/to/openshift-account.yml"
-    namespace: myNamespace
-    repositoryName: myRepositoryName
+    namespace: mynamespace
+    repositoryName: myrepositoryname
     tagName: latest
 
 If you are using JSON:
@@ -173,8 +166,8 @@ If you are using JSON:
         "account": {
               "file": "/path/to/openshift-account.json"
         },
-        "namespace": "myNamespace",
-        "repositoryName": "myRepositoryName",
+        "namespace": "mynamespace",
+        "repositoryName": "myrepositoryname",
         "tagName": "latest"
       }
     ]
@@ -191,8 +184,8 @@ If you are using YAML:
   - type: OpenShift
     account:
       name: OpenShift account
-    namespace: myNamespace
-    repositoryName: myRepositoryName
+    namespace: mynamespace
+    repositoryName: myrepositoryname
     tagName: latest
 
 If you are using JSON:
@@ -206,8 +199,8 @@ If you are using JSON:
         "account": {
           "name": "OpenShift account"
           },
-        "namespace": "myNamespace",
-        "repositoryName": "myRepositoryName",
+        "namespace": "mynamespace",
+        "repositoryName": "myrepositoryname",
         "tagName": "latest"
       }
     ]
