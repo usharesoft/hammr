@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8-4 (2018-05-22)
+--------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8-4 only
+
 hammr 3.8-3 (2018-04-04)
 --------------------------
 
