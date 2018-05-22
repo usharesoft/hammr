@@ -185,8 +185,6 @@ fi
 # Verify uforge-python-sdk version is available on Pypi
 PYPI_URL="https://pypi.org/project"
 STATUS=$(curl -o /dev/null --silent --head --write-out '%{http_code}' "$PYPI_URL/uforge_python_sdk/$SDK_VERSION/")
-echo $STATUS;
-echo "$PYPI_URL/uforge_python_sdk/$SDK_VERSION";
 if [ $STATUS -ne 200 ]; then
   release_failed "uforge_python_sdk $SDK_VERSION is not available on $PYPI_URL"
 fi
