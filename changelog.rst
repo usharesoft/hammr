@@ -8,7 +8,7 @@ hammr 3.8.5 (2018-07-09)
 
 Evolutions:
 
-* User can now publish to OpenShift Online from a Docker image
+* User can now publish to OpenShift from a Docker image, tested on OpenShift Online and OpenShift Origin
 
 hammr 3.8.4 (2018-05-02)
 ------------------------
