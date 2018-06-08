@@ -61,7 +61,7 @@ If you are using YAML:
 	- type: OVF or OVA
 	  hardwareSettings:
 	    memory: 1024
-	    hwType: 7
+	    hwType: 7 (ESXi>4.x)
 
 If you are using JSON:
 
@@ -73,7 +73,7 @@ If you are using JSON:
 	      "type": "OVF or OVA",
 	      "hardwareSettings": {
 	        "memory": 1024,
-	        "hwType": 7
+	        "hwType": "7 (ESXi>4.x)"
 	      }
 	    }
 	  ]
