@@ -2,8 +2,8 @@
 
 .. _builder-openshift:
 
-OpenShift Online
-================
+OpenShift
+=========
 
 Default builder type: ``OpenShift``
 
@@ -11,7 +11,7 @@ Require Cloud Account: Yes
 
 `https://manage.openshift.com/ <https://manage.openshift.com/>`_
 
-The OpenShift builder provides information for building and publishing machine images for OpenShift. The OpenShift builder requires cloud account information to upload and register the machine image to OpenShift online cloud.
+The OpenShift builder provides information for building and publishing machine images for OpenShift Online or OpenShift Origin. The OpenShift builder requires cloud account information to upload and register the machine image to OpenShift cloud.
 This builder type is the default name provided by UForge AppCenter.
 
 .. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
