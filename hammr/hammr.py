@@ -212,6 +212,21 @@ if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()
     exit(0)
 
+# check that the commands are correct before asking for credentials
+if len(mainArgs.cmds) > 1 and mainArgs.cmds[0] in app.subCmds:
+    try:
+        getattr(app.subCmds[mainArgs.cmds[0]], 'arg_' + mainArgs.cmds[1])().parse_args(unknown)
+    except ArgumentParserError as e:
+        printer.out(str(e), printer.ERROR)
+        exit(1)
+elif len(mainArgs.cmds) == 1 and mainArgs.cmds[0] == "help":
+    app.do_help("")
+    exit(0)
+elif len(mainArgs.cmds) == 1 and mainArgs.cmds[0] in app.subCmds:
+    app.subCmds[mainArgs.cmds[0]].printError('*** No command\n')
+    printer.out(app.subCmds[mainArgs.cmds[0]].do_help(""))
+    exit(1)
+
 cred = credentials.Credentials(mainArgs.user, mainArgs.password, mainArgs.publickey, mainArgs.secretkey, mainArgs.url)
 try:
     if cred.username is not None and cred.publicKey is None and cred.secretKey is None:
