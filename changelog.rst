@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.5 (2018-07-09)
+------------------------
+
+Evolutions:
+
+* Support Entrypoint in Docker images
+
 hammr 3.8.4 (2018-05-02)
 ------------------------
 

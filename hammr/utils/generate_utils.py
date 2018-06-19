@@ -265,6 +265,10 @@ def generate_lxc(image, builder, installProfile, api=None, login=None):
 
 
 def generate_docker(image, builder, installProfile, api=None, login=None):
+    if not "entrypoint" in builder:
+        printer.out("Entrypoint for Docker image has not been specified", printer.ERROR)
+        return None, None
+    image.entrypoint = str(builder["entrypoint"])
     image.compress = True
     return image, installProfile
 
