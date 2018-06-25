@@ -9,6 +9,7 @@ hammr 3.8.5 (2018-07-09)
 Evolutions:
 
 * User can now publish to OpenShift from a Docker image, tested on OpenShift Online and OpenShift Origin
+* Support Entrypoint in Docker images
 
 hammr 3.8.4 (2018-05-02)
 ------------------------

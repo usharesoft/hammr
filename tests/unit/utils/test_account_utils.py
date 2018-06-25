@@ -148,6 +148,61 @@ class TestDocker(TestCase):
         if password is not None: account["password"] = password
         return account
 
+class TestOpenShift(TestCase):
+
+    @patch("hammr.utils.account_utils.openshift")
+    def test_fill_openshift_should_return_cred_account_when_valid_entries(self, mock_openshift):
+        # given
+        account_given = self.build_account("testName", "testUrl", "testToken")
+
+        # when
+        account = fill_openshift(account_given)
+
+        # then
+        self.assertEquals(mock_openshift.call_count, 1)
+        self.assertEqual(account.name, account_given["name"])
+        self.assertEqual(account.registryUrl, account_given["registryUrl"])
+        self.assertEqual(account.token, account_given["token"])
+
+
+    def test_fill_openshift_should_return_none_when_missing_name(self):
+        # given
+        accountMocked = self.build_account(None, "testUrl", "testToken")
+
+        # when
+        account = fill_openshift(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+
+    def test_fill_openshift_should_return_none_when_missing_url(self):
+        # given
+        accountMocked = self.build_account("testName", None, "testToken")
+
+        # when
+        account = fill_openshift(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+
+    def test_fill_openshift_should_return_none_when_missing_token(self):
+        # given
+        accountMocked = self.build_account("testName", "testUrl", None)
+
+        # when
+        account = fill_openshift(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def build_account(self, name, registryUrl, token):
+        account = {}
+        if name is not None: account["name"] = name
+        if registryUrl is not None: account["registryUrl"] = registryUrl
+        if token is not None: account["token"] = token
+        return account
 
 class TestAzure(TestCase):
 
