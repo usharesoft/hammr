@@ -32,3 +32,4 @@ The valid keys to use within a source are:
 * ``user`` (mandatory): a string providing the user login to authenticate to the live system.
 * ``password`` (optional): a string providing the user password to authenticate to the live system.
 * ``exclude`` (optional): a list of non-native files or directories to exclude during the deep scan of the live system.
+* ``overlay`` (optional): a boolean to include overlay (extra files) for the migration (default: true)
