@@ -10,6 +10,12 @@ Evolutions:
 
 * User can now publish to OpenShift from a Docker image, tested on OpenShift Online and OpenShift Origin
 * Support Entrypoint in Docker images
+* Compatibility with UForge AppCenter 3.8.fp5-1 only
+
+Bug fixes:
+
+* Fix image publish to Google Compute Engine
+* Check command syntax before asking for password
 
 hammr 3.8.4 (2018-05-02)
 ------------------------
