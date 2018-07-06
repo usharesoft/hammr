@@ -298,6 +298,23 @@ def publish_docker(builder):
     pimage.tagName = builder["tagName"]
     return pimage
 
+def publish_openshift(builder):
+    pimage = PublishImageOpenShift()
+
+    if not "namespace" in builder:
+        printer.out("namespace in OpenShift builder is missing", printer.ERROR)
+        return
+    if not "repositoryName" in builder:
+        printer.out("repositoryName in OpenShift builder is missing", printer.ERROR)
+        return
+    if not "tagName" in builder:
+        printer.out("tagName in OpenShift builder is missing", printer.ERROR)
+        return
+
+    pimage.namespace = builder["namespace"]
+    pimage.repositoryName = builder["repositoryName"]
+    pimage.tagName = builder["tagName"]
+    return pimage
 
 def publish_oracleraw(builder):
     pimage = PublishImageOracle()

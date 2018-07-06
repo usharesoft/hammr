@@ -63,6 +63,7 @@ Container Targets
 
    builders-docker
    builders-lxc
+   builders-openshift
 
 Physical Targets
 ----------------

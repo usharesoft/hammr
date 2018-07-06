@@ -376,6 +376,27 @@ def fill_docker(account):
     myCredAccount.password = account["password"]
     return myCredAccount
 
+def openshift():
+    return CredAccountOpenShift()
+
+def fill_openshift(account):
+    myCredAccount = openshift()
+
+    if not "name" in account:
+        printer.out("name for OpenShift account is missing", printer.ERROR)
+        return
+    if not "registryUrl" in account:
+        printer.out("registryUrl for OpenShift account is missing", printer.ERROR)
+        return
+    if not "token" in account:
+        printer.out("token for Openshift account is missing", printer.ERROR)
+        return
+
+    myCredAccount.name = account["name"]
+    myCredAccount.registryUrl = account["registryUrl"]
+    myCredAccount.token = account["token"]
+    return myCredAccount
+
 def oracle():
     return CredAccountOracle()
 
