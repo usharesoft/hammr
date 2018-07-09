@@ -96,6 +96,8 @@ If you are using YAML:
   ---
   builders:
   - type: CloudStack KVM (QCOW2)
+    hardwareSettings:
+      memory: '1024'
     account:
       type: CloudStack
       name: My CloudStack account
@@ -114,6 +116,9 @@ If you are using JSON:
     "builders": [
       {
         "type": "CloudStack KVM (QCOW2)",
+        "hardwareSetting": {
+          "memory": "1024"
+        },
         "account": {
           "type": "CloudStack",
           "name": "My CloudStack account",
@@ -170,6 +175,8 @@ If you are using YAML:
   ---
   builders:
   - type: CloudStack KVM (QCOW2)
+    hardwareSettings:
+      memory: '1024'
     account:
       file: "/path/to/cloudstack-account.yml"
     imageName: CentOS Core
@@ -184,6 +191,9 @@ If you are using JSON:
     "builders": [
       {
         "type": "CloudStack KVM (QCOW2)",
+        "hardwareSetting": {
+          "memory": "1024"
+        },
         "account": {
           "file": "/path/to/cloudstack-account.json"
         },
@@ -203,6 +213,8 @@ If you are using YAML:
   ---
   builders:
   - type: CloudStack KVM (QCOW2)
+    hardwareSettings:
+      memory: '1024'
     account:
       name: My CloudStack Account
     imageName: CentOS Core
@@ -217,6 +229,10 @@ If you are using JSON:
     "builders": [
       {
         "type": "CloudStack KVM (QCOW2)",
+        "hardwareSetting": {
+          "memory": "1024"
+        },
+
         "account": {
           "name": "My CloudStack Account"
         },
