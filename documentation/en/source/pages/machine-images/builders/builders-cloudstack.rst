@@ -232,7 +232,6 @@ If you are using JSON:
         "hardwareSetting": {
           "memory": "1024"
         },
-
         "account": {
           "name": "My CloudStack Account"
         },
