@@ -61,7 +61,7 @@ If you are using YAML:
 	- type: VMware Server
 	  hardwareSettings:
 	    memory: 1024
-	    hwType: 7
+	    hwType: "7"
 
 If you are using JSON:
 

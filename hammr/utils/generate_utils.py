@@ -20,7 +20,7 @@ from ussclicore.utils import printer
 
 ##--------------------- Cloud Formats
 
-def generate_vcd(image, builder, installProfile, api, login):
+def generate_vcloud(image, builder, installProfile, api, login):
     installProfile = get_memory_amount(builder, installProfile, True)
     if installProfile == 2:
         return None, None, None
@@ -101,11 +101,9 @@ def generate_aws(image, builder, installProfile, api, login):
     image.compress = False
     return image, installProfile
 
-
-def generate_gce(image, builder, installProfile, api, login):
+def generate_google(image, builder, installProfile, api, login):
     image.compress = True
     return image, installProfile
-
 
 def generate_outscale(image, builder, installProfile, api, login):
     image.compress = False
