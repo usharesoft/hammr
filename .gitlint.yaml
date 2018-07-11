@@ -1,0 +1,17 @@
+# Python
+pylint:
+  extensions:
+    - .py
+  command: pylint
+  arguments:
+    - --rcfile=.pylintrc
+    - --output-format=text
+    - >-
+      --msg-template={{abspath}}:{{line}}:{{column}}:
+      [{{category}}:{{symbol}}] {{obj}}: {{msg}}
+    - --reports=y
+  filter: >-
+    ^{filename}:(?P<line>{lines}):((?P<column>\d+):)?
+    \[(?P<severity>.+):(?P<message_id>\S+)\]\s+(:
+    )?(?P<message>.+)$
+  installation: "Run pip install pylint."
