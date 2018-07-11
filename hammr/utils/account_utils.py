@@ -117,53 +117,22 @@ def fill_aws(account):
     myCredAccount = aws()
     # doing field verification
     if not "accountNumber" in account:
-        printer.out("accountNumber for ami account not found", printer.ERROR)
+        printer.out("accountNumber for amazon aws account not found", printer.ERROR)
         return
     if not "name" in account:
-        printer.out("name for ami account not found", printer.ERROR)
+        printer.out("name for amazon aws account not found", printer.ERROR)
         return
     if not "accessKeyId" in account:
-        printer.out("accessKey in ami account not found", printer.ERROR)
+        printer.out("accessKey in amazon aws account not found", printer.ERROR)
         return
     if not "secretAccessKeyId" in account:
-        printer.out("secretAccessKey in ami account not found", printer.ERROR)
-        return
-    if not "x509Cert" in account:
-        printer.out("x509Cert in ami account not found", printer.ERROR)
-        return
-    if not "x509PrivateKey" in account:
-        printer.out("x509PrivateKey in ami account not found", printer.ERROR)
+        printer.out("secretAccessKey in amazon aws account not found", printer.ERROR)
         return
 
     myCredAccount.accountNumber = account["accountNumber"]
     myCredAccount.name = account["name"]
     myCredAccount.accessKeyId = account["accessKeyId"]
     myCredAccount.secretAccessKeyId = account["secretAccessKeyId"]
-
-    myCredAccount.certificates = pyxb.BIND()
-    # A hack to avoid a toDOM, toXML bug
-    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
-
-    try:
-        cert = certificate()
-        with open(account["x509Cert"], "r") as myfile:
-            cert.content_ = myfile.read()
-        cert.type = "x509"
-        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-        cert.name = ntpath.basename(account["x509Cert"])
-        myCredAccount.certificates.append(cert)
-
-        cert = certificate()
-        with open(account["x509PrivateKey"], "r") as myfile:
-            cert.content_ = myfile.read()
-        cert.type = "ec2PrivateKey"
-        cert.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'string')
-        cert.name = ntpath.basename(account["x509PrivateKey"])
-        myCredAccount.certificates.append(cert)
-
-    except IOError as e:
-        printer.out("File error: " + str(e), printer.ERROR)
-        return
 
     return myCredAccount
 
