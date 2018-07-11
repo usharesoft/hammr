@@ -22,7 +22,7 @@ The SuseCloud builder section has the following definition when using YAML:
 
 	---
 	builders:
-	- type: Suse Cloud
+	- type: SUSE Cloud
 		# the rest of the definition goes here.
 
 If you are using JSON:
@@ -102,7 +102,7 @@ If you are using YAML:
 
 	---
 	builders:
-	- type: Suse Cloud
+	- type: SUSE Cloud
 	  account:
 	    type: Suse Cloud
 	    name: My SuseCloud Account
@@ -121,7 +121,7 @@ If you are using JSON:
 	{
 	  "builders": [
 	    {
-	      "type": "Suse Cloud",
+	      "type": "SUSE Cloud",
 	      "account": {
 	        "type": "Suse Cloud",
 	        "name": "My SuseCloud Account",
@@ -180,7 +180,7 @@ If you are using YAML:
 
 	---
 	builders:
-	- type: Suse Cloud
+	- type: SUSE Cloud
 	  account:
 	    file: "/home/joris/accounts/susecloud-account.yml"
 	  tenant: opencloudware
@@ -194,7 +194,7 @@ If you are using JSON:
 	{
 	  "builders": [
 	    {
-	      "type": "Suse Cloud",
+	      "type": "SUSE Cloud",
 	      "account": {
 	        "file": "/home/joris/accounts/susecloud-account.json"
 	      },
@@ -213,7 +213,7 @@ If you are using YAML:
 
 	---
 	builders:
-	- type: Suse Cloud
+	- type: SUSE Cloud
 	  account:
 	    name: My SuseCloud Account
 	  tenant: opencloudware
@@ -227,7 +227,7 @@ If you are using JSON:
 	{
 	  "builders": [
 	    {
-	      "type": "Suse Cloud",
+	      "type": "SUSE Cloud",
 	      "account": {
 	        "name": "My SuseCloud Account"
 	      },
