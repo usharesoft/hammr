@@ -124,8 +124,6 @@ The Amazon cloud account has the following valid keys:
 * ``accountNumber`` (mandatory): A string providing your AWS account number. This number can be found at the top right hand side of the Account > Security Credentials page after signing into Amazon Web Services
 * ``accessKeyId`` (mandatory): A string providing your AWS access key id. To get your access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Your access key id should be displayed, otherwise create a new one. Note, for security purposes, we recommend you change your access keys every 90 days
 * ``secretAccessKeyId`` (mandatory): A string providing you AWS secret access key. To get your secret access key, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > Access Keys. Click on the Show button to reveal your secret key
-* ``x509Cert`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate public key. To create a X.509 certificate, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > X.509 Certificates. Download the X.509 certificate or create a new one. This should be a (.pem) file.
-* ``x509PrivateKey`` (mandatory): A string providing the pathname or URL where to retrieve the X.509 certificate private key. This private key is provided during the X.509 creation process. AWS does not store this private key, so you must download it and store it during this creation process. To create a X.509 certificate, sign into AWS (aws.amazon.com), click on Security Credentials > Access Credentials > X.509 Certificates and create a new certificate. Download and save the Private Key. This should be a (.pem) file
 * ``file`` (optional): a string providing the location of the account information. This can be a pathname (relative or absolute) or an URL.
 
 .. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
@@ -148,8 +146,6 @@ If you are using YAML:
       accountNumber: 11111-111111-1111
       accessKeyId: myaccessKeyid
       secretAccessKeyId: mysecretaccesskeyid
-      x509Cert: "/path/to/aws.cert.pem"
-      x509PrivateKey: "/path/to/aws.key.pem"
     installation:
       diskSize: 10240
     region: eu-central-1
@@ -168,9 +164,7 @@ If you are using JSON:
           "name": "My AWS account",
           "accountNumber": "11111-111111-1111",
           "accessKeyId": "myaccessKeyid",
-          "secretAccessKeyId": "mysecretaccesskeyid",
-          "x509Cert": "/path/to/aws.cert.pem",
-          "x509PrivateKey": "/path/to/aws.key.pem"
+          "secretAccessKeyId": "mysecretaccesskeyid"
         },
         "installation": {
           "diskSize": 10240
@@ -195,8 +189,6 @@ To help with security, the cloud account information can be referenced by the bu
     name: My AWS account
     accessKeyId: myaccessKeyid
     secretAccessKeyId: mysecretaccesskeyid
-    x509Cert: "/path/to/aws.cert.pem"
-    x509PrivateKey: "/path/to/aws.key.pem"
 
 If you are using JSON, create a JSON file ``aws-account.json``:
 
@@ -210,8 +202,6 @@ If you are using JSON, create a JSON file ``aws-account.json``:
         "name": "My AWS account",
         "accessKeyId": "myaccessKeyid",
         "secretAccessKeyId": "mysecretaccesskeyid",
-        "x509Cert": "/path/to/aws.cert.pem",
-        "x509PrivateKey": "/path/to/aws.key.pem"
       }
     ]
   }

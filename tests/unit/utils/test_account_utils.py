@@ -346,3 +346,70 @@ class TestOracle(TestCase):
         if login is not None: account["login"] = login
         if password is not None: account["password"] = password
         return account
+
+class TestAWS(TestCase):
+
+    @patch("hammr.utils.account_utils.aws")
+    def test_fill_aws_should_return_cred_account_when_valid_entries(self, mock_aws):
+        # given
+        account_given = self.build_account("accountNumber", "name", "accessKeyId", "secretAccessKeyId")
+
+        # when
+        account = fill_aws(account_given)
+
+        # then
+        self.assertEquals(mock_aws.call_count, 1)
+        self.assertEqual(account.accountNumber, account_given["accountNumber"])
+        self.assertEqual(account.name, account_given["name"])
+        self.assertEqual(account.accessKeyId, account_given["accessKeyId"])
+        self.assertEqual(account.secretAccessKeyId, account_given["secretAccessKeyId"])
+
+    def test_fill_aws_should_return_none_when_missing_accountNumber(self):
+        # given
+        accountMocked = self.build_account(None, "name", "accessKeyId", "secretAccessKeyId")
+
+        # when
+        account = fill_aws(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+    def test_fill_aws_should_return_none_when_missing_name(self):
+        # given
+        accountMocked = self.build_account("accountNumber", None, "accessKeyId", "secretAccessKeyId")
+
+        # when
+        account = fill_aws(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+
+    def test_fill_aws_should_return_none_when_missing_accessKeyId(self):
+        # given
+        accountMocked = self.build_account("accountNumber", "name", None, "secretAccessKeyId")
+
+        # when
+        account = fill_aws(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+
+    def test_fill_aws_should_return_none_when_missing_secretAccessKeyId(self):
+        # given
+        accountMocked = self.build_account("accountNumber", "name", "accessKeyId", None)
+
+        # when
+        account = fill_aws(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def build_account(self, accountNumber, name, accessKeyId, secretAccessKeyId):
+        account = {}
+        if accountNumber is not None: account["accountNumber"] = accountNumber
+        if name is not None: account["name"] = name
+        if accessKeyId is not None: account["accessKeyId"] = accessKeyId
+        if secretAccessKeyId is not None: account["secretAccessKeyId"] = secretAccessKeyId
+        return account
