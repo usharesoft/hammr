@@ -270,6 +270,14 @@ def generate_docker(image, builder, installProfile, api=None, login=None):
     image.compress = True
     return image, installProfile
 
+def generate_openshift(image, builder, installProfile, api=None, login=None):
+    if not "entrypoint" in builder:
+        printer.out("Entrypoint for OpenShift image has not been specified", printer.ERROR)
+        return None, None
+    image.entrypoint = str(builder["entrypoint"])
+    image.compress = True
+    return image, installProfile
+
 
 ##--------------------- Utils
 def get_memory_amount(builder, installProfile, is_mandatory):
