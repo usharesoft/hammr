@@ -425,9 +425,6 @@ class Image(Cmd, CoreGlobal):
 
     def retrieve_publish_image_with_target_format_builder(self, image, builder):
         format_type = image.targetFormat.format.name
-        if format_type == "docker" :
-            if builder.has_key("type") and builder["type"] == "OpenShift":
-                format_type = "openshift"
         publish_method = getattr(publish_builders, "publish_" + generics_utils.remove_special_chars(format_type), None)
         if publish_method:
             publish_image = publish_method(builder)
@@ -452,9 +449,6 @@ class Image(Cmd, CoreGlobal):
 
     def find_builder(self, image, template):
         for builder in template["builders"]:
-            if image.targetFormat.name == "Docker":
-                if builder.has_key("type") and builder["type"] == "OpenShift":
-                    return builder
             if image.targetFormat.name == builder["type"]:
                 return builder
         raise ValueError("No builder part found for image with this format type")
