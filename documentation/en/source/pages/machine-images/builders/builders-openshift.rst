@@ -86,6 +86,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       type: OpenShift
       name: myOpenShiftaccount
@@ -103,6 +104,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
           "type": "OpenShift",
           "name": "myOpenShiftaccount",
@@ -157,6 +159,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       file: "/path/to/openshift-account.yml"
     namespace: mynamespace
@@ -171,6 +174,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
               "file": "/path/to/openshift-account.json"
         },
@@ -190,6 +194,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       name: OpenShift account
     namespace: mynamespace
@@ -204,6 +209,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
           "name": "OpenShift account"
           },

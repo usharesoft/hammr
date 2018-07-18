@@ -270,13 +270,13 @@ def generate_docker(image, builder, installProfile, api=None, login=None):
     image.compress = True
     return image, installProfile
 
-def generate_openshift(image, builder, installProfile, api=None, login=None):
+def generate_openshift(image, builder, install_profile, api=None, login=None):
     if not "entrypoint" in builder:
         printer.out("Entrypoint for OpenShift image has not been specified", printer.ERROR)
         return None, None
     image.entrypoint = str(builder["entrypoint"])
     image.compress = True
-    return image, installProfile
+    return image, install_profile
 
 
 ##--------------------- Utils
