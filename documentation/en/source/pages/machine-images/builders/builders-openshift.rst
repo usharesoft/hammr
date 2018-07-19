@@ -38,6 +38,14 @@ If you are using JSON:
 	  ]
 	}
 
+Building a Machine Image
+------------------------
+
+For building an image, the valid keys are:
+
+* ``type`` (mandatory): a string providing the machine image type to build. Default builder type for OpenShift: ``OpenShift``. To get the available builder type, please refer to :ref:`command-line-format`.
+* ``entrypoint`` (mandatory): a string describing the command to launch at OpenShift container start in ``exec`` form.
+
 Publishing a Machine Image
 --------------------------
 
@@ -78,6 +86,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       type: OpenShift
       name: myOpenShiftaccount
@@ -95,6 +104,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
           "type": "OpenShift",
           "name": "myOpenShiftaccount",
@@ -149,6 +159,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       file: "/path/to/openshift-account.yml"
     namespace: mynamespace
@@ -163,6 +174,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
               "file": "/path/to/openshift-account.json"
         },
@@ -182,6 +194,7 @@ If you are using YAML:
   ---
   builders:
   - type: OpenShift
+    entrypoint: [\"/bin/sh\"]
     account:
       name: OpenShift account
     namespace: mynamespace
@@ -196,6 +209,7 @@ If you are using JSON:
     "builders": [
       {
         "type": "OpenShift",
+        "entrypoint": "[\"/bin/sh\"]",
         "account": {
           "name": "OpenShift account"
           },
