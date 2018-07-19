@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.6 (2018-08-20)
+------------------------
+
+Evolutions:
+
+* Support generation and publication of machine images for OpenShift (it is no longer possible to publish from a Docker image to OpenShift)
+
 hammr 3.8.5 (2018-07-09)
 ------------------------
 
