@@ -68,7 +68,7 @@ class Template(Cmd, CoreGlobal):
                     nbImage=0
                     if images is not None and hasattr(images, 'image'):
                         for image in images.image:
-                            if hasattr(image, 'applianceUri') and image.applianceUri == appliance.uri:
+                            if hasattr(image, 'parentUri') and image.parentUri == appliance.uri:
                                 nbImage+=1
                     table.add_row([appliance.dbId, appliance.name, str(appliance.version), appliance.distributionName+" "+appliance.archName,
                                    appliance.created.strftime("%Y-%m-%d %H:%M:%S"), appliance.lastModified.strftime("%Y-%m-%d %H:%M:%S"), nbImage, appliance.nbUpdates, "X" if appliance.imported else "", "X" if appliance.shared else ""])

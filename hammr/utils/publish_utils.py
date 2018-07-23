@@ -26,7 +26,7 @@ from ussclicore.utils import generics_utils, printer, progressbar_widget, downlo
 def retrieve_source_from_image(image_object, image):
     if is_uri_based_on_appliance(image.uri):
         source = image_object.api.Users(image_object.login).Appliances(
-            generics_utils.extract_id(image.applianceUri)).Get()
+            generics_utils.extract_id(image.parentUri)).Get()
 
     elif is_uri_based_on_scan(image.uri):
         scanned_instance_id = extract_scannedinstance_id(image.uri)
@@ -215,7 +215,7 @@ def publish_image_from_builder(image_object, builder, template, source, counter,
 
         publish_image = image_object.retrieve_publish_image_with_target_format_builder(image, builder)
         publish_image.imageUri = image.uri
-        publish_image.applianceUri = source.uri
+        publish_image.parentUri = source.uri
         publish_image.credAccount = get_account_to_publish(image_object, builder)
         account_name = publish_image.credAccount.name
 
