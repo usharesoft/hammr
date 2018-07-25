@@ -158,7 +158,7 @@ class TestDeployOpenStack(TestCase):
         publish_image = PublishImageOpenStack()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/appliances/5/images/116'
-        publish_image.applianceUri = 'users/guest/appliances/5'
+        publish_image.parentUri = 'users/guest/appliances/5'
         publish_image.status = "complete"
         publish_image.status.complete = True
         publish_image.targetFormat = uforge.targetFormat()
