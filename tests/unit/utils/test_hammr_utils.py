@@ -6,7 +6,7 @@ import yaml
 import paramiko
 
 from mock import patch
-from tests.unit.utils.file_utils import findRelativePathFor
+from tests.unit.utils.file_utils import find_relative_path_for
 
 from hammr.utils import constants
 from hammr.utils import hammr_utils
@@ -14,10 +14,10 @@ from uforge.application import Api
 
 
 class TestFiles(unittest.TestCase):
-    def test_pythonObjectFromYamlParsingShouldBeTheSameAsJsonParsing(self):
+    def test_python_object_from_yaml_parsing_should_be_the_same_as_json_parsing(self):
         # Given
-        json_path = findRelativePathFor("tests/integration/data/test-parsing.json")
-        yaml_path = findRelativePathFor("tests/integration/data/test-parsing.yml")
+        json_path = find_relative_path_for("tests/integration/data/test-parsing.json")
+        yaml_path = find_relative_path_for("tests/integration/data/test-parsing.yml")
         # When
         json_data = json.load(open(json_path))
         yaml_data = yaml.load(open(yaml_path))
@@ -232,6 +232,46 @@ class TestFiles(unittest.TestCase):
 
         # Then
         mock_exec_command.assert_called_with("command to launch")
+
+    def test_validate_structure_template_return_None_when_stack_is_missing(self):
+        # Given
+        yaml_path = find_relative_path_for("tests/integration/data/publish_builder.yml")
+
+        # When
+        data = hammr_utils.validate_structure_template(yaml_path)
+
+        # Then
+        self.assertEqual(data, None)
+
+    def test_validate_structure_template_return_None_when_builder_is_missing(self):
+        # Given
+        yaml_path = find_relative_path_for("tests/integration/data/test-parsing.yml")
+
+        # When
+        data = hammr_utils.validate_structure_template(yaml_path)
+
+        # Then
+        self.assertEqual(data, None)
+
+    def test_validate_structure_template_return_data_when_stack_and_builder_are_not_missing(self):
+        # Given
+        json_path = find_relative_path_for("tests/integration/data/templatePXE.json")
+
+        # When
+        data = hammr_utils.validate_structure_template(json_path)
+
+        # Then
+        self.assertNotEqual(data, None)
+
+    def test_validate_structure_template_return_None_when_stack_and_builder_are_missing(self):
+        # Given
+        yaml_path = find_relative_path_for("tests/integration/data/deploy_aws.yml")
+
+        # When
+        data = hammr_utils.validate_structure_template(yaml_path)
+
+        # Then
+        self.assertEqual(data, None)
 
 if __name__ == '__main__':
     unittest.main()
