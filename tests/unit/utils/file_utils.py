@@ -14,11 +14,11 @@
 #    under the License.
 import os.path
 
-def find_relative_path_for(my_unit_test_data_file):
+def findRelativePathFor(myUnitTestDataFile):
     # When Unit Tests are launched from pycharm, the path is the directory of the unit test file
-    if os.path.isfile('../../../' + my_unit_test_data_file):
-        return '../../../' + my_unit_test_data_file
-    if os.path.isfile('../../../../' + my_unit_test_data_file):
-        return '../../../../' + my_unit_test_data_file
+    if os.path.isfile('../../../' + myUnitTestDataFile):
+        return '../../../' + myUnitTestDataFile
+    if os.path.isfile('../../../../' + myUnitTestDataFile):
+        return '../../../../' + myUnitTestDataFile
     # When Unit Tests are launched from CI, the path is the project directory
-    return my_unit_test_data_file
+    return myUnitTestDataFile

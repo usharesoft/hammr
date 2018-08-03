@@ -23,14 +23,14 @@ from uforge.objects.uforge import *
 from uforge.objects import uforge
 import datetime
 from hammr.utils.deployment_utils import *
-from tests.unit.utils.file_utils import find_relative_path_for
+from tests.unit.utils.file_utils import findRelativePathFor
 
 
 class TestDeployUtils(TestCase):
 
     def test_build_deployment_openstack_returns_None_when_file_incomplete(self):
         # Given
-        file = find_relative_path_for("tests/integration/data/deploy_openstack_incomplete.yml")
+        file = findRelativePathFor("tests/integration/data/deploy_openstack_incomplete.yml")
 
         # When
         try:
@@ -43,7 +43,7 @@ class TestDeployUtils(TestCase):
 
     def testbuild_deployment_amazon_returns_None_when_file_incomplete(self):
         # Given
-        file = find_relative_path_for("tests/integration/data/deploy_aws_incomplete.yml")
+        file = findRelativePathFor("tests/integration/data/deploy_aws_incomplete.yml")
 
         # When
         try:
@@ -56,7 +56,7 @@ class TestDeployUtils(TestCase):
 
     def testbuild_deployment_azure_returns_None_when_file_incomplete(self):
         # Given
-        file = find_relative_path_for("tests/integration/data/deploy_azure_incomplete.yml")
+        file = findRelativePathFor("tests/integration/data/deploy_azure_incomplete.yml")
 
         # When
         try:

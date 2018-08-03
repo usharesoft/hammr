@@ -19,7 +19,7 @@ from hammr.utils.hammr_utils import *
 from uforge.application import Api
 from uforge.objects.uforge import *
 from uforge.objects import uforge
-from tests.unit.utils.file_utils import find_relative_path_for
+from tests.unit.utils.file_utils import findRelativePathFor
 from mock import patch
 from hammr.commands.image import image
 
@@ -32,7 +32,7 @@ class TestPublishUtils(TestCase):
     def test_is_image_ready_to_publish_returns_true_when_memory_and_swap_size_are_defined(self):
         # given
         image = self.build_image_to_publish("complete", True, self.app_uri)
-        file = find_relative_path_for("tests/integration/data/publish_builder.yml")
+        file = findRelativePathFor("tests/integration/data/publish_builder.yml")
         builder = self.build_builder(file)
 
         # when
@@ -44,7 +44,7 @@ class TestPublishUtils(TestCase):
     def test_is_image_ready_to_publish_returns_false_when_status_is_cancelled(self):
         # given
         image = self.build_image_to_publish("cancelled", False, self.app_uri)
-        file = find_relative_path_for("tests/integration/data/publish_builder.yml")
+        file = findRelativePathFor("tests/integration/data/publish_builder.yml")
         builder = self.build_builder(file)
 
         # when
