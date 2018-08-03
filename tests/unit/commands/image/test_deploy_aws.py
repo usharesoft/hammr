@@ -22,7 +22,7 @@ from hammr.utils import constants
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 from tests.unit.commands.image.deploy_test_utils import prepare_image, prepare_mock_deploy
-from tests.unit.utils.file_utils import find_relative_path_for
+from tests.unit.utils.file_utils import findRelativePathFor
 
 
 class TestDeployAWS(TestCase):
@@ -136,7 +136,7 @@ class TestDeployAWS(TestCase):
         return deployment
 
     def prepare_image_deploy_command_aws(self, id):
-         args = "--file %s --publish-id %s" % (find_relative_path_for("tests/integration/data/deploy_aws.yml"), id)
+         args = "--file %s --publish-id %s" % (findRelativePathFor("tests/integration/data/deploy_aws.yml"), id)
          return args
 
     def prepare_aws_pimages_from_app(self):
