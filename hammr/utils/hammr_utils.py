@@ -157,6 +157,19 @@ def validate_configurations_file(file, isJson):
         check_mandatory_builders(data["builders"])
     return data
 
+def validate_builder_file_with_no_template_id(file_path):
+    data = validate(file_path)
+    if data is None:
+        return None
+    if "stack" in data and "builders" in data:
+        return data
+    elif "stack" not in data:
+        printer.out("missing stack section in file " + file_path, printer.ERROR)
+        return None
+    else:
+        printer.out("missing builder section in file "+file_path, printer.ERROR)
+        return None
+
 def validate_bundle(file):
     try:
         isJson = check_extension_is_json(file)
