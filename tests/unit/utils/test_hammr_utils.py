@@ -233,42 +233,42 @@ class TestFiles(unittest.TestCase):
         # Then
         mock_exec_command.assert_called_with("command to launch")
 
-    def test_validate_structure_template_return_None_when_stack_is_missing(self):
+    def test_validate_builder_file_with_no_template_id_return_None_when_stack_is_missing(self):
         # Given
         yaml_path = find_relative_path_for("tests/integration/data/publish_builder.yml")
 
         # When
-        data = hammr_utils.validate_structure_template(yaml_path)
+        data = hammr_utils.validate_builder_file_with_no_template_id(yaml_path)
 
         # Then
         self.assertEqual(data, None)
 
-    def test_validate_structure_template_return_None_when_builder_is_missing(self):
+    def test_validate_builder_file_with_no_template_id_return_None_when_builder_is_missing(self):
         # Given
         yaml_path = find_relative_path_for("tests/integration/data/test-parsing.yml")
 
         # When
-        data = hammr_utils.validate_structure_template(yaml_path)
+        data = hammr_utils.validate_builder_file_with_no_template_id(yaml_path)
 
         # Then
         self.assertEqual(data, None)
 
-    def test_validate_structure_template_return_data_when_stack_and_builder_are_not_missing(self):
+    def test_validate_validate_builder_file_with_no_template_id_return_data_when_stack_and_builder_are_not_missing(self):
         # Given
         json_path = find_relative_path_for("tests/integration/data/templatePXE.json")
 
         # When
-        data = hammr_utils.validate_structure_template(json_path)
+        data = hammr_utils.validate_builder_file_with_no_template_id(json_path)
 
         # Then
         self.assertNotEqual(data, None)
 
-    def test_validate_structure_template_return_None_when_stack_and_builder_are_missing(self):
+    def test_validate_builder_file_with_no_template_id_return_None_when_stack_and_builder_are_missing(self):
         # Given
         yaml_path = find_relative_path_for("tests/integration/data/deploy_aws.yml")
 
         # When
-        data = hammr_utils.validate_structure_template(yaml_path)
+        data = hammr_utils.validate_builder_file_with_no_template_id(yaml_path)
 
         # Then
         self.assertEqual(data, None)

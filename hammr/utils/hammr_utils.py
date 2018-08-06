@@ -157,7 +157,7 @@ def validate_configurations_file(file, isJson):
         check_mandatory_builders(data["builders"])
     return data
 
-def validate_structure_template(file_path):
+def validate_builder_file_with_no_template_id(file_path):
     data = validate(file_path)
     if data is None:
         return None

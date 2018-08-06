@@ -379,8 +379,10 @@ class Template(Cmd, CoreGlobal):
             if not do_args:
                     return 2
 
-            #--
-            template=validate_structure_template(do_args.file)
+            if do_args.id:
+                template = validate(do_args.file)
+            else :
+                template=validate_builder_file_with_no_template_id(do_args.file)
             if template is None:
                 return 2
 
@@ -401,15 +403,15 @@ class Template(Cmd, CoreGlobal):
                 return 0
             try:
                 i=1
-                if do_args.junit is not None:
-                    test_results=[]
+                test_results=[]
                 for builder in template["builders"]:
                     try:
                         printer.out("Generating '"+builder["type"]+"' image ("+str(i)+"/"+str(len(template["builders"]))+")")
+                        test = None
                         if do_args.junit is not None:
                             test = TestCase('Generation '+builder["type"])
                             test_results.append(test)
-                            start_time = time.time()
+                        start_time = time.time()
 
                         format_type = builder["type"]
                         target_format = generate_utils.get_target_format_object(self.api, self.login, format_type)
