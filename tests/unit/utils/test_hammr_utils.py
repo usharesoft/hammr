@@ -6,7 +6,7 @@ import yaml
 import paramiko
 
 from mock import patch
-from tests.unit.utils.file_utils import find_relative_path_for
+from tests.unit.utils.file_utils import findRelativePathFor
 
 from hammr.utils import constants
 from hammr.utils import hammr_utils
@@ -14,10 +14,10 @@ from uforge.application import Api
 
 
 class TestFiles(unittest.TestCase):
-    def test_python_object_from_yaml_parsing_should_be_the_same_as_json_parsing(self):
+    def test_pythonObjectFromYamlParsingShouldBeTheSameAsJsonParsing(self):
         # Given
-        json_path = find_relative_path_for("tests/integration/data/test-parsing.json")
-        yaml_path = find_relative_path_for("tests/integration/data/test-parsing.yml")
+        json_path = findRelativePathFor("tests/integration/data/test-parsing.json")
+        yaml_path = findRelativePathFor("tests/integration/data/test-parsing.yml")
         # When
         json_data = json.load(open(json_path))
         yaml_data = yaml.load(open(yaml_path))

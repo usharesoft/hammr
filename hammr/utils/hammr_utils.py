@@ -141,17 +141,17 @@ def validate_configurations_file(file, isJson):
     else:
         data = generics_utils.check_yaml_syntax(file)
     if data is None:
-        return None
+        return
     #check manadatory fields
     if "stack" in data:
         stack=check_mandatory_stack(data["stack"])
         if stack is None:
-            return None
+            return
         if "bundles" in data["stack"]:
             for bundle in data["stack"]["bundles"]:
                 bundle = check_bundle(bundle)
                 if bundle is None:
-                    return None
+                    return
 
     if "builders" in data:
         check_mandatory_builders(data["builders"])

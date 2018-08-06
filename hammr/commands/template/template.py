@@ -359,50 +359,52 @@ class Template(Cmd, CoreGlobal):
 
 
     def arg_build(self):
-        do_parser = ArgumentParser(prog=self.cmd_name+" build", add_help = True, description="Builds a machine image from the template")
-        mandatory = do_parser.add_argument_group("mandatory arguments")
+        doParser = ArgumentParser(prog=self.cmd_name+" build", add_help = True, description="Builds a machine image from the template")
+        mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--file', dest='file', required=True, help="yaml/json file providing the builder parameters")
-        optional = do_parser.add_argument_group("optional arguments")
+        optional = doParser.add_argument_group("optional arguments")
         optional.add_argument('--id',dest='id',required=False, help="id of the template to build")
         optional.add_argument('--junit',dest='junit',required=False, help="name of junit XML output file")
         optional.add_argument('--simulate', dest='simulated', action='store_true', help='Simulate the generation (only the Checking Dependencies process will be executed)', required = False)
         optional.add_argument('--force', dest='forced', action='store_true', help='Force the checking dependencies', required = False)
-        return do_parser
+        return doParser
 
     def do_build(self, args):
         try:
             #add arguments
-            do_parser = self.arg_build()
-            do_args = do_parser.parse_args(shlex.split(args))
+            doParser = self.arg_build()
+            doArgs = doParser.parse_args(shlex.split(args))
 
             #if the help command is called, parse_args returns None object
-            if not do_args:
+            if not doArgs:
                     return 2
 
             if do_args.id:
                 template = validate(do_args.file)
             else :
                 template=validate_builder_file_with_no_template_id(do_args.file)
+            
             if template is None:
                 return 2
 
-            if do_args.id:
-                my_appliance = self.api.Users(self.login).Appliances().Getall(Query="dbId=="+do_args.id)
-                my_appliance = my_appliance.appliances.appliance
+            if doArgs.id:
+                myAppliance = self.api.Users(self.login).Appliances().Getall(Query="dbId=="+doArgs.id)
+                myAppliance = myAppliance.appliances.appliance
             else:
                 #Get template which correpond to the template file
-                my_appliance = self.api.Users(self.login).Appliances().Getall(Query="name=='"+template["stack"]["name"]+"';version=='"+template["stack"]["version"]+"'")
-                my_appliance = my_appliance.appliances.appliance
-            if my_appliance is None or len(my_appliance)!=1:
+                myAppliance = self.api.Users(self.login).Appliances().Getall(Query="name=='"+template["stack"]["name"]+"';version=='"+template["stack"]["version"]+"'")
+                myAppliance = myAppliance.appliances.appliance
+            if myAppliance is None or len(myAppliance)!=1:
                 printer.out("No template found on the plateform")
                 return 0
-            my_appliance=my_appliance[0]
-            r_install_profile = self.api.Users(self.login).Appliances(my_appliance.dbId).Installprofile("").Getdeprecated()
-            if r_install_profile is None:
+            myAppliance=myAppliance[0]
+            rInstallProfile = self.api.Users(self.login).Appliances(myAppliance.dbId).Installprofile("").Getdeprecated()
+            if rInstallProfile is None:
                 printer.out("No installation found on the template '"+template["stack"]["name"]+"'", printer.ERROR)
                 return 0
             try:
                 i=1
+
                 test_results=[]
                 for builder in template["builders"]:
                     try:
@@ -414,59 +416,90 @@ class Template(Cmd, CoreGlobal):
                         start_time = time.time()
 
                         format_type = builder["type"]
-                        target_format = generate_utils.get_target_format_object(self.api, self.login, format_type)
-                        if target_format is None:
+                        targetFormat = generate_utils.get_target_format_object(self.api, self.login, format_type)
+                        if targetFormat is None:
                             printer.out("Builder type unknown: "+format_type, printer.ERROR)
                             return 2
 
-                        my_image = image()
-                        my_install_profile = installProfile()
-                        if r_install_profile.partitionAuto:
+                        myimage = image()
+                        myinstallProfile = installProfile()
+                        if rInstallProfile.partitionAuto:
                             if "installation" in builder:
                                 if "swapSize" in builder["installation"]:
-                                    my_install_profile.swapSize = builder["installation"]["swapSize"]
+                                    myinstallProfile.swapSize = builder["installation"]["swapSize"]
                                 if "diskSize" in builder["installation"]:
-                                    my_install_profile.diskSize = builder["installation"]["diskSize"]
+                                    myinstallProfile.diskSize = builder["installation"]["diskSize"]
                             else:
-                                my_install_profile.swapSize = r_install_profile.swapSize
-                                my_install_profile.diskSize = r_install_profile.partitionTable.disks.disk[0].size
+                                myinstallProfile.swapSize = rInstallProfile.swapSize
+                                myinstallProfile.diskSize = rInstallProfile.partitionTable.disks.disk[0].size
 
-                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(target_format.format.name), None)
+                        func = getattr(generate_utils, "generate_"+generics_utils.remove_special_chars(targetFormat.format.name), None)
                         if func:
-                            my_image,my_install_profile = func(my_image, builder, my_install_profile, self.api, self.login)
+                            myimage,myinstallProfile = func(myimage, builder, myinstallProfile, self.api, self.login)
                         else:
                             printer.out("Builder type unknown: "+format_type, printer.ERROR)
                             return 2
 
 
-                        if my_image is None:
+                        if myimage is None:
                             return 2
 
-                        my_image.targetFormat = target_format
-                        my_image.installProfile = my_install_profile
-                        if do_args.simulated is not None and do_args.simulated:
-                            my_image.simulated=True
-                        if do_args.forced is not None and do_args.forced:
-                            my_image.forceCheckingDeps=True
+                        myimage.targetFormat = targetFormat
+                        myimage.installProfile = myinstallProfile
+                        if doArgs.simulated is not None and doArgs.simulated:
+                            myimage.simulated=True
+                        if doArgs.forced is not None and doArgs.forced:
+                            myimage.forceCheckingDeps=True
 
-                        rImage = self.api.Users(self.login).Appliances(my_appliance.dbId).Images().Generate(my_image)
-                        status = self.update_generation_status(my_appliance, rImage)
-                        self.finish_generation_according_to_status(builder, do_args, rImage, start_time, status, test)
+                        rImage = self.api.Users(self.login).Appliances(myAppliance.dbId).Images().Generate(myimage)
 
+                        status = rImage.status
+                        statusWidget = progressbar_widget.Status()
+                        statusWidget.status = status
+                        widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
+                        progress = ProgressBar(widgets=widgets, maxval=100).start()
+                        while not (status.complete or status.error or status.cancelled):
+                            statusWidget.status = status
+                            progress.update(status.percentage)
+                            status = self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Get()
+                            time.sleep(2)
+                        statusWidget.status = status
+                        progress.finish()
+                        if status.error:
+                            printer.out("Generation '"+builder["type"]+"' error: "+status.message+"\n"+status.errorMessage, printer.ERROR)
+                            if status.detailedError:
+                                printer.out(status.detailedErrorMsg)
+                            if doArgs.junit is not None:
+                                test.elapsed_sec=time.time() - start_time
+                                test.add_error_info("Error", status.message+"\n"+status.errorMessage)
+                        elif status.cancelled:
+                            printer.out("Generation '"+builder["type"]+"' canceled: "+status.message, printer.WARNING)
+                            if doArgs.junit is not None:
+                                test.elapsed_sec=time.time() - start_time
+                                test.add_failure_info("Canceled", status.message)
+                        else:
+                            printer.out("Generation '"+builder["type"]+"' ok", printer.OK)
+                            printer.out("Image URI: "+rImage.uri)
+                            printer.out("Image Id : "+generics_utils.extract_id(rImage.uri))
+                            if doArgs.junit is not None:
+                                test.elapsed_sec=time.time() - start_time
+                                #the downloadUri already contains downloadKey at the end
+                                if rImage.downloadUri is not None:
+                                    test.stdout=self.api.getUrl() +"/"+rImage.downloadUri
                         i+=1
                     except Exception as e:
                         if  is_uforge_exception(e):
                             print_uforge_exception(e)
-                            if do_args.junit is not None and "test_results" in locals() and len(test_results)>0:
+                            if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                                 test=test_results[len(test_results)-1]
                                 test.elapsed_sec=time.time() - start_time
                                 test.add_error_info("Error", get_uforge_exception(e))
                         else:
                             raise
-                if do_args.junit is not None:
-                    test_name = my_appliance.distributionName+" "+my_appliance.archName
-                    ts = TestSuite("Generation "+test_name, test_results)
-                    with open(do_args.junit, 'w') as f:
+                if doArgs.junit is not None:
+                    testName = myAppliance.distributionName+" "+myAppliance.archName
+                    ts = TestSuite("Generation "+testName, test_results)
+                    with open(doArgs.junit, 'w') as f:
                         TestSuite.to_file(f, [ts], prettyprint=False)
                 return 0
             except KeyError as e:
@@ -478,15 +511,15 @@ class Template(Cmd, CoreGlobal):
         except KeyboardInterrupt:
             printer.out("\n")
             if generics_utils.query_yes_no("Do you want to cancel the job ?"):
-                if 'myAppliance' in locals() and 'rImage' in locals() and hasattr(my_appliance, 'dbId') and hasattr(rImage, 'dbId'):
-                    self.api.Users(self.login).Appliances(my_appliance.dbId).Images(rImage.dbId).Status.Cancel()
+                if 'myAppliance' in locals() and 'rImage' in locals() and hasattr(myAppliance, 'dbId') and hasattr(rImage, 'dbId'):
+                    self.api.Users(self.login).Appliances(myAppliance.dbId).Images(rImage.dbId).Status.Cancel()
                 else:
                     printer.out("Impossible to cancel", printer.WARNING)
             else:
                 printer.out("Exiting command")
         except Exception as e:
             print_uforge_exception(e)
-            if do_args.junit is not None and "test_results" in locals() and len(test_results)>0:
+            if doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                 test=test_results[len(test_results)-1]
                 if "start_time" in locals():
                     elapse=time.time() - start_time
@@ -497,66 +530,20 @@ class Template(Cmd, CoreGlobal):
             else:
                 return 2
         finally:
-            if "do_args" in locals() and do_args.junit is not None and "test_results" in locals() and len(test_results)>0:
+            if "doArgs" in locals() and doArgs.junit is not None and "test_results" in locals() and len(test_results)>0:
                 if "myAppliance" in locals():
-                    test_name = my_appliance.distributionName+" "+my_appliance.archName
+                    testName = myAppliance.distributionName+" "+myAppliance.archName
                 else:
-                    test_name = ""
-                ts = TestSuite("Generation "+test_name, test_results)
-                with open(do_args.junit, 'w') as f:
+                    testName = ""
+                ts = TestSuite("Generation "+testName, test_results)
+                with open(doArgs.junit, 'w') as f:
                     TestSuite.to_file(f, [ts], prettyprint=False)
 
-    def finish_generation_according_to_status(self, builder, do_args, rImage, start_time, status, test):
-        if status.error:
-            self.generation_finished_with_error(builder, do_args, start_time, status, test)
-        elif status.cancelled:
-            self.generation_finished_cancelled(builder, do_args, start_time, status, test)
-        else:
-            self.generation_finished_with_success(builder, do_args, rImage, start_time, test)
-
-    def generation_finished_with_error(self, builder, do_args, start_time, status, test):
-        printer.out("Generation '" + builder["type"] + "' error: " + status.message + "\n" + status.errorMessage,
-                    printer.ERROR)
-        if status.detailedError:
-            printer.out(status.detailedErrorMsg)
-        if do_args.junit is not None:
-            test.elapsed_sec = time.time() - start_time
-            test.add_error_info("Error", status.message + "\n" + status.errorMessage)
-
-    def generation_finished_cancelled(self, builder, do_args, start_time, status, test):
-        printer.out("Generation '" + builder["type"] + "' canceled: " + status.message, printer.WARNING)
-        if do_args.junit is not None:
-            test.elapsed_sec = time.time() - start_time
-            test.add_failure_info("Canceled", status.message)
-
-    def generation_finished_with_success(self, builder, do_args, rImage, start_time, test):
-        printer.out("Generation '" + builder["type"] + "' ok", printer.OK)
-        printer.out("Image URI: " + rImage.uri)
-        printer.out("Image Id : " + generics_utils.extract_id(rImage.uri))
-        if do_args.junit is not None:
-            test.elapsed_sec = time.time() - start_time
-            # the downloadUri already contains downloadKey at the end
-            if rImage.downloadUri is not None:
-                test.stdout = self.api.getUrl() + "/" + rImage.downloadUri
-
-    def update_generation_status(self, my_appliance, rImage):
-        status = rImage.status
-        status_widget = progressbar_widget.Status()
-        status_widget.status = status
-        widgets = [Bar('>'), ' ', status_widget, ' ', ReverseBar('<')]
-        progress = ProgressBar(widgets=widgets, maxval=100).start()
-        while not (status.complete or status.error or status.cancelled):
-            status_widget.status = status
-            progress.update(status.percentage)
-            status = self.api.Users(self.login).Appliances(my_appliance.dbId).Images(rImage.dbId).Status.Get()
-            time.sleep(2)
-        status_widget.status = status
-        progress.finish()
-        return status
 
     def help_build(self):
-        do_parser = self.arg_build()
-        do_parser.print_help()
+        doParser = self.arg_build()
+        doParser.print_help()
+
 
 
     def import_stack(self, file, isImport, isForce, rbundles, isUseMajor):
