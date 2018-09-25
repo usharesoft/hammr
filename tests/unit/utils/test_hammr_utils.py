@@ -215,7 +215,8 @@ class TestFiles(unittest.TestCase):
         mock_paramiko_from_transport.return_value = mock_sftp_client
 
         # When
-        hammr_utils.upload_binary_to_client("hostname", 22, "username", "password",  "/tmp/local/temp/dir/binaryName", "/tmp/uri/binary", None)
+        hammr_utils.upload_binary_to_client("hostname", 22, "username", "password",
+                                            "/tmp/local/temp/dir/binaryName", "/tmp/uri/binary", None)
 
         # Then
         mock_transport.assert_called_with(("hostname", 22))

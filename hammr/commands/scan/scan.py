@@ -108,9 +108,11 @@ class Scan(Cmd, CoreGlobal):
             local_uforge_scan_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_SCAN_BINARY, constants.SCAN_BINARY_NAME)
 
             try:
-                self.upload_and_launch_scan_binary(self.login, self.password, None, do_args, local_uforge_scan_path, self.api.getUrl())
+                self.upload_and_launch_scan_binary(
+                    self.login, self.password, None, do_args, local_uforge_scan_path, self.api.getUrl())
             except AttributeError:
-                self.upload_and_launch_scan_binary(self.login, None, self.apikeys, do_args, local_uforge_scan_path, self.api.getUrl())
+                self.upload_and_launch_scan_binary(
+                    self.login, None, self.apikeys, do_args, local_uforge_scan_path, self.api.getUrl())
 
             # delete tmp dir
             shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -121,13 +123,13 @@ class Scan(Cmd, CoreGlobal):
                 my_scanned_instances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
                                                                                     Name=do_args.name)
                 my_scanned_instances = my_scanned_instances.scannedInstances.scannedInstance
-                if my_scanned_instances is None or len(my_scanned_instances) == 0:
+                if my_scanned_instances is None or not my_scanned_instances:
                     time.sleep(5)
                 else:
                     if len(my_scanned_instances) > 1:
                         printer.out("A scan with the same name already exists", printer.ERROR)
                     my_scanned_instance = my_scanned_instances[0]
-                    if len(my_scanned_instance.scans.scan) == 0:
+                    if not my_scanned_instance.scans.scan:
                         time.sleep(5)
                     else:
                         running = self.handle_scan_run_status(my_scanned_instance, running)
@@ -496,7 +498,8 @@ class Scan(Cmd, CoreGlobal):
             overlay = "-o"
 
         binary_path = dir + "/" + constants.SCAN_BINARY_NAME
-        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path, id_file)
+        client = hammr_utils.upload_binary_to_client(
+            hostname, port, username, password, file_src_path, binary_path, id_file)
 
         command_test_service = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P'
         summary = hammr_utils.launch_binary(client, command_test_service)
@@ -514,39 +517,39 @@ class Scan(Cmd, CoreGlobal):
         else:
             return ' -a ' + uforge_apikeys['publickey'] + ' -s ' + uforge_apikeys['secretkey']
 
-    def print_scan_run_result_according_to_status(self, status):
-        if status.error:
-            printer.out("Scan  error: " + status.message + "\n" + status.errorMessage,
+    def print_scan_run_result_status(self, scan_status):
+        if scan_status.error:
+            printer.out("Scan  error: " + scan_status.message + "\n" + scan_status.errorMessage,
                         printer.ERROR)
-            if status.detailedError:
-                printer.out(status.detailedErrorMsg)
-        elif status.cancelled:
-            printer.out("Scan cancelled: " + status.message, printer.WARNING)
+            if scan_status.detailedError:
+                printer.out(scan_status.detailedErrorMsg)
+        elif scan_status.cancelled:
+            printer.out("Scan cancelled: " + scan_status.message, printer.WARNING)
         else:
             printer.out("Scan successfully", printer.OK)
 
-    def update_scan_run_status(self, status_widget, status, progress,my_scanned_instance, scan):
-        status_widget.status = status
-        progress.update(status.percentage)
-        status = (self.api.Users(self.login).Scannedinstances(my_scanned_instance.dbId).Scans(
+    def update_scan_run_status(self, status_widget, scan_status, progress, my_scanned_instance, scan):
+        status_widget.status = scan_status
+        progress.update(scan_status.percentage)
+        scan_status = (self.api.Users(self.login).Scannedinstances(my_scanned_instance.dbId).Scans(
             scan.dbId).Get("false", "false", "false", "false", None, None, None, None, None)).status
         time.sleep(2)
-        return status
+        return scan_status
 
     def handle_scan_run_status(self, my_scanned_instance, running):
-        for scan in my_scanned_instance.scans.scan:
-            if (not scan.status.complete and not scan.status.error and not scan.status.cancelled):
-                status = scan.status
+        for current_scan in my_scanned_instance.scans.scan:
+            if (not current_scan.status.complete and not current_scan.status.error and not current_scan.status.cancelled):
+                scan_status = current_scan.status
                 status_widget = progressbar_widget.Status()
-                status_widget.status = status
+                status_widget.status = scan_status
                 widgets = [Bar('>'), ' ', status_widget, ' ', ReverseBar('<')]
                 progress = ProgressBar(widgets=widgets, maxval=100).start()
-                while not (status.complete or status.error or status.cancelled):
-                    status = self.update_scan_run_status(status_widget, status, progress, my_scanned_instance, scan)
+                while not (scan_status.complete or scan_status.error or scan_status.cancelled):
+                    scan_status = self.update_scan_run_status(status_widget, scan_status, progress, my_scanned_instance, current_scan)
 
-                status_widget.status = status
+                status_widget.status = scan_status
                 progress.finish()
-                self.print_scan_run_result_according_to_status(status)
+                self.print_scan_run_result_status(scan_status)
                 running = False
                 break
             else:
