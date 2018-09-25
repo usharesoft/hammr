@@ -526,7 +526,7 @@ class Scan(Cmd, CoreGlobal):
         elif scan_status.cancelled:
             printer.out("Scan cancelled: " + scan_status.message, printer.WARNING)
         else:
-            printer.out("Scan successfully", printer.OK)
+            printer.out("Scan successful", printer.OK)
 
     def update_scan_run_status(self, status_widget, scan_status, progress, my_scanned_instance, current_scan):
         status_widget.status = scan_status
