@@ -121,7 +121,7 @@ class Scan(Cmd, CoreGlobal):
             running = True
             while running:
                 my_scanned_instances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
-                                                                                            Name=do_args.name)
+                                                                                          Name=do_args.name)
                 my_scanned_instances = my_scanned_instances.scannedInstances.scannedInstance
                 if my_scanned_instances is None or not my_scanned_instances:
                     time.sleep(5)
@@ -539,7 +539,7 @@ class Scan(Cmd, CoreGlobal):
     def handle_scan_run_status(self, my_scanned_instance, running):
         for current_scan in my_scanned_instance.scans.scan:
             if (not current_scan.status.complete and not
-                current_scan.status.error and not current_scan.status.cancelled):
+                    current_scan.status.error and not current_scan.status.cancelled):
                 scan_status = current_scan.status
                 status_widget = progressbar_widget.Status()
                 status_widget.status = scan_status
