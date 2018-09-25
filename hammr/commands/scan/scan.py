@@ -121,7 +121,7 @@ class Scan(Cmd, CoreGlobal):
             running = True
             while running:
                 my_scanned_instances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
-                                                                                    Name=do_args.name)
+                                                                                            Name=do_args.name)
                 my_scanned_instances = my_scanned_instances.scannedInstances.scannedInstance
                 if my_scanned_instances is None or not my_scanned_instances:
                     time.sleep(5)
@@ -528,24 +528,26 @@ class Scan(Cmd, CoreGlobal):
         else:
             printer.out("Scan successfully", printer.OK)
 
-    def update_scan_run_status(self, status_widget, scan_status, progress, my_scanned_instance, scan):
+    def update_scan_run_status(self, status_widget, scan_status, progress, my_scanned_instance, current_scan):
         status_widget.status = scan_status
         progress.update(scan_status.percentage)
         scan_status = (self.api.Users(self.login).Scannedinstances(my_scanned_instance.dbId).Scans(
-            scan.dbId).Get("false", "false", "false", "false", None, None, None, None, None)).status
+            current_scan.dbId).Get("false", "false", "false", "false", None, None, None, None, None)).status
         time.sleep(2)
         return scan_status
 
     def handle_scan_run_status(self, my_scanned_instance, running):
         for current_scan in my_scanned_instance.scans.scan:
-            if (not current_scan.status.complete and not current_scan.status.error and not current_scan.status.cancelled):
+            if (not current_scan.status.complete and not
+                current_scan.status.error and not current_scan.status.cancelled):
                 scan_status = current_scan.status
                 status_widget = progressbar_widget.Status()
                 status_widget.status = scan_status
                 widgets = [Bar('>'), ' ', status_widget, ' ', ReverseBar('<')]
                 progress = ProgressBar(widgets=widgets, maxval=100).start()
                 while not (scan_status.complete or scan_status.error or scan_status.cancelled):
-                    scan_status = self.update_scan_run_status(status_widget, scan_status, progress, my_scanned_instance, current_scan)
+                    scan_status = self.update_scan_run_status(status_widget, scan_status, progress,
+                                                              my_scanned_instance, current_scan)
 
                 status_widget.status = scan_status
                 progress.finish()
