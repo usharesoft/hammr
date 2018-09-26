@@ -3,6 +3,14 @@
 Changelog
 =========
 
+hammr 3.8.8 (2018-11-12)
+------------------------
+
+Evolutions:
+
+* User can now use an SSH key instead of a password when scanning a remote machine with hammr scan run
+
+
 hammr 3.8.6 (2018-08-20)
 ------------------------
 
