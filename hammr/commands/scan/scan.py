@@ -70,15 +70,15 @@ class Scan(Cmd, CoreGlobal):
         doParser.print_help()
 
     def arg_run(self):
-        doParser = ArgumentParser(prog=self.cmd_name + " run", add_help=True,
+        do_parser = ArgumentParser(prog=self.cmd_name + " run", add_help=True,
                                   description="Executes a deep scan of a running system")
-        mandatory = doParser.add_argument_group("mandatory arguments")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--ip', dest='ip', required=True,
                                help="the IP address or fully qualified hostname of the running system")
         mandatory.add_argument('--scan-login', dest='login', required=True, help="the root user name (normally root)")
         mandatory.add_argument('--name', dest='name', required=True,
                                help="the scan name to use when creating the scan meta-data")
-        optional = doParser.add_argument_group("optional arguments")
+        optional = do_parser.add_argument_group("optional arguments")
         optional.add_argument('--scan-port', dest='port', required=False,
                               help="the ssh port of the running system")
         optional.add_argument('--scan-password', dest='password', required=False,
@@ -87,28 +87,32 @@ class Scan(Cmd, CoreGlobal):
                               help="the directory where to install the uforge-scan.bin binary used to execute the deep scan")
         optional.add_argument('--exclude', dest='exclude', nargs='+', required=False,
                               help="a list of directories or files to exclude during the deep scan")
-        optional.add_argument('-o', '--overlay', dest='overlay', action='store_true', required=False, help="perform a scan with overlay into the given scanned instance")
-        return doParser
+        optional.add_argument('-o', '--overlay', dest='overlay', action='store_true', required=False,
+                              help="perform a scan with overlay into the given scanned instance")
+        optional.add_argument('--identity-file', dest='id_file', required=False,
+                              help="the file containing the private ssh key used to connect to the source machine")
+        return do_parser
 
     def do_run(self, args):
         try:
             # add arguments
-            doParser = self.arg_run()
-            doArgs = doParser.parse_args(shlex.split(args))
+            do_parser = self.arg_run()
+            do_args = do_parser.parse_args(shlex.split(args))
 
-            #if the help command is called, parse_args returns None object
-            if not doArgs:
-                    return 2
+            if not do_args:
+                return 2
 
-            if not self.check_overlay_option_is_allowed(doArgs.name, doArgs.overlay):
+            if not self.check_overlay_option_is_allowed(do_args.name, do_args.overlay):
                 return 2
 
             local_uforge_scan_path = hammr_utils.download_binary_in_local_temp_dir(self.api, constants.TMP_WORKING_DIR, constants.URI_SCAN_BINARY, constants.SCAN_BINARY_NAME)
 
             try:
-                self.upload_and_launch_scan_binary(self.login, self.password, None, doArgs, local_uforge_scan_path, self.api.getUrl())
+                self.upload_and_launch_scan_binary(
+                    self.login, self.password, None, do_args, local_uforge_scan_path, self.api.getUrl())
             except AttributeError:
-                self.upload_and_launch_scan_binary(self.login, None, self.apikeys, doArgs, local_uforge_scan_path, self.api.getUrl())
+                self.upload_and_launch_scan_binary(
+                    self.login, None, self.apikeys, do_args, local_uforge_scan_path, self.api.getUrl())
 
             # delete tmp dir
             shutil.rmtree(constants.TMP_WORKING_DIR)
@@ -116,47 +120,19 @@ class Scan(Cmd, CoreGlobal):
             printer.out("Searching scan on uforge ...")
             running = True
             while running:
-                myScannedInstances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
-                                                                                    Name=doArgs.name)
-                myScannedInstances = myScannedInstances.scannedInstances.scannedInstance
-                if myScannedInstances is None or len(myScannedInstances) == 0:
+                my_scanned_instances = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true",
+                                                                                          Name=do_args.name)
+                my_scanned_instances = my_scanned_instances.scannedInstances.scannedInstance
+                if my_scanned_instances is None or not my_scanned_instances:
                     time.sleep(5)
                 else:
-                    if len(myScannedInstances) > 1:
+                    if len(my_scanned_instances) > 1:
                         printer.out("A scan with the same name already exists", printer.ERROR)
-                    myScannedInstance = myScannedInstances[0]
-                    if len(myScannedInstance.scans.scan) == 0:
+                    my_scanned_instance = my_scanned_instances[0]
+                    if not my_scanned_instance.scans.scan:
                         time.sleep(5)
                     else:
-                        for scan in myScannedInstance.scans.scan:
-                            if (not scan.status.complete and not scan.status.error and not scan.status.cancelled):
-                                status = scan.status
-                                statusWidget = progressbar_widget.Status()
-                                statusWidget.status = status
-                                widgets = [Bar('>'), ' ', statusWidget, ' ', ReverseBar('<')]
-                                progress = ProgressBar(widgets=widgets, maxval=100).start()
-                                while not (status.complete or status.error or status.cancelled):
-                                    statusWidget.status = status
-                                    progress.update(status.percentage)
-                                    status = (self.api.Users(self.login).Scannedinstances(myScannedInstance.dbId).Scans(
-                                        scan.dbId).Get("false", "false", "false", "false", None, None, None, None,
-                                                       None)).status
-                                    time.sleep(2)
-                                statusWidget.status = status
-                                progress.finish()
-                                if status.error:
-                                    printer.out("Scan  error: " + status.message + "\n" + status.errorMessage,
-                                                printer.ERROR)
-                                    if status.detailedError:
-                                        printer.out(status.detailedErrorMsg)
-                                elif status.cancelled:
-                                    printer.out("Scan canceled: " + status.message, printer.WARNING)
-                                else:
-                                    printer.out("Scan successfully", printer.OK)
-                                running = False
-                                break
-                            else:
-                                pass
+                        running = self.handle_scan_run_status(my_scanned_instance, running)
 
 
         except ArgumentParserError as e:
@@ -166,8 +142,8 @@ class Scan(Cmd, CoreGlobal):
             return hammr_utils.handle_uforge_exception(e)
 
     def help_run(self):
-        doParser = self.arg_run()
-        doParser.print_help()
+        do_parser = self.arg_run()
+        do_parser.print_help()
 
     def check_overlay_option_is_allowed(self, name, overlay):
         myScannedInstance = self.api.Users(self.login).Scannedinstances.Getall(Includescans="true", Name=name)
@@ -493,10 +469,13 @@ class Scan(Cmd, CoreGlobal):
     def upload_and_launch_scan_binary(self, uforge_login, uforge_password, uforge_apikeys, args, file_src_path, uforge_url):
         hostname = args.ip
         username = args.login
+        id_file = args.id_file
+        password = None
 
-        if not args.password:
-            password = getpass.getpass('Password for %s@%s: ' % (username, hostname))
-        else:
+        if not id_file:
+            if not args.password:
+                password = getpass.getpass('Password for %s@%s: ' % (username, hostname))
+        if args.password:
             password = args.password
 
         if not args.port:
@@ -519,7 +498,8 @@ class Scan(Cmd, CoreGlobal):
             overlay = "-o"
 
         binary_path = dir + "/" + constants.SCAN_BINARY_NAME
-        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
+        client = hammr_utils.upload_binary_to_client(
+            hostname, port, username, password, file_src_path, binary_path, id_file)
 
         command_test_service = 'chmod +x ' + dir + '/' + constants.SCAN_BINARY_NAME + '; ' + dir + '/' + constants.SCAN_BINARY_NAME + ' -u ' + uforge_login + self.get_uforge_auth(uforge_apikeys, uforge_password) + ' -U ' + uforge_url + ' -P'
         summary = hammr_utils.launch_binary(client, command_test_service)
@@ -536,3 +516,44 @@ class Scan(Cmd, CoreGlobal):
             return ' -p ' + uforge_password
         else:
             return ' -a ' + uforge_apikeys['publickey'] + ' -s ' + uforge_apikeys['secretkey']
+
+    def print_scan_run_result_status(self, scan_status):
+        if scan_status.error:
+            printer.out("Scan  error: " + scan_status.message + "\n" + scan_status.errorMessage,
+                        printer.ERROR)
+            if scan_status.detailedError:
+                printer.out(scan_status.detailedErrorMsg)
+        elif scan_status.cancelled:
+            printer.out("Scan cancelled: " + scan_status.message, printer.WARNING)
+        else:
+            printer.out("Scan successful", printer.OK)
+
+    def update_scan_run_status(self, status_widget, scan_status, progress, my_scanned_instance, current_scan):
+        status_widget.status = scan_status
+        progress.update(scan_status.percentage)
+        scan_status = (self.api.Users(self.login).Scannedinstances(my_scanned_instance.dbId).Scans(
+            current_scan.dbId).Get("false", "false", "false", "false", None, None, None, None, None)).status
+        time.sleep(2)
+        return scan_status
+
+    def handle_scan_run_status(self, my_scanned_instance, running):
+        for current_scan in my_scanned_instance.scans.scan:
+            if (not current_scan.status.complete and not
+                    current_scan.status.error and not current_scan.status.cancelled):
+                scan_status = current_scan.status
+                status_widget = progressbar_widget.Status()
+                status_widget.status = scan_status
+                widgets = [Bar('>'), ' ', status_widget, ' ', ReverseBar('<')]
+                progress = ProgressBar(widgets=widgets, maxval=100).start()
+                while not (scan_status.complete or scan_status.error or scan_status.cancelled):
+                    scan_status = self.update_scan_run_status(status_widget, scan_status, progress,
+                                                              my_scanned_instance, current_scan)
+
+                status_widget.status = scan_status
+                progress.finish()
+                self.print_scan_run_result_status(scan_status)
+                running = False
+                break
+            else:
+                pass
+        return running

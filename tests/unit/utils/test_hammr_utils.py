@@ -215,12 +215,13 @@ class TestFiles(unittest.TestCase):
         mock_paramiko_from_transport.return_value = mock_sftp_client
 
         # When
-        hammr_utils.upload_binary_to_client("hostname", 22, "username", "password",  "/tmp/local/temp/dir/binaryName", "/tmp/uri/binary")
+        hammr_utils.upload_binary_to_client("hostname", 22, "username", "password",
+                                            "/tmp/local/temp/dir/binaryName", "/tmp/uri/binary", None)
 
         # Then
         mock_transport.assert_called_with(("hostname", 22))
         mock_sftp_client.put.assert_called_with("/tmp/local/temp/dir/binaryName", "/tmp/uri/binary")
-        mock_connect.assert_called_with("hostname", 22, "username", "password")
+        mock_connect.assert_called_with("hostname", 22, "username", "password", None)
 
     @patch("paramiko.SSHClient.exec_command")
     def test_launch_binary_call_exec_command_with_given_command(self, mock_exec_command):

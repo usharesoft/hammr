@@ -322,10 +322,15 @@ def download_binary_in_local_temp_dir(api, local_temp_dir, uri_binary, binary_na
     except Exception, e:
         raise Exception("Impossible to download binary [" + binary_name + "]: " + str(e))
 
-def upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path):
+def upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path, id_file):
     try:
         t = paramiko.Transport((hostname, port))
-        t.connect(username=username, password=password)
+        pkey = None
+        if id_file:
+            pkey = paramiko.RSAKey.from_private_key_file(id_file)
+            t.connect(username=username, pkey=pkey)
+        else:
+            t.connect(username=username, password=password)
         sftp = paramiko.SFTPClient.from_transport(t)
 
         # upload binary
@@ -335,7 +340,7 @@ def upload_binary_to_client(hostname, port, username, password, file_src_path, b
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
-        client.connect(hostname, port, username, password)
+        client.connect(hostname, port, username, password, pkey)
 
     except paramiko.AuthenticationException as e:
         raise Exception("Authentification error: " + e[0])
