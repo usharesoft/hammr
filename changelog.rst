@@ -10,6 +10,17 @@ Evolutions:
 
 * User can now use an SSH key instead of a password when scanning a remote machine with hammr scan run
 
+hammr 3.8.7 (2018-10-01)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp7-1 only
+
+Bug fixes:
+
+* Fix hammr-release.sh script to work with the new 301 redirection from pypi.org
+
 hammr 3.8.6 (2018-08-20)
 ------------------------
 
