@@ -198,7 +198,7 @@ class Migration(Cmd, CoreGlobal):
         dir = "/tmp"
 
         binary_path = dir + "/" + constants.MIGRATION_BINARY_NAME
-        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path)
+        client = hammr_utils.upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path, None)
 
         command_launch = 'chmod +x ' + dir + '/' + constants.MIGRATION_BINARY_NAME + '; nohup ' + dir + '/' + constants.MIGRATION_BINARY_NAME + ' -u ' + uforge_login + ' -p ' + uforge_password + ' -U ' + uforge_url + ' -n \'' + \
                          migration_config["name"] + '\' ' + overlay + exclude + ' >/dev/null 2>&1 &'
