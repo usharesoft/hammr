@@ -49,13 +49,13 @@ If you are using YAML:
 
 	---
 	users:
-	- name: joris
-	  fullName: joris
-	  homeDir: "/home/joris"
+	- name: myuser
+	  fullName: myfullusername
+	  homeDir: "/home/myuser"
 	  shell: "/bin/bash"
-	- name: yann
-	  fullName: yann dorcet
-	  homeDir: "/home/ydorcet"
+	- name: anotheruser
+	  fullName: anotheruserfullname
+	  homeDir: "/home/anotheruser"
 	  shell: "/bin/bash"
 
 If you are using JSON:
@@ -65,15 +65,15 @@ If you are using JSON:
 	{
 	  "users": [
 	    {
-	      "name": "joris",
-	      "fullName": "joris",
-	      "homeDir": "/home/joris",
+	      "name": "myuser",
+	      "fullName": "myfullusername",
+	      "homeDir": "/home/myuser",
 	      "shell": "/bin/bash"
 	    },
 	    {
-	      "name": "yann",
-	      "fullName": "yann dorcet",
-	      "homeDir": "/home/ydorcet",
+	      "name": "anotheruser",
+	      "fullName": "anotheruserfullname",
+	      "homeDir": "/home/anotheruser",
 	      "shell": "/bin/bash"
 	    }
 	  ]
@@ -90,20 +90,20 @@ If you are using YAML:
 
 	---
 	users:
-	- name: joris
-	  fullName: joris
+	- name: myuser
+	  fullName: myfullusername
 	  userId: 2222
-	  primaryGroup: joris
+	  primaryGroup: myuser
 	  secondaryGroups: dev,france
-	  homeDir: "/home/joris"
+	  homeDir: "/home/myuser"
 	  shell: "/bin/bash"
-	- name: yann
-	  fullName: yann dorcet
+	- name: anotheruser
+	  fullName: anotheruserfullname
 	  systemUser: true
 	  userId: 400
-	  primaryGroup: yann
+	  primaryGroup: anotheruser
 	  secondaryGroups: admin,dev,france
-	  homeDir: "/home/ydorcet"
+	  homeDir: "/home/anotheruser"
 	  shell: "/sbin/nologin"
 
 If you are using JSON:
@@ -113,22 +113,22 @@ If you are using JSON:
 	{
 	  "users": [
 	    {
-	      "name": "joris",
-	      "fullName": "joris",
+	      "name": "myusername",
+	      "fullName": "myfullusername",
 	      "userId": 2222,
-	      "primaryGroup": "joris",
+	      "primaryGroup": "myuser",
 	      "secondaryGroups": "dev,france",
-	      "homeDir": "/home/joris",
+	      "homeDir": "/home/myuser",
 	      "shell": "/bin/bash"
 	    },
 	    {
-	      "name": "yann",
-	      "fullName": "yann dorcet",
+	      "name": "anotheruser",
+	      "fullName": "anotheruserfullname",
 	      "systemUser": true,
 	      "userId": 400,
-	      "primaryGroup": "yann",
+	      "primaryGroup": "anotheruser",
 	      "secondaryGroups": "admin,dev,france",
-	      "homeDir": "/home/ydorcet",
+	      "homeDir": "/home/anotheruser",
 	      "shell": "/sbin/nologin"
 	    }
 	  ]
