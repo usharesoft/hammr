@@ -9,6 +9,7 @@ hammr 3.8.8 (2018-11-12)
 Evolutions:
 
 * User can now use an SSH key instead of a password when scanning a remote machine with hammr scan run
+* Google Cloud Engine authentication method has been updated to support the new format used to authenticate to the platform. As a result, credentials accounts have changed. The certificate is no longer a ``.p12`` file but a ``.json`` file. Old Google Cloud Engine credential accounts will no longer be usable.
 
 hammr 3.8.7 (2018-10-01)
 ------------------------

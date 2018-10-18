@@ -14,6 +14,7 @@
 #    under the License.
 
 import ntpath
+import pyxb
 
 from uforge.objects.uforge import *
 from ussclicore.utils import generics_utils, printer
@@ -237,40 +238,36 @@ def fill_vsphere(account):
     myCredAccount.port = port
     return myCredAccount
 
-def gce():
+def google():
     return CredAccountGoogle()
 
-def fill_gce(account):
-    myCredAccount = gce()
+def fill_google(account):
+    myCredAccount = google()
     # doing field verification
-    if not "username" in account:
-        printer.out("username in gce account not found", printer.ERROR)
-        return
-    if not "certPassword" in account:
-        printer.out("certPassword in gce account not found", printer.ERROR)
+    if "username" in account or "certPassword" in account:
+        printer.out("You may use an old GCE account. Please refer to the documentation.", printer.ERROR)
         return
     if not "cert" in account:
-        printer.out("cert in gce account not found", printer.ERROR)
+        printer.out("cert in GCE account not found", printer.ERROR)
         return
     if not "name" in account:
-        printer.out("name for gce account not found", printer.ERROR)
+        printer.out("name for GCE account not found", printer.ERROR)
         return
 
     myCredAccount.type_ = "google"
-    myCredAccount.login = account["username"]
-    myCredAccount.password = account["certPassword"]
     myCredAccount.name = account["name"]
 
-    myCertificates = certificates()
-    myCredAccount.certificates = myCertificates
+    myCredAccount.certificates = pyxb.BIND()
+    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
 
     try:
         myCertificate = certificate()
         with open(account["cert"], "r") as myfile:
             myCertificate.certStr = myfile.read()
-        myCertificate.type_ = "googleCertificate"
+        myCertificate.type = "googleCertificate"
+        myCertificate.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'type')
         myCertificate.name = ntpath.basename(account["cert"])
-        myCertificates.add_certificate(myCertificate)
+        myCredAccount.certificates.append(myCertificate)
 
     except IOError as e:
         printer.out("File error: " + str(e), printer.ERROR)

@@ -11,7 +11,7 @@ Require Cloud Account: Yes
 
 `Google Compute Engine <https://cloud.google.com/compute/>`_
 
-The GCE builder provides information for building and publishing the machine image for Googe Compute Engine. The GCE builder requires cloud account information to upload and register the machine image to Google Compute Engine public cloud.
+The GCE builder provides information for building and publishing the machine image for Google Compute Engine. The GCE builder requires cloud account information to upload and register the machine image to Google Compute Engine public cloud.
 This builder type is the default name provided by UForge AppCenter.
 
 .. note:: This builder type name can be changed by your UForge administrator. To get the available builder types, please refer to :ref:`command-line-format`
@@ -101,9 +101,8 @@ Used to authenticate to GCE.
 The GCE cloud account has the following valid keys:
 
 * ``type`` (mandatory): a string providing the cloud account type. Default platform type for Google Compute Engine: ``Google Compute Engine``. To get the available platform type, please refer to :ref:`command-line-platform`
-* ``certPassword`` (mandatory): A string providing the password to decrypt the GCE certificate. This password is normally provided along with the certificate.
-* ``cert`` (mandatory): A string providing the pathname or URL where to retrieve your GCE certificate. This should be a (.pem) file.
 * ``name`` (mandatory): a string providing the name of the cloud account. This name can be used in a builder section to reference the rest of the cloud account information.
+* ``cert`` (mandatory): A string providing the pathname or URL where to retrieve your GCE certificate. This should be a (.json) file.
 
 
 .. note:: In the case where ``name`` or ``file`` is used to reference a cloud account, all the other keys are no longer required in the account definition for the builder.
@@ -123,9 +122,7 @@ If you are using YAML:
 	  account:
 	    type: Google Compute Engine
 	    name: My GCE Account
-	    username: joris
-	    certPassword: myCertPassword
-	    cert: "/home/joris/certs/gce.pem"
+	    cert: "/home/joris/certs/gce.json"
 	  computeZone: europe-west1-a
 	  bucketLocation: EU
 	  bucket: jorisbucketname
@@ -145,9 +142,7 @@ If you are using JSON:
 	      "account": {
 	        "type": "Google Compute Engine",
 	        "name": "My GCE Account",
-	        "username": "joris",
-	        "certPassword": "myCertPassword",
-	        "cert": "/home/joris/certs/gce.pem"
+	        "cert": "/home/joris/certs/gce.json"
 	      },
 	      "computeZone": "europe-west1-a",
 	      "bucketLocation": "EU",
@@ -171,9 +166,7 @@ To help with security, the cloud account information can be referenced by the bu
 	accounts:
 	- type: Google Compute Engine
 	  name: My GCE Account
-	  username: joris
-	  certPassword: myCertPassword
-	  cert: "/home/joris/certs/gce.pem"
+	  cert: "/home/joris/certs/gce.json"
 
 If you are using JSON, create a JSON file ``gce-account.json``:
 
@@ -184,9 +177,7 @@ If you are using JSON, create a JSON file ``gce-account.json``:
 	    {
 	        "type": "Google Compute Engine",
 	        "name": "My GCE Account",
-	        "username": "joris",
-	        "certPassword": "myCertPassword",
-	        "cert": "/home/joris/certs/gce.pem"
+	        "cert": "/home/joris/certs/gce.json"
 	    }
 	  ]
 	}

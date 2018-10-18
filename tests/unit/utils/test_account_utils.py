@@ -413,3 +413,43 @@ class TestAWS(TestCase):
         if accessKeyId is not None: account["accessKeyId"] = accessKeyId
         if secretAccessKeyId is not None: account["secretAccessKeyId"] = secretAccessKeyId
         return account
+
+
+class TestGoogle(TestCase):
+
+    def test_fill_google_should_return_none_when_missing_name(self):
+        # given
+        accountMocked = self.build_account(None, "testCert")
+
+        # when
+        account = fill_google(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+    def test_fill_google_should_return_none_when_missing_cert(self):
+        # given
+        accountMocked = self.build_account("testName", None)
+
+        # when
+        account = fill_google(accountMocked)
+
+        # then
+        self.assertEqual(None, account)
+
+    def test_fill_google_should_return_none_when_old(self):
+        # given
+        accountMocked = self.build_account("testName", "testCert")
+        accountMocked["username"] = "testUsername"
+
+        # when
+        account = fill_google(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def build_account(self, name, certificate):
+        account = {}
+        if name is not None: account["name"] = name
+        if certificate is not None: account["cert"] = certificate
+        return account
