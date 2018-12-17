@@ -213,7 +213,8 @@ def publish_image_from_builder(image_object, builder, template, source, counter,
         if image is None:
             image = get_image_to_publish(image_object, builder, template, source, counter)
 
-        publish_image = image_object.retrieve_publish_image_with_target_format_builder(image, builder)
+        cred_account = get_account_to_publish(image_object, builder)
+        publish_image = image_object.retrieve_publish_image_with_target_format_builder(image, builder, cred_account)
         publish_image.imageUri = image.uri
         publish_image.parentUri = source.uri
         publish_image.credAccount = get_account_to_publish(image_object, builder)

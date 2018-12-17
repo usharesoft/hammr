@@ -129,10 +129,15 @@ def set_install_profile_disk_size(install_profile, builder, image_format_name):
                 raise Exception("check yours parameters in file, no attribute [disksize] for [migration][target][builder][installation], mandatory to migrate to [" + builder["type"] +"]")
     return install_profile
 
-def retrieve_publish_image(builder, target_format):
+def retrieve_publish_image(builder, target_format, cred_account):
     create_publish_image_method = getattr(publish_builders, "publish_" + generics_utils.remove_special_chars(target_format.format.name), None)
     if create_publish_image_method:
-        return create_publish_image_method(builder)
+        if hasattr(cred_account, "keystoneVersion"):
+            publish_image = create_publish_image_method(builder, cred_account.keystoneVersion)
+        else:
+            publish_image = create_publish_image_method(builder)
+        publish_image.credAccount = cred_account
+        return publish_image
 
     raise Exception("TargetFormat type is unsupported: " + target_format.format.name)
 

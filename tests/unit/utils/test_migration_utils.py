@@ -434,13 +434,9 @@ class TestMigrationTable(unittest.TestCase):
         # then
         self.assertTrue("check yours parameters in file, no attribute [disksize] for [migration][target][builder][installation], mandatory to migrate to [Amazon AWS]" in e.exception)
 
-    def test_retrieve_publish_image_return_the_publish_image_created(self):
+    @patch("hammr.utils.publish_builders.publish_vcenter")
+    def test_retrieve_publish_image_return_the_publish_image_created(self, mock_publish_vcenter):
         # given
-        target_format = uforge.TargetFormat()
-        image_format = uforge.ImageFormat()
-        image_format.name = "vcenter"
-        target_format.format = image_format
-
         builder = {
             "displayName": "vcenter-vm-name",
             "esxHost": "esxhost_vcenter",
@@ -448,23 +444,57 @@ class TestMigrationTable(unittest.TestCase):
             "network": "network_vcenter"
         }
 
+        cred_account = uforge.CredAccountVSphere()
+
+        publish_image = uforge.PublishImageVSphere()
+        publish_image.displayName = builder["displayName"]
+        publish_image.esxHost = builder["esxHost"]
+        publish_image.datastore = builder["datastore"]
+        publish_image.network = builder["network"]
+
+        mock_publish_vcenter.return_value = publish_image
+
         # when
-        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, target_format)
+        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, self.create_target_format("vcenter"), cred_account)
 
         # then
+        mock_publish_vcenter.assert_called_with(builder)
         self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
         self.assertEqual(publish_image_retrieved.esxHost, builder["esxHost"])
         self.assertEqual(publish_image_retrieved.datastore, builder["datastore"])
         self.assertEqual(publish_image_retrieved.network, builder["network"])
 
+    @patch("hammr.utils.publish_builders.publish_openstackqcow2")
+    def test_retrieve_publish_image_call_publish_builder_method_with_keystone_version_when_openstack(self, mock_publish_openstackqcow2):
+        # given
+        builder = {
+            "displayName": "openstackqcow2-vm-name",
+            "tenantName": "tenant_name",
+            "keystoneDomain": "keystone_domain"
+        }
+
+        cred_account = uforge.CredAccountOpenStack()
+        cred_account.keystoneVersion = "v3"
+
+        publish_image = uforge.PublishImageVSphere()
+        publish_image.displayName = builder["displayName"]
+        publish_image.tenantName = builder["tenantName"]
+        publish_image.keystoneDomain = builder["keystoneDomain"]
+
+        mock_publish_openstackqcow2.return_value = publish_image
+
+        # when
+        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, self.create_target_format("openstackqcow2"), cred_account)
+
+        # then
+        mock_publish_openstackqcow2.assert_called_with(builder, "v3")
+        self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
+        self.assertEqual(publish_image_retrieved.tenantName, builder["tenantName"])
+        self.assertEqual(publish_image_retrieved.keystoneDomain, builder["keystoneDomain"])
+
     @patch("ussclicore.utils.generics_utils.remove_special_chars")
     def test_retrieve_publish_image_raise_exception_when_format_name_not_found(self, mock_remove_special_chars):
         # given
-        target_format = uforge.TargetFormat()
-        image_format = uforge.ImageFormat()
-        image_format.name = "vcenter"
-        target_format.format = image_format
-
         builder = {
             "displayName": "vcenter-vm-name",
             "esxHost": "esxhost_vcenter",
@@ -472,11 +502,13 @@ class TestMigrationTable(unittest.TestCase):
             "network": "network_vcenter"
         }
 
+        cred_account = uforge.CredAccountVSphere()
+
         mock_remove_special_chars.return_value = "vcenternotfound"
 
         # when
         with self.assertRaises(Exception) as e:
-            migration_utils.retrieve_publish_image(builder, target_format)
+            migration_utils.retrieve_publish_image(builder, self.create_target_format("vcenter"), cred_account)
 
         # then
         self.assertTrue("TargetFormat type is unsupported: vcenter" in e.exception)
@@ -557,6 +589,15 @@ class TestMigrationTable(unittest.TestCase):
         accounts.credAccounts = pyxb.BIND()
         accounts.credAccounts.append(account)
         return accounts
+
+    def create_target_format(self, image_format_name):
+        image_format = uforge.ImageFormat()
+        image_format.name = image_format_name
+
+        target_format = uforge.TargetFormat()
+        target_format.format = image_format
+
+        return target_format
 
     def get_migration_config(self, migration_key="migration", name_key="name", os_key="os", os_value="linux",
                              source_key="source", host_key="host", user_key="user",

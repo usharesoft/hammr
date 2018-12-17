@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from unittest import TestCase
+from mock import patch
 
 from hammr.utils.publish_builders import *
 
@@ -421,4 +422,138 @@ class TestPublishGoogle(TestCase):
         if storage_class is not None: builder["storageClass"] = storage_class
         if disk_name_prefix is not None: builder["diskNamePrefix"] = disk_name_prefix
 
+        return builder
+
+class TestPublishOpenStack(TestCase):
+    def test_publish_openstack_should_return_publish_image_when_valid_entries_for_v3(self):
+        # given
+        builder = self.build_builder_v3("testDisplayName", "testKeystoneDomain", "testKeystoneProject")
+
+        # when
+        pimage = publish_openstack(builder, "v3")
+
+        # then
+        self.assertEqual(pimage.displayName, builder["displayName"])
+        self.assertEqual(pimage.keystoneDomain, builder["keystoneDomain"])
+        self.assertEqual(pimage.keystoneProject, builder["keystoneProject"])
+
+    def test_publish_openstack_should_return_none_when_missing_keystoneDomain_for_v3(self):
+        # given
+        builder = self.build_builder_v3("testDisplayName", None, "testKeystoneProject")
+
+        # when
+        pimage = publish_openstack(builder, "v3")
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_openstack_should_return_none_when_missing_keystoneDomain_for_v3(self):
+        # given
+        builder = self.build_builder_v3("testDisplayName", "testKeystoneDomain", None)
+
+        # when
+        pimage = publish_openstack(builder, "v3")
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_openstack_should_return_none_when_missing_displayName_for_v3(self):
+        # given
+        builder = self.build_builder_v3(None, "testKeystoneDomain", "testKeystoneProject")
+
+        # when
+        pimage = publish_openstack(builder, "v3")
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_openstack_should_return_publish_image_when_valid_entries_for_v2(self):
+        # given
+        builder = self.build_builder_v2("testDisplayName", "testTenantName")
+
+        # when
+        pimage = publish_openstack(builder, "v2.0")
+
+        # then
+        self.assertEqual(pimage.displayName, builder["displayName"])
+        self.assertEqual(pimage.tenantName, builder["tenantName"])
+
+    def test_publish_openstack_should_return_none_when_missing_tenantName_for_v2(self):
+        # given
+        builder = self.build_builder_v2("testDisplayName", None)
+
+        # when
+        pimage = publish_openstack(builder, "v2.0")
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_openstack_should_return_none_when_missing_displayName_for_v2(self):
+        # given
+        builder = self.build_builder_v2(None, "testTenantName")
+
+        # when
+        pimage = publish_openstack(builder, "v2.0")
+
+        # then
+        self.assertEqual(pimage, None)
+
+    @patch("hammr.utils.publish_builders.publish_openstack")
+    def test_publish_openstackqcow2_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
+        # given
+        builder = self.build_builder("testDisplayNameqcow2")
+
+        # when
+        publish_openstackqcow2(builder, "vtestqcow2")
+
+        # then
+        mock_publish_openstack.assert_called_with(builder, "vtestqcow2")
+
+    @patch("hammr.utils.publish_builders.publish_openstack")
+    def test_publish_openstackvhd_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
+        # given
+        builder = self.build_builder("testDisplayNamevhd")
+
+        # when
+        publish_openstackvhd(builder, "vtestvhd")
+
+        # then
+        mock_publish_openstack.assert_called_with(builder, "vtestvhd")
+
+    @patch("hammr.utils.publish_builders.publish_openstack")
+    def test_publish_openstackvmdk_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
+        # given
+        builder = self.build_builder("testDisplayNamevmdk")
+
+        # when
+        publish_openstackvmdk(builder, "vtestvmdk")
+
+        # then
+        mock_publish_openstack.assert_called_with(builder, "vtestvmdk")
+
+    @patch("hammr.utils.publish_builders.publish_openstack")
+    def test_publish_openstackvdi_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
+        # given
+        builder = self.build_builder("testDisplayNamevdi")
+
+        # when
+        publish_openstackvdi(builder, "vtestvdi")
+
+        # then
+        mock_publish_openstack.assert_called_with(builder, "vtestvdi")
+
+    def build_builder(self, display_name):
+        builder = {}
+        if display_name is not None: builder["displayName"] = display_name
+        return builder
+
+    def build_builder_v2(self, display_name, tenant_name):
+        builder = self.build_builder(display_name)
+        if tenant_name is not None: builder["tenantName"] = tenant_name
+        return builder
+
+    def build_builder_v3(self, display_name, keystone_domain, keystone_project):
+        builder = self.build_builder(display_name)
+        if keystone_domain is not None: builder["keystoneDomain"] = keystone_domain
+        if keystone_project is not None: builder["keystoneProject"] = keystone_project
         return builder

@@ -126,45 +126,49 @@ def publish_susecloud(builder):
     return pimage
 
 
-def publish_openstack(builder):
+def publish_openstack(builder, keystone_version):
     pimage = PublishImageOpenStack()
 
     # doing field verification
     if not "displayName" in builder:
         printer.out("displayName in openstack builder not found", printer.ERROR)
         return
-    if not "tenantName" in builder:
-        printer.out("TenantName in openstack builder not found", printer.ERROR)
-        return
+    if keystone_version == "v3":
+        if not "keystoneDomain" in builder:
+            printer.out("keystoneDomain in openstack builder not found when account keystone version is v3", printer.ERROR)
+            return
+        if not "keystoneProject" in builder:
+            printer.out("keystoneProject in openstack builder not found when account keystone version is v3", printer.ERROR)
+            return
+        pimage.keystoneDomain = builder["keystoneDomain"]
+        pimage.keystoneProject = builder["keystoneProject"]
+    else:
+        if not "tenantName" in builder:
+            printer.out("TenantName in openstack builder not found when account keystone version is v2.0", printer.ERROR)
+            return
+        pimage.tenantName = builder["tenantName"]
 
     pimage.displayName = builder["displayName"]
-    pimage.tenantName = builder["tenantName"]
-
     if "publicImage" in builder:
         pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
-    if "keystoneDomain" in builder:
-        pimage.keystoneDomain = builder["keystoneDomain"]
-        return
-    if "keystoneProject" in builder:
-        pimage.keystoneProject = builder["keystoneProject"]
-        return
+
     return pimage
 
 
-def publish_openstackqcow2(builder):
-    return publish_openstack(builder)
+def publish_openstackqcow2(builder, keystone_version):
+    return publish_openstack(builder, keystone_version)
 
 
-def publish_openstackvhd(builder):
-    return publish_openstack(builder)
+def publish_openstackvhd(builder, keystone_version):
+    return publish_openstack(builder, keystone_version)
 
 
-def publish_openstackvmdk(builder):
-    return publish_openstack(builder)
+def publish_openstackvmdk(builder, keystone_version):
+    return publish_openstack(builder, keystone_version)
 
 
-def publish_openstackvdi(builder):
-    return publish_openstack(builder)
+def publish_openstackvdi(builder, keystone_version):
+    return publish_openstack(builder, keystone_version)
 
 
 def publish_aws(builder):
