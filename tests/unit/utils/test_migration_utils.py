@@ -435,7 +435,7 @@ class TestMigrationTable(unittest.TestCase):
         self.assertTrue("check yours parameters in file, no attribute [disksize] for [migration][target][builder][installation], mandatory to migrate to [Amazon AWS]" in e.exception)
 
     @patch("hammr.utils.publish_builders.publish_vcenter")
-    def test_retrieve_publish_image_return_the_publish_image_created(self, mock_publish_vcenter):
+    def test_build_publish_image_return_the_publish_image_created(self, mock_publish_vcenter):
         # given
         builder = {
             "displayName": "vcenter-vm-name",
@@ -455,45 +455,17 @@ class TestMigrationTable(unittest.TestCase):
         mock_publish_vcenter.return_value = publish_image
 
         # when
-        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, self.create_target_format("vcenter"), cred_account)
+        publish_image_retrieved = migration_utils.build_publish_image(builder, self.create_target_format("vcenter"), cred_account)
 
         # then
-        mock_publish_vcenter.assert_called_with(builder)
+        mock_publish_vcenter.assert_called_with(builder, cred_account)
         self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
         self.assertEqual(publish_image_retrieved.esxHost, builder["esxHost"])
         self.assertEqual(publish_image_retrieved.datastore, builder["datastore"])
         self.assertEqual(publish_image_retrieved.network, builder["network"])
 
-    @patch("hammr.utils.publish_builders.publish_openstackqcow2")
-    def test_retrieve_publish_image_call_publish_builder_method_with_keystone_version_when_openstack(self, mock_publish_openstackqcow2):
-        # given
-        builder = {
-            "displayName": "openstackqcow2-vm-name",
-            "tenantName": "tenant_name",
-            "keystoneDomain": "keystone_domain"
-        }
-
-        cred_account = uforge.CredAccountOpenStack()
-        cred_account.keystoneVersion = "v3"
-
-        publish_image = uforge.PublishImageVSphere()
-        publish_image.displayName = builder["displayName"]
-        publish_image.tenantName = builder["tenantName"]
-        publish_image.keystoneDomain = builder["keystoneDomain"]
-
-        mock_publish_openstackqcow2.return_value = publish_image
-
-        # when
-        publish_image_retrieved = migration_utils.retrieve_publish_image(builder, self.create_target_format("openstackqcow2"), cred_account)
-
-        # then
-        mock_publish_openstackqcow2.assert_called_with(builder, "v3")
-        self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
-        self.assertEqual(publish_image_retrieved.tenantName, builder["tenantName"])
-        self.assertEqual(publish_image_retrieved.keystoneDomain, builder["keystoneDomain"])
-
     @patch("ussclicore.utils.generics_utils.remove_special_chars")
-    def test_retrieve_publish_image_raise_exception_when_format_name_not_found(self, mock_remove_special_chars):
+    def test_build_publish_image_raise_exception_when_format_name_not_found(self, mock_remove_special_chars):
         # given
         builder = {
             "displayName": "vcenter-vm-name",
@@ -508,7 +480,7 @@ class TestMigrationTable(unittest.TestCase):
 
         # when
         with self.assertRaises(Exception) as e:
-            migration_utils.retrieve_publish_image(builder, self.create_target_format("vcenter"), cred_account)
+            migration_utils.build_publish_image(builder, self.create_target_format("vcenter"), cred_account)
 
         # then
         self.assertTrue("TargetFormat type is unsupported: vcenter" in e.exception)

@@ -15,6 +15,8 @@
 from unittest import TestCase
 from mock import patch
 
+from uforge.objects import uforge
+
 from hammr.utils.publish_builders import *
 
 class TestPublishK5(TestCase):
@@ -23,7 +25,7 @@ class TestPublishK5(TestCase):
         builder = self.build_builder("testName", "testDomain", "testProject", "testRegion")
 
         # when
-        pimage = publish_k5vmdk(builder)
+        pimage = publish_k5vmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.displayName, builder["displayName"])
@@ -37,7 +39,7 @@ class TestPublishK5(TestCase):
         builder = self.build_builder(None, "testDomain", "testProject", "testRegion")
 
         # when
-        pimage = publish_k5vmdk(builder)
+        pimage = publish_k5vmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -48,7 +50,7 @@ class TestPublishK5(TestCase):
         builder = self.build_builder("testName", None, "testProject", "testRegion")
 
         # when
-        pimage = publish_k5vmdk(builder)
+        pimage = publish_k5vmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -59,7 +61,7 @@ class TestPublishK5(TestCase):
         builder = self.build_builder("testName", "testDomain", None, "testRegion")
 
         # when
-        pimage = publish_k5vmdk(builder)
+        pimage = publish_k5vmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -70,7 +72,7 @@ class TestPublishK5(TestCase):
         builder = self.build_builder("testName", "testDomain", "testProject", None)
 
         # when
-        pimage = publish_k5vmdk(builder)
+        pimage = publish_k5vmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -84,13 +86,17 @@ class TestPublishK5(TestCase):
         if region is not None: builder["region"] = region
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountK5()
+        return cred_accound
+
 class TestPublishDocker(TestCase):
     def test_publish_docker_should_return_publish_image_when_valid_entries(self):
         # given
         builder = self.build_builder("testNamespace", "testRepositoryName", "testTagName")
 
         # when
-        pimage = publish_docker(builder)
+        pimage = publish_docker(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.namespace, builder["namespace"])
@@ -102,7 +108,7 @@ class TestPublishDocker(TestCase):
         builder = self.build_builder(None, "testRepositoryName", "testTagName")
 
         # when
-        pimage = publish_docker(builder)
+        pimage = publish_docker(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -112,7 +118,7 @@ class TestPublishDocker(TestCase):
         builder = self.build_builder("testNamespace", None, "testTagName")
 
         # when
-        pimage = publish_docker(builder)
+        pimage = publish_docker(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -122,7 +128,7 @@ class TestPublishDocker(TestCase):
         builder = self.build_builder("testNamespace", "testRepositoryName", None)
 
         # when
-        pimage = publish_docker(builder)
+        pimage = publish_docker(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -134,13 +140,17 @@ class TestPublishDocker(TestCase):
         if tag_name is not None: builder["tagName"] = tag_name
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountDocker()
+        return cred_accound
+
 class TestPublishOpenShift(TestCase):
     def test_publish_openshift_should_return_publish_image_when_valid_entries(self):
         # given
         builder = self.build_builder("testNamespace", "testRepositoryName", "testTagName")
 
         # when
-        pimage = publish_openshift(builder)
+        pimage = publish_openshift(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.namespace, builder["namespace"])
@@ -152,7 +162,7 @@ class TestPublishOpenShift(TestCase):
         builder = self.build_builder(None, "testRepositoryName", "testTagName")
 
         # when
-        pimage = publish_openshift(builder)
+        pimage = publish_openshift(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -162,7 +172,7 @@ class TestPublishOpenShift(TestCase):
         builder = self.build_builder("testNamespace", None, "testTagName")
 
         # when
-        pimage = publish_openshift(builder)
+        pimage = publish_openshift(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -172,7 +182,7 @@ class TestPublishOpenShift(TestCase):
         builder = self.build_builder("testNamespace", "testRepositoryName", None)
 
         # when
-        pimage = publish_openshift(builder)
+        pimage = publish_openshift(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -184,6 +194,10 @@ class TestPublishOpenShift(TestCase):
         if tag_name is not None: builder["tagName"] = tag_name
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountOpenShift()
+        return cred_accound
+
 class TestPublishAzure(TestCase):
 
     def test_publish_azure_should_return_publish_image_when_valid_entries_withResourceGroup(self):
@@ -191,7 +205,7 @@ class TestPublishAzure(TestCase):
         builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", "myResourceGroup")
 
         # when
-        pimage = publish_azure(builder)
+        pimage = publish_azure(builder, self.build_cred_account())
 
         # then
         self.assertNotEqual(pimage, None)
@@ -206,7 +220,7 @@ class TestPublishAzure(TestCase):
         builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", "myDisplayName", None)
 
         # when
-        pimage = publish_azure(builder)
+        pimage = publish_azure(builder, self.build_cred_account())
 
         # then
         self.assertNotEqual(pimage, None)
@@ -221,7 +235,7 @@ class TestPublishAzure(TestCase):
         builder = self.build_azure_builder("myStorageAccount", None,"myBlob", "myDisplayName", "myResourceGroup")
 
         # when
-        pimage = publish_azure(builder)
+        pimage = publish_azure(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -231,7 +245,7 @@ class TestPublishAzure(TestCase):
         builder = self.build_azure_builder("myStorageAccount", "myContainer", None, "myDisplayName", "myResourceGroup")
 
         # when
-        pimage = publish_azure(builder)
+        pimage = publish_azure(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -241,7 +255,7 @@ class TestPublishAzure(TestCase):
         builder = self.build_azure_builder("myStorageAccount", "myContainer", "myBlob", None, "myResourceGroup")
 
         # when
-        pimage = publish_azure(builder)
+        pimage = publish_azure(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -255,6 +269,10 @@ class TestPublishAzure(TestCase):
         if resourceGroup is not None: builder["resourceGroup"] = resourceGroup
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountAzure()
+        return cred_accound
+
 class TestPublishCloudStack(TestCase):
 
     def test_publish_cloudstack_should_return_publish_image_when_valid_entries(self):
@@ -262,7 +280,7 @@ class TestPublishCloudStack(TestCase):
         builder = self.build_cloudstack_builder("myImageName", "myZone", "myDescription")
 
         # when
-        pimage = publish_cloudstack(builder)
+        pimage = publish_cloudstack(builder, self.build_cred_account())
 
         # then
         self.assertNotEqual(pimage, None)
@@ -275,7 +293,7 @@ class TestPublishCloudStack(TestCase):
         builder = self.build_cloudstack_builder(None, "myZone", "myDescription")
 
         # when
-        pimage = publish_cloudstack(builder)
+        pimage = publish_cloudstack(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -285,7 +303,7 @@ class TestPublishCloudStack(TestCase):
         builder = self.build_cloudstack_builder("myImageName", None, "myDescription")
 
         # when
-        pimage = publish_cloudstack(builder)
+        pimage = publish_cloudstack(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -295,7 +313,7 @@ class TestPublishCloudStack(TestCase):
         builder = self.build_cloudstack_builder("myImageName", "myZone", None)
 
         # when
-        pimage = publish_cloudstack(builder)
+        pimage = publish_cloudstack(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -308,13 +326,17 @@ class TestPublishCloudStack(TestCase):
         if description is not None: builder["description"] = description
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountCloudStack()
+        return cred_accound
+
 class TestPublishOracle(TestCase):
     def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
         # given
         builder = self.build_oracle_builder("displayName", "computeEndPoint")
 
         # when
-        pimage = publish_oracleraw(builder)
+        pimage = publish_oracleraw(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.displayName, builder["displayName"])
@@ -325,7 +347,7 @@ class TestPublishOracle(TestCase):
         builder = self.build_oracle_builder(None, "computeEndPoint")
 
         # when
-        pimage = publish_oracleraw(builder)
+        pimage = publish_oracleraw(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -335,7 +357,7 @@ class TestPublishOracle(TestCase):
         builder = self.build_oracle_builder("displayName", None)
 
         # when
-        pimage = publish_oracleraw(builder)
+        pimage = publish_oracleraw(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -346,6 +368,10 @@ class TestPublishOracle(TestCase):
         if compute_end_point is not None: builder["computeEndPoint"] = compute_end_point
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountOracle()
+        return cred_accound
+
 
 class TestPublishOutscale(TestCase):
     def test_publish_outscale_should_return_publish_image_when_valid_entries(self):
@@ -353,7 +379,7 @@ class TestPublishOutscale(TestCase):
         builder = self.build_outscale_builder("myRegion")
 
         # when
-        pimage = publish_outscale(builder)
+        pimage = publish_outscale(builder, self.build_cred_account())
 
         # then
         self.assertNotEqual(pimage, None)
@@ -365,7 +391,7 @@ class TestPublishOutscale(TestCase):
         builder = self.build_outscale_builder(None)
 
         # when
-        pimage = publish_outscale(builder)
+        pimage = publish_outscale(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -376,6 +402,10 @@ class TestPublishOutscale(TestCase):
             builder["region"] = region
         return builder
 
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountOutscale()
+        return cred_accound
+
 class TestPublishGoogle(TestCase):
     def test_publish_google_should_return_publish_image_when_valid_entries(self):
         # given
@@ -383,7 +413,7 @@ class TestPublishGoogle(TestCase):
         print(builder)
 
         # when
-        pimage = publish_google(builder)
+        pimage = publish_google(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.zoneName, builder["computeZone"])
@@ -398,7 +428,7 @@ class TestPublishGoogle(TestCase):
         builder = self.build_google_builder("computeZone", "bucketLocation", None, "projectId", "storageClass", "diskNamePrefix")
 
         # when
-        pimage = publish_google(builder)
+        pimage = publish_google(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -408,7 +438,7 @@ class TestPublishGoogle(TestCase):
         builder = self.build_google_builder("computeZone", "bucketLocation", "bucket", None, "storageClass", "diskNamePrefix")
 
         # when
-        pimage = publish_google(builder)
+        pimage = publish_google(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
@@ -421,8 +451,11 @@ class TestPublishGoogle(TestCase):
         if project_id is not None: builder["projectId"] = project_id
         if storage_class is not None: builder["storageClass"] = storage_class
         if disk_name_prefix is not None: builder["diskNamePrefix"] = disk_name_prefix
-
         return builder
+
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountGoogle()
+        return cred_accound
 
 class TestPublishOpenStack(TestCase):
     def test_publish_openstack_should_return_publish_image_when_valid_entries_for_v3(self):
@@ -430,7 +463,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v3("testDisplayName", "testKeystoneDomain", "testKeystoneProject")
 
         # when
-        pimage = publish_openstack(builder, "v3")
+        pimage = publish_openstack(builder, self.build_cred_account_v3())
 
         # then
         self.assertEqual(pimage.displayName, builder["displayName"])
@@ -442,7 +475,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v3("testDisplayName", None, "testKeystoneProject")
 
         # when
-        pimage = publish_openstack(builder, "v3")
+        pimage = publish_openstack(builder, self.build_cred_account_v3())
 
         # then
         self.assertEqual(pimage, None)
@@ -452,7 +485,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v3("testDisplayName", "testKeystoneDomain", None)
 
         # when
-        pimage = publish_openstack(builder, "v3")
+        pimage = publish_openstack(builder, self.build_cred_account_v3())
 
         # then
         self.assertEqual(pimage, None)
@@ -462,7 +495,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v3(None, "testKeystoneDomain", "testKeystoneProject")
 
         # when
-        pimage = publish_openstack(builder, "v3")
+        pimage = publish_openstack(builder, self.build_cred_account_v3())
 
         # then
         self.assertEqual(pimage, None)
@@ -472,7 +505,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v2("testDisplayName", "testTenantName")
 
         # when
-        pimage = publish_openstack(builder, "v2.0")
+        pimage = publish_openstack(builder, self.build_cred_account_v2())
 
         # then
         self.assertEqual(pimage.displayName, builder["displayName"])
@@ -483,7 +516,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v2("testDisplayName", None)
 
         # when
-        pimage = publish_openstack(builder, "v2.0")
+        pimage = publish_openstack(builder, self.build_cred_account_v2())
 
         # then
         self.assertEqual(pimage, None)
@@ -493,7 +526,7 @@ class TestPublishOpenStack(TestCase):
         builder = self.build_builder_v2(None, "testTenantName")
 
         # when
-        pimage = publish_openstack(builder, "v2.0")
+        pimage = publish_openstack(builder, self.build_cred_account_v2())
 
         # then
         self.assertEqual(pimage, None)
@@ -502,45 +535,49 @@ class TestPublishOpenStack(TestCase):
     def test_publish_openstackqcow2_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
         # given
         builder = self.build_builder("testDisplayNameqcow2")
+        cred_account = self.build_cred_account()
 
         # when
-        publish_openstackqcow2(builder, "vtestqcow2")
+        publish_openstackqcow2(builder, cred_account)
 
         # then
-        mock_publish_openstack.assert_called_with(builder, "vtestqcow2")
+        mock_publish_openstack.assert_called_with(builder, cred_account)
 
     @patch("hammr.utils.publish_builders.publish_openstack")
     def test_publish_openstackvhd_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
         # given
         builder = self.build_builder("testDisplayNamevhd")
+        cred_account = self.build_cred_account()
 
         # when
-        publish_openstackvhd(builder, "vtestvhd")
+        publish_openstackvhd(builder, cred_account)
 
         # then
-        mock_publish_openstack.assert_called_with(builder, "vtestvhd")
+        mock_publish_openstack.assert_called_with(builder, cred_account)
 
     @patch("hammr.utils.publish_builders.publish_openstack")
     def test_publish_openstackvmdk_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
         # given
         builder = self.build_builder("testDisplayNamevmdk")
+        cred_account = self.build_cred_account()
 
         # when
-        publish_openstackvmdk(builder, "vtestvmdk")
+        publish_openstackvmdk(builder, cred_account)
 
         # then
-        mock_publish_openstack.assert_called_with(builder, "vtestvmdk")
+        mock_publish_openstack.assert_called_with(builder, cred_account)
 
     @patch("hammr.utils.publish_builders.publish_openstack")
     def test_publish_openstackvdi_should_call_publish_openstack_with_same_parameters(self, mock_publish_openstack):
         # given
         builder = self.build_builder("testDisplayNamevdi")
+        cred_account = self.build_cred_account()
 
         # when
-        publish_openstackvdi(builder, "vtestvdi")
+        publish_openstackvdi(builder, cred_account)
 
         # then
-        mock_publish_openstack.assert_called_with(builder, "vtestvdi")
+        mock_publish_openstack.assert_called_with(builder, cred_account)
 
     def build_builder(self, display_name):
         builder = {}
@@ -557,3 +594,17 @@ class TestPublishOpenStack(TestCase):
         if keystone_domain is not None: builder["keystoneDomain"] = keystone_domain
         if keystone_project is not None: builder["keystoneProject"] = keystone_project
         return builder
+
+    def build_cred_account(self):
+        cred_accound = uforge.CredAccountOpenStack()
+        return cred_accound
+
+    def build_cred_account_v2(self):
+        cred_accound = self.build_cred_account()
+        cred_accound.keystoneVersion = "v2.0"
+        return cred_accound
+
+    def build_cred_account_v3(self):
+        cred_accound = self.build_cred_account()
+        cred_accound.keystoneVersion = "v3"
+        return cred_accound

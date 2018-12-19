@@ -101,7 +101,7 @@ class TestImage(TestCase):
         self.assertEqual(2, return_value)
 
     @patch("hammr.utils.publish_builders.publish_vcenter")
-    def test_retrieve_publish_image_with_target_format_builder_return_the_publish_image_created(self,
+    def test_build_publish_image_return_the_publish_image_created(self,
                                                                                                 mock_publish_vcenter):
         # given
         i = self.prepare_image()
@@ -124,48 +124,15 @@ class TestImage(TestCase):
         mock_publish_vcenter.return_value = publish_image
 
         # when
-        publish_image_retrieved = i.retrieve_publish_image_with_target_format_builder(self.create_image("vcenter"), builder,
+        publish_image_retrieved = i.build_publish_image(self.create_image("vcenter"), builder,
                                                                                          cred_account)
 
         # then
-        mock_publish_vcenter.assert_called_with(builder)
+        mock_publish_vcenter.assert_called_with(builder, cred_account)
         self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
         self.assertEqual(publish_image_retrieved.esxHost, builder["esxHost"])
         self.assertEqual(publish_image_retrieved.datastore, builder["datastore"])
         self.assertEqual(publish_image_retrieved.network, builder["network"])
-
-    @patch("hammr.utils.publish_builders.publish_openstackqcow2")
-    def test_retrieve_publish_image_with_target_format_builder_call_publish_builder_method_with_keystone_version_when_openstack(
-            self,
-            mock_publish_openstackqcow2):
-        # given
-        i = self.prepare_image()
-
-        builder = {
-            "displayName": "openstackqcow2-vm-name",
-            "tenantName": "tenant_name",
-            "keystoneDomain": "keystone_domain"
-        }
-
-        cred_account = uforge.CredAccountOpenStack()
-        cred_account.keystoneVersion = "v3"
-
-        publish_image = uforge.PublishImageVSphere()
-        publish_image.displayName = builder["displayName"]
-        publish_image.tenantName = builder["tenantName"]
-        publish_image.keystoneDomain = builder["keystoneDomain"]
-
-        mock_publish_openstackqcow2.return_value = publish_image
-
-        # when
-        publish_image_retrieved = i.retrieve_publish_image_with_target_format_builder(self.create_image("openstackqcow2"), builder,
-                                                                                         cred_account)
-
-        # then
-        mock_publish_openstackqcow2.assert_called_with(builder, "v3")
-        self.assertEqual(publish_image_retrieved.displayName, builder["displayName"])
-        self.assertEqual(publish_image_retrieved.tenantName, builder["tenantName"])
-        self.assertEqual(publish_image_retrieved.keystoneDomain, builder["keystoneDomain"])
 
     def prepare_image(self):
         i = image.Image()

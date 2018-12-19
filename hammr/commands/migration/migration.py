@@ -93,7 +93,7 @@ class Migration(Cmd, CoreGlobal):
             if image is None:
                 return 2
             cred_account = migration_utils.retrieve_account(self.api, self.login, migration_config["target"]["builder"]["account"]["name"])
-            publish_image = migration_utils.retrieve_publish_image(migration_config["target"]["builder"], target_format, cred_account)
+            publish_image = migration_utils.build_publish_image(migration_config["target"]["builder"], target_format, cred_account)
             if publish_image is None:
                 return 2
 

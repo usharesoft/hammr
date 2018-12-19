@@ -423,14 +423,11 @@ class Image(Cmd, CoreGlobal):
             appliance = appliance[0]
             publish_all_builders(self, template, appliance)
 
-    def retrieve_publish_image_with_target_format_builder(self, image, builder, cred_account):
+    def build_publish_image(self, image, builder, cred_account):
         format_type = image.targetFormat.format.name
         publish_method = getattr(publish_builders, "publish_" + generics_utils.remove_special_chars(format_type), None)
         if publish_method:
-            if hasattr(cred_account, "keystoneVersion"):
-                publish_image = publish_method(builder, cred_account.keystoneVersion)
-            else:
-                publish_image = publish_method(builder)
+            publish_image = publish_method(builder, cred_account)
             if publish_image is None:
                 raise ValueError("Could not find the builder")
         else:
