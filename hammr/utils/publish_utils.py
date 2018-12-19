@@ -217,7 +217,6 @@ def publish_image_from_builder(image_object, builder, template, source, counter,
         publish_image = image_object.build_publish_image(image, builder, cred_account)
         publish_image.imageUri = image.uri
         publish_image.parentUri = source.uri
-        publish_image.credAccount = get_account_to_publish(image_object, builder)
         account_name = publish_image.credAccount.name
 
         published_image = call_publish_webservice(image_object, image, source, publish_image)

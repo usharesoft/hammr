@@ -101,8 +101,7 @@ class TestImage(TestCase):
         self.assertEqual(2, return_value)
 
     @patch("hammr.utils.publish_builders.publish_vcenter")
-    def test_build_publish_image_return_the_publish_image_created(self,
-                                                                                                mock_publish_vcenter):
+    def test_build_publish_image_return_the_publish_image_created(self, mock_publish_vcenter):
         # given
         i = self.prepare_image()
 
@@ -124,8 +123,7 @@ class TestImage(TestCase):
         mock_publish_vcenter.return_value = publish_image
 
         # when
-        publish_image_retrieved = i.build_publish_image(self.create_image("vcenter"), builder,
-                                                                                         cred_account)
+        publish_image_retrieved = i.build_publish_image(self.create_image("vcenter"), builder, cred_account)
 
         # then
         mock_publish_vcenter.assert_called_with(builder, cred_account)
