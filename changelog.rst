@@ -3,6 +3,17 @@
 Changelog
 =========
 
+hammr 3.8.9 (2018-12-21)
+------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp9-1 only
+
+Bug fixes:
+
+* Disk usage quota not displayed by quota list command when user has quota limits
+
 hammr 3.8.8 (2018-11-12)
 ------------------------
 
