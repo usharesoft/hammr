@@ -18,8 +18,7 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="3.8.0.5"
-
+VERSION="3.8.0.6"
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
 HTTP_TIMEOUT=120
