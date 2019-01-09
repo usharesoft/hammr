@@ -19,7 +19,7 @@ from uforge.objects.uforge import *
 from hammr.utils.hammr_utils import *
 from ussclicore.utils import generics_utils, printer
 
-def publish_vcd(builder):
+def publish_vcd(builder, cred_account):
     pimage = PublishImageVCloudDirector()
 
     # doing field verification
@@ -39,7 +39,7 @@ def publish_vcd(builder):
     return pimage
 
 
-def publish_vcenter(builder):
+def publish_vcenter(builder, cred_account):
     pimage = PublishImageVSphere()
 
     # doing field verification
@@ -65,7 +65,7 @@ def publish_vcenter(builder):
     return pimage
 
 
-def publish_cloudstack(builder):
+def publish_cloudstack(builder, cred_account):
     pimage = PublishImageCloudStack()
 
     # doing field verification
@@ -89,17 +89,17 @@ def publish_cloudstack(builder):
     pimage.description = builder["description"]
     return pimage
 
-def publish_cloudstackqcow2(builder):
-    return publish_cloudstack(builder)
+def publish_cloudstackqcow2(builder, cred_account):
+    return publish_cloudstack(builder, cred_account)
 
-def publish_cloudstackvhd(builder):
-    return publish_cloudstack(builder)
+def publish_cloudstackvhd(builder, cred_account):
+    return publish_cloudstack(builder, cred_account)
 
-def publish_cloudstackova(builder):
-    return publish_cloudstack(builder)
+def publish_cloudstackova(builder, cred_account):
+    return publish_cloudstack(builder, cred_account)
 
 
-def publish_susecloud(builder):
+def publish_susecloud(builder, cred_account):
     pimage = PublishImageSuseCloud()
 
     # doing field verification
@@ -126,48 +126,52 @@ def publish_susecloud(builder):
     return pimage
 
 
-def publish_openstack(builder):
+def publish_openstack(builder, cred_account):
     pimage = PublishImageOpenStack()
 
     # doing field verification
     if not "displayName" in builder:
         printer.out("displayName in openstack builder not found", printer.ERROR)
         return
-    if not "tenantName" in builder:
-        printer.out("TenantName in openstack builder not found", printer.ERROR)
-        return
+    if hasattr(cred_account, "keystoneVersion") and cred_account.keystoneVersion == "v3":
+        if not "keystoneDomain" in builder:
+            printer.out("keystoneDomain in openstack builder not found when account keystone version is v3", printer.ERROR)
+            return
+        if not "keystoneProject" in builder:
+            printer.out("keystoneProject in openstack builder not found when account keystone version is v3", printer.ERROR)
+            return
+        pimage.keystoneDomain = builder["keystoneDomain"]
+        pimage.keystoneProject = builder["keystoneProject"]
+    else:
+        if not "tenantName" in builder:
+            printer.out("TenantName in openstack builder not found when account keystone version is v2.0", printer.ERROR)
+            return
+        pimage.tenantName = builder["tenantName"]
 
     pimage.displayName = builder["displayName"]
-    pimage.tenantName = builder["tenantName"]
-
     if "publicImage" in builder:
         pimage.credAccount.publicImage = True if (builder["publicImage"] == "true") else False
-    if "keystoneDomain" in builder:
-        pimage.keystoneDomain = builder["keystoneDomain"]
-        return
-    if "keystoneProject" in builder:
-        pimage.keystoneProject = builder["keystoneProject"]
-        return
+
     return pimage
 
 
-def publish_openstackqcow2(builder):
-    return publish_openstack(builder)
+def publish_openstackqcow2(builder, cred_account):
+    return publish_openstack(builder, cred_account)
 
 
-def publish_openstackvhd(builder):
-    return publish_openstack(builder)
+def publish_openstackvhd(builder, cred_account):
+    return publish_openstack(builder, cred_account)
 
 
-def publish_openstackvmdk(builder):
-    return publish_openstack(builder)
+def publish_openstackvmdk(builder, cred_account):
+    return publish_openstack(builder, cred_account)
 
 
-def publish_openstackvdi(builder):
-    return publish_openstack(builder)
+def publish_openstackvdi(builder, cred_account):
+    return publish_openstack(builder, cred_account)
 
 
-def publish_aws(builder):
+def publish_aws(builder, cred_account):
     pimage = PublishImageAws()
 
     # doing field verification
@@ -182,7 +186,7 @@ def publish_aws(builder):
     pimage.region = builder["region"]
     return pimage
 
-def publish_azure(builder):
+def publish_azure(builder, cred_account):
     pimage = PublishImageAzure()
 
     if not "storageAccount" in builder:
@@ -208,7 +212,7 @@ def publish_azure(builder):
 
     return pimage
 
-def publish_google(builder):
+def publish_google(builder, cred_account):
     pimage = PublishImageGoogle()
 
     # doing field verification
@@ -243,7 +247,7 @@ def publish_google(builder):
     return pimage
 
 
-def publish_outscale(builder):
+def publish_outscale(builder, cred_account):
     pimage = PublishImageOutscale()
 
     # doing field verification
@@ -255,7 +259,7 @@ def publish_outscale(builder):
     return pimage
 
 
-def publish_k5vmdk(builder):
+def publish_k5vmdk(builder, cred_account):
     pimage = PublishImageK5()
 
     # doing field verification
@@ -280,7 +284,7 @@ def publish_k5vmdk(builder):
     return pimage
 
 
-def publish_docker(builder):
+def publish_docker(builder, cred_account):
     pimage = PublishImageDocker()
 
     if not "namespace" in builder:
@@ -298,7 +302,7 @@ def publish_docker(builder):
     pimage.tagName = builder["tagName"]
     return pimage
 
-def publish_openshift(builder):
+def publish_openshift(builder, cred_account):
     pimage = PublishImageOpenShift()
 
     if not "namespace" in builder:
@@ -316,7 +320,7 @@ def publish_openshift(builder):
     pimage.tagName = builder["tagName"]
     return pimage
 
-def publish_oracleraw(builder):
+def publish_oracleraw(builder, cred_account):
     pimage = PublishImageOracle()
 
     if not "displayName" in builder:

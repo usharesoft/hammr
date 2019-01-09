@@ -92,11 +92,10 @@ class Migration(Cmd, CoreGlobal):
             image = migration_utils.retrieve_image(migration_config["target"]["builder"], target_format, self.api, self.login)
             if image is None:
                 return 2
-            publish_image = migration_utils.retrieve_publish_image(migration_config["target"]["builder"], target_format)
+            cred_account = migration_utils.retrieve_account(self.api, self.login, migration_config["target"]["builder"]["account"]["name"])
+            publish_image = migration_utils.build_publish_image(migration_config["target"]["builder"], target_format, cred_account)
             if publish_image is None:
                 return 2
-            cred_account = migration_utils.retrieve_account(self.api, self.login, migration_config["target"]["builder"]["account"]["name"])
-            publish_image.credAccount = cred_account
 
             migration = self.create_migration(migration_config["name"], migration_config["os"], target_format.name, image, publish_image)
             self.api.Users(self.login).Migrations.Create(body=migration, element_name="ns1:migration")
