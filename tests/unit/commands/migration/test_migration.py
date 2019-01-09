@@ -75,14 +75,14 @@ class TestMigration(unittest.TestCase):
     @patch("hammr.utils.migration_utils.retrieve_migration_configuration")
     @patch("hammr.utils.migration_utils.retrieve_target_format")
     @patch("hammr.utils.migration_utils.retrieve_image")
-    @patch("hammr.utils.migration_utils.retrieve_publish_image")
+    @patch("hammr.utils.migration_utils.build_publish_image")
     @patch("hammr.utils.migration_utils.retrieve_account")
     @patch("hammr.commands.migration.Migration.create_migration")
     @patch("hammr.commands.migration.Migration.upload_and_launch_migration_binary")
     @patch("uforge.application.Api._Users._Migrations.Create")
     @patch("ussclicore.utils.printer.out")
     @patch("shutil.rmtree")
-    def test_do_launch_succeed_when_all_parameters_are_ok(self, mock_rmtree, mock_out, mock_api_create, mock_upload_and_launch_migration_binary, mock_create_migration, mock_retrieve_account, mock_retrieve_publish_image, mock_retrieve_image, mock_retrieve_target_format, mock_retrieve_migration_configuration, mock_download_binary):
+    def test_do_launch_succeed_when_all_parameters_are_ok(self, mock_rmtree, mock_out, mock_api_create, mock_upload_and_launch_migration_binary, mock_create_migration, mock_retrieve_account, mock_build_publish_image, mock_retrieve_image, mock_retrieve_target_format, mock_retrieve_migration_configuration, mock_download_binary):
         # given
         m = migration.Migration()
         m.api = Api("url", username="username", password="password", headers=None,
@@ -93,7 +93,7 @@ class TestMigration(unittest.TestCase):
         mock_retrieve_migration_configuration.return_value = self.get_migration_config()
         mock_retrieve_target_format.return_value = self.create_targetFormat("targetFormatRetrieved")
         mock_retrieve_image.return_value = uforge.Image()
-        mock_retrieve_publish_image.return_value = uforge.PublishImageVSphere()
+        mock_build_publish_image.return_value = uforge.PublishImageVSphere()
         mock_retrieve_account.return_value = uforge.CredAccountVSphere()
         migration_to_create = uforge.migration()
         mock_create_migration.return_value = migration_to_create
@@ -179,7 +179,7 @@ class TestMigration(unittest.TestCase):
         m.upload_and_launch_migration_binary(m.login, m.password, migration_config, "local_uforge_migration_path", m.api.getUrl())
 
         # then
-        mock_upload_binary.assert_called_with(migration_config["source"]["host"], migration_config["source"]["ssh-port"], migration_config["source"]["user"], migration_config["source"]["password"], "local_uforge_migration_path", "/tmp/" + constants.MIGRATION_BINARY_NAME)
+        mock_upload_binary.assert_called_with(migration_config["source"]["host"], migration_config["source"]["ssh-port"], migration_config["source"]["user"], migration_config["source"]["password"], "local_uforge_migration_path", "/tmp/" + constants.MIGRATION_BINARY_NAME, None)
 
         mock_launch_binary.assert_called_with(ANY, self.get_command_launch(migration_config["name"], "-o ", ""))
 
@@ -204,7 +204,8 @@ class TestMigration(unittest.TestCase):
                                               migration_config["source"]["ssh-port"],
                                               migration_config["source"]["user"],
                                               migration_config["source"]["password"], "local_uforge_migration_path",
-                                              "/tmp/" + constants.MIGRATION_BINARY_NAME)
+                                              "/tmp/" + constants.MIGRATION_BINARY_NAME,
+                                              None)
 
         mock_launch_binary.assert_called_with(ANY, self.get_command_launch(migration_config["name"], "-o ", "-e '/folder_to_exclude' -e '/folder/file_to_exclude.txt' -e '/folder/file to exclude with space.txt' "))
 
@@ -229,7 +230,8 @@ class TestMigration(unittest.TestCase):
                                               migration_config["source"]["ssh-port"],
                                               migration_config["source"]["user"],
                                               migration_config["source"]["password"], "local_uforge_migration_path",
-                                              "/tmp/" + constants.MIGRATION_BINARY_NAME)
+                                              "/tmp/" + constants.MIGRATION_BINARY_NAME,
+                                              None)
 
         mock_launch_binary.assert_called_with(ANY, self.get_command_launch(migration_config["name"], "-o ", ""))
 
@@ -254,7 +256,8 @@ class TestMigration(unittest.TestCase):
                                               migration_config["source"]["ssh-port"],
                                               migration_config["source"]["user"],
                                               migration_config["source"]["password"], "local_uforge_migration_path",
-                                              "/tmp/" + constants.MIGRATION_BINARY_NAME)
+                                              "/tmp/" + constants.MIGRATION_BINARY_NAME,
+                                              None)
 
         mock_launch_binary.assert_called_with(ANY, self.get_command_launch(migration_config["name"], "", ""))
 
