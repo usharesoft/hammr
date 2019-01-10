@@ -1,6 +1,6 @@
 __author__="UShareSoft"
 
-# Copyright 2007-2015 UShareSoft SAS, All rights reserved
+# Copyright 2007-2019 UShareSoft SAS, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
