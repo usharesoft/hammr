@@ -3,6 +3,17 @@
 Changelog
 =========
 
+hammr 3.8.10 (2018-02-04)
+-------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp10-1 only
+
+Bug fixes:
+
+* Cannot publish to OpenStack when account has v3 as keystone version
+
 hammr 3.8.9 (2018-12-21)
 ------------------------
 
