@@ -4,4 +4,6 @@ python:
 install:
   - pip install . --pre
   - pip install git-lint pylint
-script: "nosetests && if [ \"$TRAVIS_PULL_REQUEST\" != \"false\" ]; then git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint; fi; exit 0 "
+script:
+  - "if [ \"$TRAVIS_PULL_REQUEST\" != \"false\" ]; then git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint; fi || true"
+  - nosetests
