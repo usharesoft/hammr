@@ -127,17 +127,17 @@ class TestFiles(unittest.TestCase):
         archive_files = []
         files = {
             'name': 'myDirectory',
-            'source': 'tests/integration/data/directoryTest',
+            'source': 'tests/integration/data/aDirectory',
             'tag': 'softwarefile',
             'destination': '/usr/local/myBundle',
             'files': [
                 {
                     "name": "file.txt",
-                    "source": "tests/integration/data/directoryTest/file1of3.txt"
+                    "source": "tests/integration/data/aDirectory/file1of3.txt"
                 },
                 {
                     "name": "file.txt",
-                    "source": "tests/integration/data/directoryTest/file2of3.txt"
+                    "source": "tests/integration/data/aDirectory/file2of3.txt"
                 }
             ]
         }
@@ -148,7 +148,7 @@ class TestFiles(unittest.TestCase):
         # Then
         self.assertEqual(
             context_manager.exception.message,
-            "Cannot have identical files in the bundles section: bundles/MyBundle/1.0/myDirectory/file.txt from tests/integration/data/directoryTest/file2of3.txt"
+            "Cannot have identical files in the bundles section: bundles/MyBundle/1.0/myDirectory/file.txt from tests/integration/data/aDirectory/file2of3.txt"
         )
 
     def test_recursivelyAppendToArchive_should_succeed_when_several_files_have_same_source(self):
@@ -159,17 +159,17 @@ class TestFiles(unittest.TestCase):
         archive_files = []
         files = {
             'name': 'myDirectory',
-            'source': 'tests/integration/data/directoryTest',
+            'source': 'tests/integration/data/aDirectory',
             'tag': 'softwarefile',
             'destination': '/usr/local/myBundle',
             'files': [
                 {
                     'name': 'file1.txt',
-                    'source': 'tests/integration/data/directoryTest/file1of3.txt'
+                    'source': 'tests/integration/data/aDirectory/file1of3.txt'
                 },
                 {
                     'name': 'file2.txt',
-                    'source': 'tests/integration/data/directoryTest/file1of3.txt'
+                    'source': 'tests/integration/data/aDirectory/file1of3.txt'
                 },
                 {
                     'name': 'pkg1.rpm',
@@ -188,9 +188,9 @@ class TestFiles(unittest.TestCase):
 
         # Then
         self.assertEqual(archive_files, [
-            ['bundles/MyBundle/1.0/myDirectory', 'tests/integration/data/directoryTest'],
-            ['bundles/MyBundle/1.0/myDirectory/file1.txt', 'tests/integration/data/directoryTest/file1of3.txt'],
-            ['bundles/MyBundle/1.0/myDirectory/file2.txt', 'tests/integration/data/directoryTest/file1of3.txt'],
+            ['bundles/MyBundle/1.0/myDirectory', 'tests/integration/data/aDirectory'],
+            ['bundles/MyBundle/1.0/myDirectory/file1.txt', 'tests/integration/data/aDirectory/file1of3.txt'],
+            ['bundles/MyBundle/1.0/myDirectory/file2.txt', 'tests/integration/data/aDirectory/file1of3.txt'],
             ['bundles/MyBundle/1.0/myDirectory/pkg1.rpm','http://myServer.com/pkg1/download'],
             ['bundles/MyBundle/1.0/myDirectory/pkg2.rpm', 'http://myServer.com/pkg2/download']
         ])
