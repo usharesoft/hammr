@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _machine-images:
 
@@ -15,3 +15,4 @@ Templates allow you to generate and publish identical machine images for physica
    machine-image-publish
    machine-image-deploy
    machine-image-download
+   builders/overview

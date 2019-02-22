@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -41,7 +41,7 @@ def retrieve_credaccount(image_object, pimageId, pimage):
 
 def retrieve_credaccount_from_app(image_object, pimageId, pimage):
     image_id = generics_utils.extract_id(pimage.imageUri)
-    source_id = generics_utils.extract_id(pimage.applianceUri)
+    source_id = generics_utils.extract_id(pimage.parentUri)
     account_id = pimage.credAccount.dbId
     return image_object.api.Users(image_object.login).Appliances(source_id).Images(image_id).Pimages(pimageId).\
         Accounts(account_id).Resources.Getaccountresources()
@@ -103,7 +103,7 @@ def build_deployment_aws(attributes):
 
 def build_deployment_azure(attributes):
     deployment = Deployment()
-    my_instance = InstanceAzureResourceManager()
+    my_instance = InstanceAzure()
 
     deployment.name = attributes["name"]
     my_instance.userName = attributes["userName"]
@@ -214,7 +214,7 @@ def call_deploy(image_object, publish_image, deployment):
 
     if is_uri_based_on_appliance(publish_image.imageUri):
         source = image_object.api.Users(image_object.login).Appliances(
-            generics_utils.extract_id(publish_image.applianceUri)).Get()
+            generics_utils.extract_id(publish_image.parentUri)).Get()
 
         if source is None or not hasattr(source, 'dbId'):
             raise TypeError("No template found for this image")

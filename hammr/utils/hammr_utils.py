@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,6 +14,8 @@
 #    under the License.
 
 import json
+import shutil
+import paramiko
 import yaml
 import sys
 import re
@@ -25,6 +27,8 @@ import pyxb
 
 from uforge.objects.uforge import *
 import ussclicore.utils.download_utils
+from ussclicore.utils import download_utils
+from ussclicore.argumentParser import ArgumentParserError
 from ussclicore.utils import printer
 from ussclicore.utils import generics_utils
 from hammr.utils.bundle_utils import *
@@ -153,6 +157,19 @@ def validate_configurations_file(file, isJson):
         check_mandatory_builders(data["builders"])
     return data
 
+def validate_builder_file_with_no_template_id(file_path):
+    data = validate(file_path)
+    if data is None:
+        return None
+    if "stack" in data and "builders" in data:
+        return data
+    elif "stack" not in data:
+        printer.out("missing stack section in file " + file_path, printer.ERROR)
+        return None
+    else:
+        printer.out("missing builder section in file "+file_path, printer.ERROR)
+        return None
+
 def validate_bundle(file):
     try:
         isJson = check_extension_is_json(file)
@@ -277,3 +294,78 @@ def extract_appliance_id(image_uri):
         return int(match.group(1))
     else:
         return None
+
+
+def retrieve_template_from_file(file):
+    file = generics_utils.get_file(file)
+    if not file:
+        raise ArgumentParserError("Wrong file argument")
+    template = validate(file)
+    if not template:
+        raise ValueError("Could not extract information from file")
+    return template
+
+def download_binary_in_local_temp_dir(api, local_temp_dir, uri_binary, binary_name):
+    uri = generics_utils.get_uforge_url_from_ws_url(api.getUrl())
+    download_url = uri + uri_binary
+
+    if os.path.isdir(local_temp_dir):
+        shutil.rmtree(local_temp_dir)
+    os.mkdir(local_temp_dir)
+    local_uforge_binary_path = local_temp_dir + os.sep + binary_name
+
+    dlUtils = download_utils.Download(download_url, local_uforge_binary_path,
+                                      not api.getDisableSslCertificateValidation())
+    try:
+        dlUtils.start()
+        return local_uforge_binary_path
+    except Exception, e:
+        raise Exception("Impossible to download binary [" + binary_name + "]: " + str(e))
+
+def upload_binary_to_client(hostname, port, username, password, file_src_path, binary_path, id_file):
+    try:
+        t = paramiko.Transport((hostname, port))
+        pkey = None
+        if id_file:
+            pkey = paramiko.RSAKey.from_private_key_file(id_file)
+            t.connect(username=username, pkey=pkey)
+        else:
+            t.connect(username=username, password=password)
+        sftp = paramiko.SFTPClient.from_transport(t)
+
+        # upload binary
+        sftp.put(file_src_path, binary_path)
+        t.close()
+
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
+        client.connect(hostname, port, username, password, pkey)
+
+    except paramiko.AuthenticationException as e:
+        raise Exception("Authentification error: " + e[0])
+    except Exception, e:
+        try:
+            t.close()
+            client.close()
+        except:
+            pass
+        raise Exception("Caught exception when uploading binary [" + binary_path + "]: " + str(e))
+
+    return client
+
+def launch_binary(client, command):
+    try:
+        summary = ''
+        stdin, stdout, stderr = client.exec_command(command)
+        for line in stdout:
+            summary = summary + "... " + line
+
+    except Exception, e:
+        try:
+            client.close()
+        except:
+            pass
+        raise Exception("Caught exception: " + str(e))
+
+    return summary

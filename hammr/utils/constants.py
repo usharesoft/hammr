@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -18,7 +18,7 @@ __author__="UShareSoft"
 import os
 import tempfile
 
-VERSION="3.8.2"
+VERSION="3.8.10"
 
 
 TMP_WORKING_DIR=tempfile.gettempdir() + os.sep + "hammr-" + str(os.getpid())
@@ -41,6 +41,9 @@ FOLDER_LOGO = "logo";
 
 URI_SCAN_BINARY="/resources/uforge-scan.bin"
 SCAN_BINARY_NAME="uforge-scan.bin"
+
+URI_MIGRATION_BINARY="/resources/uforge-migrate.bin"
+MIGRATION_BINARY_NAME="uforge-migrate.bin"
 
 QUOTAS_SCAN="scan"
 QUOTAS_TEMPLATE="appliance"

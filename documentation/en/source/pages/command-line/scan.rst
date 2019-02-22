@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _command-line-scan:
 
@@ -56,10 +56,11 @@ Executes a deep scan of a running system.
 
 	* ``--ip`` (mandatory): the IP address or fully qualified hostname of the running system
 	* ``--scan-login`` (mandatory): the root user name (normally root)
-	* ``--name`` (mandatory): the scan name to use when creating the scan meta-data
+	* ``--name`` (mandatory): the scan name to use when creating the scan meta-data. If you want to use spaces in the scan name, you must use single quote and double quotes before and after the name. For example: ``--name '"my scan name with spaces"'``
 	* ``--scan-password`` (optional): the root password to authenticate to the running system
 	* ``--dir`` (optional): the directory where to install the uforge-scan.bin binary used to execute the deep scan
 	* ``--exclude`` (optional): a list of directories or files to exclude during the deep scan
 	* ``--overlay`` (optional): include overlay (extra files) for the given scan
+	* ``--identity-file`` (optional): the file containing the private ssh key used to connect to the source machine
 
 .. note:: If a CTR exception (eg: `ERROR: Caught exception: CTR mode needs counter parameter, not IV`) occurs while executing ``run`` sub-command try upgrading your paramiko library to either 1.18.4 or 2.3.1 using ``sudo pip install paramiko==VERSION``.

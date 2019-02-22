@@ -82,76 +82,7 @@
   }
  },
  {
-  "type" : "nimbula-esx",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
-  "type" : "nimbula-kvm",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
   "type" : "openstack",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
-  "type" : "eucalyptus-xen",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  },
-  "account": {
-    "name": "My Eucalyptus"
-  }
- },
- {
-  "type" : "eucalyptus-kvm",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  },
-  "account": {
-    "name": "My Eucalyptus"
-  }
- },
- {
-  "type" : "flexiant-raw",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
-  "type" : "flexiant-ova",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
-  "type" : "flexiant-kvm",
   "hardwareSettings" : {
   "memory" : 1024
   },
@@ -179,15 +110,6 @@
  },
  {
   "type" : "cloudstack-ova",
-  "hardwareSettings" : {
-  "memory" : 1024
-  },
-   "installation" : {
-   "diskSize" : 2000
-  }
- },
- {
-  "type" : "abiquo",
   "hardwareSettings" : {
   "memory" : 1024
   },

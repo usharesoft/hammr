@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -36,7 +36,10 @@ from ussclicore.utils import generics_utils
 from ussclicore.utils import printer
 import commands
 from uforge.application import Api, checkUForgeCompatible
-from utils import constants, hammr_utils
+from utils import constants, hammr_utils, credentials
+from utils.credentials import CredentialsException
+from xml.sax import SAXParseException
+from requests.exceptions import RequestException
 
 class CmdBuilder(object):
     @staticmethod
@@ -67,6 +70,8 @@ class CmdBuilder(object):
         class_.subCmds[platform.cmd_name] = platform
         deploy = commands.deploy.Deploy()
         class_.subCmds[deploy.cmd_name] = deploy
+        migration = commands.migration.Migration()
+        class_.subCmds[migration.cmd_name] = migration
 
 ## Main cmd
 class Hammr(Cmd):
@@ -128,6 +133,9 @@ class Hammr(Cmd):
                     printer.ERROR)
                 sys.exit(2)
 
+        except (SAXParseException, RequestException):
+            printer.out("Cannot reached the UForge server. Please check the provided URL.", printer.ERROR)
+            sys.exit(2)
         except Exception as e:
             hammr_utils.print_uforge_exception(e)
             sys.exit(2)
@@ -160,7 +168,7 @@ def generate_base_doc(app, hamm_help):
 def set_globals_cmds(subCmds):
     for cmd in subCmds:
         if hasattr(subCmds[cmd], 'set_globals'):
-            subCmds[cmd].set_globals(api, login, password)
+            subCmds[cmd].set_globals(api, login, cred.password, cred.get_api_keys())
             if hasattr(subCmds[cmd], 'subCmds'):
                 set_globals_cmds(subCmds[cmd].subCmds)
 
@@ -191,6 +199,8 @@ CoreArgumentParser.actions=myactions
 mainParser.add_argument('-a', '--url', dest='url', type=str, help='the UForge server URL endpoint to use', required = False)
 mainParser.add_argument('-u', '--user', dest='user', type=str, help='the user name used to authenticate to the UForge server', required = False)
 mainParser.add_argument('-p', '--password', dest='password', type=str, help='the password used to authenticate to the UForge server', required = False)
+mainParser.add_argument('-k', '--publickey', dest='publickey', type=str, help='public API key to use for this request. Default: no default', required = False)
+mainParser.add_argument('-s', '--secretkey', dest='secretkey', type=str, help='secret API key to use for this request. Default: no default', required = False)
 mainParser.add_argument('-c', '--credentials', dest='credentials', type=str, help='the credential file used to authenticate to the UForge server (default to ~/.hammr/credentials.yml or ~/.hammr/credentials.json)', required = False)
 mainParser.add_argument('-v', action='version', help='displays the current version of the hammr tool', version="%(prog)s version '"+constants.VERSION+"'")
 mainParser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit', required = False)
@@ -202,71 +212,55 @@ if mainArgs.help and not mainArgs.cmds:
     mainParser.print_help()
     exit(0)
 
-if mainArgs.url is not None:
-    url=mainArgs.url
-
-if mainArgs.user is not None:
-    if not mainArgs.password:
-        mainArgs.password = getpass.getpass()
-    username=mainArgs.user
-    password=mainArgs.password
-    sslAutosigned=True
-else:
-    if mainArgs.credentials is not None:
-        credfile=mainArgs.credentials
-        credpath=check_credfile(credfile)
-        if credpath is None:
-            printer.out("credentials file '" + credfile + "' not found\n", printer.ERROR)
-            exit(1)
-    else:
-        credpath=check_default_credfile()
-        if credpath is None:
-            printer.out("credentials file 'credentials.yml' or 'credentials.json' not found\n", printer.ERROR)
-            exit(1)
-
-    printer.out("no username nor password provided on command line, trying credentials file", printer.INFO)
-
-    printer.out("Using credentials file: " + credpath, printer.INFO)
+# check that the commands are correct before asking for credentials
+if len(mainArgs.cmds) > 1 and mainArgs.cmds[0] in app.subCmds:
     try:
-        data = hammr_utils.load_data(credpath)
-        if mainArgs.user:
-            username=mainArgs.user
-        elif "user" in data:
-            username=data["user"]
-        else:
-            printer.out("username not found in credentials file", printer.ERROR)
-        if mainArgs.password:
-            password=mainArgs.password
-        elif "password" in data:
-            password=data["password"]
-        else:
-            printer.out("password not found in credentials file", printer.ERROR)
-        if mainArgs.url:
-            url=mainArgs.url
-        elif "url" in data:
-            url=data["url"]
-        else:
-            printer.out("url not found in credentials file", printer.ERROR)
-        printer.out("Using url " + url, printer.INFO)
-        if "acceptAutoSigned" in data:
-            sslAutosigned=data["acceptAutoSigned"]
-        else:
-            sslAutosigned=True
-    except ValueError as e:
-        printer.out("parsing error in credentials file: "+str(e), printer.ERROR)
-    except IOError as e:
-        printer.out("File error in credentials file: "+str(e), printer.ERROR)
-    except Exception as e:
-        hammr_utils.print_uforge_exception(e)
+        getattr(app.subCmds[mainArgs.cmds[0]], 'arg_' + mainArgs.cmds[1])().parse_args(unknown)
+    except ArgumentParserError as e:
+        printer.out(str(e), printer.ERROR)
         exit(1)
+elif len(mainArgs.cmds) == 1 and mainArgs.cmds[0] == "help":
+    app.do_help("")
+    exit(0)
+elif len(mainArgs.cmds) == 1 and mainArgs.cmds[0] in app.subCmds:
+    app.subCmds[mainArgs.cmds[0]].printError('*** No command\n')
+    printer.out(app.subCmds[mainArgs.cmds[0]].do_help(""))
+    exit(1)
+
+cred = credentials.Credentials(mainArgs.user, mainArgs.password, mainArgs.publickey, mainArgs.secretkey, mainArgs.url)
+try:
+    if cred.username is not None and cred.publicKey is None and cred.secretKey is None:
+        if not cred.password:
+            cred.password = getpass.getpass()
+    elif cred.publicKey is None and cred.secretKey is None:
+        if mainArgs.credentials is not None:
+            credfile = mainArgs.credentials
+            credpath = check_credfile(credfile)
+            if credpath is None:
+                printer.out("credentials file '" + credfile + "' not found\n", printer.ERROR)
+                exit(1)
+        else:
+            credpath = check_default_credfile()
+            if credpath is None:
+                printer.out("credentials file 'credentials.yml' or 'credentials.json' not found\n", printer.ERROR)
+                exit(1)
+        printer.out("no username provided on command line, trying credentials file", printer.INFO)
+        printer.out("Using credentials file: " + credpath, printer.INFO)
+        cred = credentials.Credentials.from_file(credpath)
+
+    cred.validate()
+except CredentialsException as e:
+    printer.out(str(e), printer.ERROR)
+    exit(1)
 
 #UForge API instanciation
-api = Api(url, username = username, password = password, headers = None, disable_ssl_certificate_validation = sslAutosigned, timeout = constants.HTTP_TIMEOUT)
+api = Api(cred.url, username=cred.username, password=cred.password, headers=None, apikeys=cred.get_api_keys(),
+          disable_ssl_certificate_validation=cred.sslAutosigned, timeout=constants.HTTP_TIMEOUT)
 
-if generics_utils.is_superviser_mode(username):
-    login = generics_utils.get_target_username(username)
+if generics_utils.is_superviser_mode(cred.username):
+    login = generics_utils.get_target_username(cred.username)
 else:
-    login = username
+    login = cred.username
 
 set_globals_cmds(app.subCmds)
 

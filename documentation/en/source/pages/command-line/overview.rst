@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _command-line:
 
@@ -31,9 +31,10 @@ Below provides a list of the available ``commands``:
    bundle
    deploy
    format
-   platform
    image
+   migrate
    os
+   platform
    quota
    scan
    template

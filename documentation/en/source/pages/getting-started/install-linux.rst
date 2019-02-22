@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _install-linux:
 
@@ -29,7 +29,6 @@ Now, you are ready to install the latest version of Hammr:
 
 .. code-block:: shell
 
-	$ easy_install progressbar==2.3
 	$ pip install hammr
 
 If you want to install a specific version of Hammr, see :ref:`install-compatibility` to find the compatible version of UForge, and in the code above replace the ``pip install hammr`` with:

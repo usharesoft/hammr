@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _build-machine-image:
 
@@ -72,13 +72,13 @@ Lets now use this account to build a machine image for Amazon EC2. Open up the f
     installation:
       diskSize: 12288
   builders:
-  - type: Amazon
+  - type: Amazon AWS
     account:
       name: James AWS Account
     installation:
       diskSize: 10240
     region: eu-west-1
-    s3bucket: mybucketname
+    bucket: mybucketname
 
 If you are using JSON (file ``nginx-template.json``):
 
@@ -105,7 +105,7 @@ If you are using JSON (file ``nginx-template.json``):
     },
     "builders": [
       {
-        "type": "Amazon",
+        "type": "Amazon AWS",
         "account": {
           "name": "James AWS Account"
         },
@@ -113,7 +113,7 @@ If you are using JSON (file ``nginx-template.json``):
           "diskSize": 10240
         },
         "region": "eu-west-1",
-        "s3bucket": "mybucketname"
+        "bucket": "mybucketname"
       }
     ]
   }

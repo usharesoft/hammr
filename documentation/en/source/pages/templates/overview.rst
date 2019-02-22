@@ -1,4 +1,4 @@
-.. Copyright (c) 2007-2018 UShareSoft, All rights reserved
+.. Copyright (c) 2007-2019 UShareSoft, All rights reserved
 
 .. _creating-managing-templates:
 
@@ -19,3 +19,4 @@ You should refer to the section for all the possible parameters you can add to d
    pkgs-update
    pkg-deps/overview
    partitioning/overview
+   templates-spec/overview

@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -111,7 +111,7 @@ class Account(Cmd, CoreGlobal):
                         printer.out("Platform type unknown: "+account_type, printer.ERROR)
                         return 2
 
-                    func = getattr(account_utils, generics_utils.remove_special_chars(targetPlatform.type), None)
+                    func = getattr(account_utils, "fill_" + generics_utils.remove_special_chars(targetPlatform.type), None)
                     if func:
                         if accounts_file_type == "builders" and "account" in iterable:
                             myCredAccount = func(iterable["account"])

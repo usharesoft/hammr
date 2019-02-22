@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -22,7 +22,7 @@ from hammr.utils import constants
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 from tests.unit.commands.image.deploy_test_utils import prepare_image, prepare_mock_deploy
-from tests.unit.utils.file_utils import findRelativePathFor
+from tests.unit.utils.file_utils import find_relative_path_for
 
 
 class TestDeployAzure(TestCase):
@@ -103,7 +103,7 @@ class TestDeployAzure(TestCase):
         deployment.name = "DeploymentName"
         deployment.applicationId = "id123456789"
 
-        instance = InstanceAzureResourceManager()
+        instance = InstanceAzure()
         instance.cores = "1"
         instance.memory = "1024"
         instance.hostname = "example.com"
@@ -113,7 +113,7 @@ class TestDeployAzure(TestCase):
         location = Location()
         location.provider = "myprovider"
         instance.location = location
-        instance.cloudProvider = "azurearm"
+        instance.cloudProvider = "azure"
 
         deployment.instances = pyxb.BIND()
         deployment.instances._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Instances')
@@ -122,17 +122,17 @@ class TestDeployAzure(TestCase):
         return deployment
 
     def prepare_image_deploy_command_azure(self, id):
-         args = "--file %s --publish-id %s" % (findRelativePathFor("tests/integration/data/deploy_azure.yml"), id)
+         args = "--file %s --publish-id %s" % (find_relative_path_for("tests/integration/data/deploy_azure.yml"), id)
          return args
 
     def prepare_azure_pimages_from_app(self):
         publish_images = uforge.publishImages()
         publish_images.publishImages = pyxb.BIND()
 
-        publish_image = PublishImageAzureResourceManager()
+        publish_image = PublishImageAzure()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/appliances/5/images/1234'
-        publish_image.applianceUri = 'users/guest/appliances/5'
+        publish_image.parentUri = 'users/guest/appliances/5'
         publish_image.status = "complete"
         publish_image.status.complete = True
         publish_image.targetFormat = uforge.targetFormat()
@@ -146,7 +146,7 @@ class TestDeployAzure(TestCase):
         publish_images = uforge.publishImages()
         publish_images.publishImages = pyxb.BIND()
 
-        publish_image = PublishImageAzureResourceManager()
+        publish_image = PublishImageAzure()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/scannedinstances/5/scans/12/images/1234'
         publish_image.status = "complete"

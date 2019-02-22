@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -71,6 +71,31 @@ class TestGeneratePXE(TestCase):
         self.assertFalse(image.compress)
         self.assertEquals(intall_profile_given, install_profile)
 
+class TestGenerateGoogle(TestCase):
+    def test_generate_google_should_return_compressed_image_given_compressed_image(self):
+        # given
+        image_given = CompressedImage()
+        install_profile_given = MockObject()
+
+        # when
+        image, install_profile = generate_google(image_given, WhateverObject(), install_profile_given, WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
+
+    def test_generate_google_should_return_compressed_image_given_uncompressed_image(self):
+        # given
+        image_given = UncompressedImage()
+        install_profile_given = MockObject()
+
+        # when
+        image, install_profile = generate_google(image_given, WhateverObject(), install_profile_given,
+                                                 WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
 
 class TestGenerateOracle(TestCase):
     def test_generate_oracleraw_should_return_compressed_image_given_compressed_image(self):
@@ -110,3 +135,48 @@ class MockObject:
 
 class WhateverObject:
     whatever = "whatever"
+
+class TestGeneratOpenShift(TestCase):
+    def test_generate_openshift_should_return_compressed_image_given_compressed_image(self):
+        # given
+        image_given = CompressedImage()
+        install_profile_given = MockObject()
+        builder = {};
+        builder["entrypoint"] = "/bin/bash"
+
+        # when
+        image, install_profile = generate_openshift(image_given, builder, install_profile_given,
+                                                    WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
+
+    def test_generate_openshift_should_return_compressed_image_given_uncompressed_image(self):
+        # given
+        image_given = UncompressedImage()
+        install_profile_given = MockObject()
+        builder = {};
+        builder["entrypoint"] = "/bin/bash"
+
+        # when
+        image, install_profile = generate_openshift(image_given, builder, install_profile_given,
+                                                    WhateverObject(), WhateverObject())
+
+        # then
+        self.assertTrue(image.compress)
+        self.assertEquals(install_profile_given, install_profile)
+
+    def test_generate_openshift_should_return_none_when_entrypoint_is_not_set(self):
+        # given
+        image_given = UncompressedImage()
+        install_profile_given = MockObject()
+        builder = {};
+
+        # when
+        image, install_profile = generate_openshift(image_given, builder, install_profile_given,
+                                                    WhateverObject(), WhateverObject())
+
+        # then
+        self.assertEquals(image,None)
+        self.assertEquals(install_profile, None)

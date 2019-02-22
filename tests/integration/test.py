@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -41,7 +41,7 @@ def get_template_id(template, name):
         id = cmd.read().rstrip()
         os.remove("stdout_file")
         return id
-    
+
 def get_account_id(account, name):
         stdout = sys.stdout
         sys.stdout = open('stdout_file', 'w')
@@ -51,7 +51,7 @@ def get_account_id(account, name):
         id = cmd.read().rstrip()
         os.remove("stdout_file")
         return id
-    
+
 def get_image_id(image, name):
         stdout = sys.stdout
         sys.stdout = open('stdout_file', 'w')
@@ -363,5 +363,3 @@ if __name__ == '__main__':
                 unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
         else:
                 unittest.main()
-
-

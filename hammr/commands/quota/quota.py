@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -48,7 +48,7 @@ class Quota(Cmd, CoreGlobal):
                     if quota.limit == -1:
                         nb = " (" + str(quota.nb) + ")"
                     else:
-                        nb = " (" + str(quota.nb) + "/" + str(quota.limit) + ")"
+                        nb = " (" + str(size(quota.nb)) + "/" + str(size(quota.limit)) + ")"
 
                     if quota.type == constants.QUOTAS_SCAN:
                         text = "Scan" + ("s" if quota.nb > 1 else "") + nb
@@ -57,7 +57,7 @@ class Quota(Cmd, CoreGlobal):
                     elif quota.type == constants.QUOTAS_GENERATION:
                         text = "Generation" + ("s" if quota.nb > 1 else "") + nb
                     elif quota.type == constants.QUOTAS_DISK_USAGE:
-                        text = "Disk usage (" + size(quota.nb) + ")"
+                        text = "Disk usage" + nb
 
                     if quota.limit != -1:
                         nb = float(quota.nb)

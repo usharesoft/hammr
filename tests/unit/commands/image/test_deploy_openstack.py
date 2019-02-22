@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2007-2018 UShareSoft, All rights reserved
+# Copyright (c) 2007-2019 UShareSoft, All rights reserved
 #
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -22,7 +22,7 @@ from hammr.utils import constants
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 from tests.unit.commands.image.deploy_test_utils import prepare_image, prepare_mock_deploy
-from tests.unit.utils.file_utils import findRelativePathFor
+from tests.unit.utils.file_utils import find_relative_path_for
 from tests.unit.utils.pyxb_utils import get_pyXB_anon_type_for_list_attrb, get_pyXB_anon_type_for_simple_attrb
 
 
@@ -136,7 +136,7 @@ class TestDeployOpenStack(TestCase):
         return deployment
 
     def prepare_image_deploy_command_openstack(self, id):
-         args = "--file %s --publish-id %s" % (findRelativePathFor("tests/integration/data/deploy_openstack.yml"), id)
+         args = "--file %s --publish-id %s" % (find_relative_path_for("tests/integration/data/deploy_openstack.yml"), id)
          return args
 
     def prepare_openstack_credaccount(self):
@@ -158,7 +158,7 @@ class TestDeployOpenStack(TestCase):
         publish_image = PublishImageOpenStack()
         publish_image.dbId = 1234
         publish_image.imageUri = 'users/guest/appliances/5/images/116'
-        publish_image.applianceUri = 'users/guest/appliances/5'
+        publish_image.parentUri = 'users/guest/appliances/5'
         publish_image.status = "complete"
         publish_image.status.complete = True
         publish_image.targetFormat = uforge.targetFormat()
