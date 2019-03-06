@@ -74,18 +74,20 @@ def recursivelyAppendToArchive(bundle, files, parentDir, checkList, archive_file
     #must save the filepath before changing it after archive
     filePathBeforeTar = files["source"]
     if not "tag" in files or ("tag" in files and files["tag"] != "ospkg"):
-        #if parentDir is a no empty path, add os.sep after. Else keep it as ""
-        if parentDir:
-            parentDir = parentDir + os.sep
-         #add to list of file to tar
-        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["name"]))
-        if file_tar_path not in checkList:
-            checkList.append(file_tar_path)
+        if files["source"] not in checkList:
+            #add the source path to the check list
+            checkList.append(files["source"])
+            #if parentDir is a no empty path, add os.sep after. Else keep it as ""
+            if parentDir:
+                parentDir = parentDir + os.sep
+
+            #add to list of file to tar
+            file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["source"]))
             archive_files.append([file_tar_path,files["source"]])
             #changing source path to archive related source path
             files["source"]=file_tar_path
         else:
-            raise ValueError("Cannot have identical files in the bundles section: " + file_tar_path + " from " + filePathBeforeTar)
+            raise ValueError("Cannot have identical files in the bundles section: " + filePathBeforeTar)
 
     if "files" in files:
         for subFiles in files["files"]:
