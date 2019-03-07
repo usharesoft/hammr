@@ -3,6 +3,19 @@
 Changelog
 =========
 
+hammr 3.8.11 (2018-03-18)
+-------------------------
+
+Evolutions:
+
+* Compatibility with UForge AppCenter 3.8.fp11-1 only
+* Update company copyright message from 2018 to 2019
+
+Bug fixes:
+
+* Travis build ignoring test failures
+* Remove ref to progress bar
+
 hammr 3.8.10 (2018-02-04)
 -------------------------
 
@@ -325,4 +338,3 @@ Bug fixes:
 
 * Fix issue #34 - Exit status of Hammr command
 * Enhance the error message if an issue occurs when trying to download a machine image
-
