@@ -74,11 +74,13 @@ def recursivelyAppendToArchive(bundle, files, parentDir, checkList, archive_file
     #must save the filepath before changing it after archive
     filePathBeforeTar = files["source"]
     if not "tag" in files or ("tag" in files and files["tag"] != "ospkg"):
-        #if parentDir is a no empty path, add os.sep after. Else keep it as ""
-        if parentDir:
+        # if parentDir is a no empty path or already ending with os.sep, add os.sep at the end
+        if parentDir and not parentDir.endswith(os.sep):
             parentDir = parentDir + os.sep
-         #add to list of file to tar
-        file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["name"]))
+        file_tar_path = constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) \
+                      + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) \
+                      + os.sep + parentDir \
+                      + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["name"]))
         if file_tar_path not in checkList:
             checkList.append(file_tar_path)
             archive_files.append([file_tar_path,files["source"]])
@@ -101,15 +103,19 @@ def processFilesFromFolder(bundle, files, filePath, parentDir, checkList, archiv
         subFilesDict = dict({"name" : ntpath.basename(subFiles), "source" : filePath + os.sep + ntpath.basename(subFiles), "files" : []})
         #must save the filepath before changing it after archive
         subFilePathBeforeTar = subFilesDict["source"]
-        if subFilesDict["source"] not in checkList:
-            #add the source path to the check list
-            checkList.append(subFilesDict["source"])
-            #if parentDir is a no empty path, add os.sep after. Else keep it as ""
-            if parentDir:
-                parentDir = parentDir + os.sep
 
-            #add to list of file to tar
-            file_tar_path=constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(ntpath.basename(subFilesDict["source"]))
+        # if parentDir is a no empty path or already ending with os.sep, add os.sep at the end
+        if parentDir and not parentDir.endswith(os.sep):
+            parentDir = parentDir + os.sep
+
+        # add to list of file to tar
+        file_tar_path = constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(
+            bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(
+            bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(
+            ntpath.basename(subFilesDict["source"]))
+
+        if file_tar_path not in checkList:
+            checkList.append(file_tar_path)
             archive_files.append([file_tar_path,subFilesDict["source"]])
             #changing source path to archive related source path and add it to files section of parent folder
             subFilesDict["source"] = file_tar_path
