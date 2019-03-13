@@ -119,11 +119,11 @@ class TestFiles(unittest.TestCase):
         #Then
         self.assertIsNotNone(bundle)
 
-    def test_recursivelyAppendToArchive_should_failed_when_two_files_have_same_archive_path(self):
+    def test_recursively_append_to_archive_should_failed_when_two_files_have_same_archive_path(self):
         # Given
         bundle = { 'name': 'MyBundle', 'version': '1.0' }
         parent_dir = ""
-        check_list = []
+        duplicate_check_list = []
         archive_files = []
         files = {
             'name': 'myDirectory',
@@ -143,7 +143,7 @@ class TestFiles(unittest.TestCase):
         }
         # When
         with self.assertRaises(ValueError) as context_manager:
-            bundle_utils.recursivelyAppendToArchive(bundle, files, parent_dir, check_list, archive_files)
+            bundle_utils.recursively_append_to_archive(bundle, files, parent_dir, duplicate_check_list, archive_files)
 
         # Then
         self.assertEqual(
@@ -151,11 +151,11 @@ class TestFiles(unittest.TestCase):
             "Cannot have identical files in the bundles section: bundles/MyBundle/1.0/myDirectory/file.txt from tests/integration/data/aDirectory/file2of3.txt"
         )
 
-    def test_recursivelyAppendToArchive_should_succeed_when_several_files_have_same_source(self):
+    def test_recursively_append_to_archive_should_succeed_when_several_files_have_same_source(self):
         # Given
         bundle = { 'name': 'MyBundle', 'version': '1.0' }
         parent_dir = ""
-        check_list = []
+        duplicate_check_list = []
         archive_files = []
         files = {
             'name': 'myDirectory',
@@ -184,7 +184,7 @@ class TestFiles(unittest.TestCase):
             ]
         }
         # When
-        r_check_list, r_archive_files = bundle_utils.recursivelyAppendToArchive(bundle, files, parent_dir, check_list, archive_files)
+        r_duplicate_check_list, r_archive_files = bundle_utils.recursively_append_to_archive(bundle, files, parent_dir, duplicate_check_list, archive_files)
 
         # Then
         self.assertEqual(archive_files, [
@@ -196,6 +196,36 @@ class TestFiles(unittest.TestCase):
         ])
         self.assertEqual(r_archive_files, archive_files)
 
+    def test_recursively_append_to_archive_should_succeed_when_directory_contains_file_already_described(self):
+        # Given
+        bundle = { 'name': 'MyBundle', 'version': '1.0' }
+        parent_dir = ""
+        duplicate_check_list = []
+        archive_files = []
+        files = {
+            'name': 'directoryTest',
+            'source': 'tests/integration/data/directoryTest',
+            'tag': 'softwarefile',
+            'destination': '/usr/local/myBundle',
+            'files': [
+                {
+                    'name': 'file1of3.txt',
+                    'source': 'tests/integration/data/directoryTest/file1of3.txt',
+                    'rights': '625',
+                }
+            ]
+        }
+        # When
+        r_duplicate_check_list, r_archive_files = bundle_utils.recursively_append_to_archive(bundle, files, parent_dir, duplicate_check_list, archive_files)
+
+        # Then
+        self.assertEqual(archive_files, [
+            ['bundles/MyBundle/1.0/directoryTest', 'tests/integration/data/directoryTest'],
+            ['bundles/MyBundle/1.0/directoryTest/file1of3.txt', 'tests/integration/data/directoryTest/file1of3.txt'],
+            ['bundles/MyBundle/1.0/directoryTest/file2of3.txt', 'tests/integration/data/directoryTest/file2of3.txt'],
+            ['bundles/MyBundle/1.0/directoryTest/file3of3.txt', 'tests/integration/data/directoryTest/file3of3.txt']
+        ])
+        self.assertEqual(r_archive_files, archive_files)
 
 if __name__ == '__main__':
     unittest.main()

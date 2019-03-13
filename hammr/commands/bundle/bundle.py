@@ -235,10 +235,10 @@ class Bundle(Cmd, CoreGlobal):
             isJsonFile= check_extension_is_json(file)
             archive_files=[]
             try:
-                checkList = []
+                duplicate_check_list = []
                 if "files" in bundle:
                     for files in bundle["files"]:
-                        checkList,archive_files = recursivelyAppendToArchive(bundle, files, "", checkList, archive_files)
+                        duplicate_check_list, archive_files = recursively_append_to_archive(bundle, files, "", duplicate_check_list, archive_files)
                 else:
                     printer.out("No files section found for bundle", printer.ERROR)
                     return 2

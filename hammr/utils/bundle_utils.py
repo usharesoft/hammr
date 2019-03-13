@@ -70,58 +70,59 @@ def check_files(bundle, file, level):
 
     return bundle
 
-def recursivelyAppendToArchive(bundle, files, parentDir, checkList, archive_files):
+def recursively_append_to_archive(bundle, files, parent_dir, duplicate_check_list, archive_files):
     #must save the filepath before changing it after archive
     filePathBeforeTar = files["source"]
+
     if not "tag" in files or ("tag" in files and files["tag"] != "ospkg"):
-        # if parentDir is a no empty path or already ending with os.sep, add os.sep at the end
-        if parentDir and not parentDir.endswith(os.sep):
-            parentDir = parentDir + os.sep
-        file_tar_path = constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) \
-                      + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) \
-                      + os.sep + parentDir \
-                      + generics_utils.remove_URI_forbidden_char(ntpath.basename(files["name"]))
-        if file_tar_path not in checkList:
-            checkList.append(file_tar_path)
-            archive_files.append([file_tar_path,files["source"]])
-            #changing source path to archive related source path
-            files["source"]=file_tar_path
-        else:
-            raise ValueError("Cannot have identical files in the bundles section: " + file_tar_path + " from " + filePathBeforeTar)
+        add_file_to_archive_and_update_file_source(bundle, files, parent_dir, duplicate_check_list, archive_files)
 
     if "files" in files:
         for subFiles in files["files"]:
-            checkList,archive_files = recursivelyAppendToArchive(bundle, subFiles, parentDir + ntpath.basename(files["source"]), checkList, archive_files)
+            duplicate_check_list,archive_files = recursively_append_to_archive(
+                bundle, subFiles, parent_dir + ntpath.basename(files["source"]), duplicate_check_list, archive_files)
 
     if (not "tag" in files or files["tag"] != "ospkg") and os.path.isdir(filePathBeforeTar):
-        checkList,archive_files = processFilesFromFolder(bundle, files, filePathBeforeTar, parentDir + ntpath.basename(filePathBeforeTar), checkList, archive_files)
+        duplicate_check_list, archive_files = process_files_from_folder(
+            bundle, files, filePathBeforeTar, parent_dir + ntpath.basename(filePathBeforeTar), duplicate_check_list, archive_files)
 
-    return checkList, archive_files
+    return duplicate_check_list, archive_files
 
-def processFilesFromFolder(bundle, files, filePath, parentDir, checkList, archive_files):
+def process_files_from_folder(bundle, files, filePath, parentDir, duplicate_check_list, archive_files):
     for subFiles in os.listdir(filePath):
         subFilesDict = dict({"name" : ntpath.basename(subFiles), "source" : filePath + os.sep + ntpath.basename(subFiles), "files" : []})
         #must save the filepath before changing it after archive
         subFilePathBeforeTar = subFilesDict["source"]
 
-        # if parentDir is a no empty path or already ending with os.sep, add os.sep at the end
-        if parentDir and not parentDir.endswith(os.sep):
-            parentDir = parentDir + os.sep
-
-        # add to list of file to tar
-        file_tar_path = constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(
-            bundle["name"]) + os.sep + generics_utils.remove_URI_forbidden_char(
-            bundle["version"]) + os.sep + parentDir + generics_utils.remove_URI_forbidden_char(
-            ntpath.basename(subFilesDict["source"]))
-
-        if file_tar_path not in checkList:
-            checkList.append(file_tar_path)
-            archive_files.append([file_tar_path,subFilesDict["source"]])
-            #changing source path to archive related source path and add it to files section of parent folder
-            subFilesDict["source"] = file_tar_path
+        if add_file_to_archive_and_update_file_source(
+                bundle, subFilesDict, parentDir, duplicate_check_list, archive_files, False):
             files["files"].append(subFilesDict)
 
         if os.path.isdir(subFilePathBeforeTar):
-            checkList,archive_files = processFilesFromFolder(bundle, subFilesDict, subFilePathBeforeTar, parentDir + ntpath.basename(subFilePathBeforeTar), checkList, archive_files)
+            duplicate_check_list,archive_files = process_files_from_folder(
+                bundle, subFilesDict, subFilePathBeforeTar, parentDir + ntpath.basename(subFilePathBeforeTar),
+                duplicate_check_list, archive_files)
 
-    return checkList, archive_files
+    return duplicate_check_list, archive_files
+
+def add_file_to_archive_and_update_file_source(bundle, file, parent_dir, duplicate_check_list,  archive_files, fail_on_duplicates=True):
+    file_tar_path = build_file_tar_path(bundle, file, parent_dir)
+    if file_tar_path not in duplicate_check_list:
+        duplicate_check_list.append(file_tar_path)
+        archive_files.append([file_tar_path, file["source"]])
+        # changing source path to archive related source path
+        file["source"] = file_tar_path
+        return True
+    elif fail_on_duplicates:
+        raise ValueError(
+            "Cannot have identical files in the bundles section: " + file_tar_path + " from " + file["source"])
+    return False
+
+def build_file_tar_path(bundle, file, parent_dir):
+    # if parentDir is a no empty path or already ending with os.sep, add os.sep at the end
+    if parent_dir and not parent_dir.endswith(os.sep):
+        parent_dir = parent_dir + os.sep
+    return constants.FOLDER_BUNDLES + os.sep + generics_utils.remove_URI_forbidden_char(bundle["name"]) \
+                  + os.sep + generics_utils.remove_URI_forbidden_char(bundle["version"]) \
+                  + os.sep + parent_dir \
+                  + generics_utils.remove_URI_forbidden_char(ntpath.basename(file["name"]))
