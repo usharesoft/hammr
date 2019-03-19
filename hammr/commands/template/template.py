@@ -271,12 +271,12 @@ class Template(Cmd, CoreGlobal):
                         printer.out("No source file found in config", printer.ERROR)
                         return 2
             try:
-                checkList = []
+                duplicate_check_list = []
                 if "bundles" in template["stack"]:
                     for bundle in template["stack"]["bundles"]:
                         if "files" in bundle:
                             for files in bundle["files"]:
-                                checkList,archive_files = recursivelyAppendToArchive(bundle, files, "", checkList, archive_files)
+                                duplicate_check_list, archive_files = recursively_append_to_archive(bundle, files, "", duplicate_check_list, archive_files)
                         else:
                             printer.out("No files section found for bundle", printer.ERROR)
                             return 2
