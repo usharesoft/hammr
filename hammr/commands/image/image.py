@@ -564,7 +564,7 @@ class Image(Cmd, CoreGlobal):
         if publish_method:
             publish_image = publish_method(builder, cred_account)
             if publish_image is None:
-                raise ValueError("Could not find the builder")
+                raise ValueError("Error with the builder. The publish cannot proceed.")
         else:
             raise ValueError("Builder type unknown: " + format_type)
         publish_image.credAccount = cred_account

@@ -321,15 +321,28 @@ def publish_openshift(builder, cred_account):
     return pimage
 
 def publish_oracleraw(builder, cred_account):
+    printer.out("The generation of the old oracle format is not supported anymore. Please generate in the new oracle format.", printer.ERROR)
+    return
+
+def publish_oraclevmdk(builder, cred_account):
     pimage = PublishImageOracle()
 
     if not "displayName" in builder:
         printer.out("displayName in Oracle builder is missing", printer.ERROR)
         return
-    if not "computeEndPoint" in builder:
-        printer.out("computeEndPoint in Oracle builder is missing", printer.ERROR)
+    if not "bucketName" in builder:
+        printer.out("bucketName in Oracle builder is missing", printer.ERROR)
+        return
+    if not "publishRegion" in builder:
+        printer.out("publishRegion in Oracle builder is missing", printer.ERROR)
+        return
+    if not "compartmentId" in builder:
+        printer.out("compartmentId in Oracle builder is missing", printer.ERROR)
         return
 
     pimage.displayName = builder["displayName"]
-    pimage.computeEndPoint = builder["computeEndPoint"]
+    pimage.bucketName = builder["bucketName"]
+    pimage.publishRegion = builder["publishRegion"]
+    pimage.compartmentId = builder["compartmentId"]
+
     return pimage

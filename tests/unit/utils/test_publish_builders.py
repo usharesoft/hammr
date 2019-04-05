@@ -333,39 +333,74 @@ class TestPublishCloudStack(TestCase):
 class TestPublishOracle(TestCase):
     def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
         # given
-        builder = self.build_oracle_builder("displayName", "computeEndPoint")
+        builder = self.build_oracle_builder("displayName", "compartmentId", "publishRegion", "bucketName")
 
         # when
         pimage = publish_oracleraw(builder, self.build_cred_account())
+
+        # then
+        self.assertEqual(pimage, None)
+
+
+    def test_publish_oracle_should_return_publish_image_when_valid_entries(self):
+        # given
+        builder = self.build_oracle_builder("displayName", "compartmentId", "publishRegion", "bucketName")
+
+        # when
+        pimage = publish_oraclevmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage.displayName, builder["displayName"])
-        self.assertEqual(pimage.computeEndPoint, builder["computeEndPoint"])
+        self.assertEqual(pimage.compartmentId, builder["compartmentId"])
+        self.assertEqual(pimage.publishRegion, builder["publishRegion"])
+        self.assertEqual(pimage.bucketName, builder["bucketName"])
 
     def test_publish_oracle_should_return_none_when_missing_display_name(self):
         # given
-        builder = self.build_oracle_builder(None, "computeEndPoint")
+        builder = self.build_oracle_builder(None, "compartmentId", "publishRegion", "bucketName")
 
         # when
-        pimage = publish_oracleraw(builder, self.build_cred_account())
+        pimage = publish_oraclevmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
 
-    def test_publish_oracle_should_return_none_when_missing_compute_end_point(self):
+    def test_publish_oracle_should_return_none_when_missing_compartment_id(self):
         # given
-        builder = self.build_oracle_builder("displayName", None)
+        builder = self.build_oracle_builder("displayName", None, "publishRegion", "bucketName")
 
         # when
-        pimage = publish_oracleraw(builder, self.build_cred_account())
+        pimage = publish_oraclevmdk(builder, self.build_cred_account())
 
         # then
         self.assertEqual(pimage, None)
 
-    def build_oracle_builder(self, display_name, compute_end_point):
+    def test_publish_oracle_should_return_none_when_missing_publish_region(self):
+        # given
+        builder = self.build_oracle_builder("displayName", "compartmentId", None, "bucketName")
+
+        # when
+        pimage = publish_oraclevmdk(builder, self.build_cred_account())
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def test_publish_oracle_should_return_none_when_missing_bucket_name(self):
+        # given
+        builder = self.build_oracle_builder("displayName", "compartmentId", "publishRegion", None)
+
+        # when
+        pimage = publish_oraclevmdk(builder, self.build_cred_account())
+
+        # then
+        self.assertEqual(pimage, None)
+
+    def build_oracle_builder(self, display_name, compartmentId, publishRegion, bucketName):
         builder = {}
         if display_name is not None: builder["displayName"] = display_name
-        if compute_end_point is not None: builder["computeEndPoint"] = compute_end_point
+        if compartmentId is not None: builder["compartmentId"] = compartmentId
+        if publishRegion is not None: builder["publishRegion"] = publishRegion
+        if bucketName is not None: builder["bucketName"] = bucketName
         return builder
 
     def build_cred_account(self):

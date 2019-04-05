@@ -56,7 +56,9 @@ To publish an image, the valid keys are:
 * ``type`` (mandatory): a string providing the machine image type to build. Default builder type for Oracle Cloud: ``Oracle Cloud``. To get the available builder type, please refer to :ref:`command-line-format`
 * ``account`` (mandatory): an object providing the Oracle Cloud account information required to publish the built machine image.
 * ``displayName`` (mandatory): a string providing the name of the image that will be displayed.
-* ``computeEndPoint`` (mandatory): a string providing the compute end point url to register the machine image to.
+* ``compartmentId`` (mandatory): a string providing the compartment id containing the object file and the image mahcine file.
+* ``publishRegion`` (mandatory): a string providing the region where the image will be published.
+* ``bucketName`` (mandatory): a string providing the bucket name where will be transfered the machine image file.
 
 Oracle Cloud Account
 --------------------
