@@ -35,6 +35,15 @@
   "account": {
     "name": "unittest2"
   }
+ },
+ {
+  "type" : "Oracle Cloud",
+  "hardwareSettings" : {
+    "memory" : 1024
+  },
+  "installation" : {
+    "diskSize" : 2000
+  }
  }
  ]
 }
