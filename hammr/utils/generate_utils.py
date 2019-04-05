@@ -117,6 +117,10 @@ def generate_oracleraw(image, builder, installProfile, api, login):
     image.compress = True
     return image, installProfile
 
+def generate_oraclevmdk(image, builder, installProfile, api, login):
+    image.compress = True
+    return image, installProfile
+
 ##--------------------- Physical Formats
 def generate_iso(image, builder, installProfile, api=None, login=None):
     image.compress = True
