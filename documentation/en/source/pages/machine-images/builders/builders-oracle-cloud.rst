@@ -114,7 +114,9 @@ If you are using JSON:
           "domainName": "a123456"
         },
         "displayName": "myOracleDisplayName",
-        "computeEndPoint": "myComputeEndPointUrl"
+        "compartmentId":"ocid1.compartment.oc1..aaaaaaaa4vt34sarwn3j4czxypud3oulshkzr7gmqqbga4xpzp7wkjruqgiq",
+        "publishRegion":"eu-frankfurt-1",
+        "bucketName":"bucket-api-test"
       }
     ]
   }
@@ -167,7 +169,10 @@ If you are using YAML:
     account:
       file: "/path/to/oracle-cloud-account.yml"
     displayName: myOracleDisplayName
-    computeEndPoint: myComputeEndPointUrl
+    compartmentId: ocid1.compartment.oc1..aaaaaaaa4vt34sarwn3j4czxypud3oulshkzr7gmqqbga4xpzp7wkjruqgiq
+    publishRegion: eu-frankfurt-1
+    bucketName: bucket-api-test
+
 
 If you are using JSON:
 
@@ -181,7 +186,9 @@ If you are using JSON:
               "file": "/path/to/oracle-cloud-account.json"
         },
         "displayName": "myOracleDisplayName",
-        "computeEndPoint": "myComputeEndPointUrl"
+        "compartmentId":"ocid1.compartment.oc1..aaaaaaaa4vt34sarwn3j4czxypud3oulshkzr7gmqqbga4xpzp7wkjruqgiq",
+        "publishRegion":"eu-frankfurt-1",
+        "bucketName":"bucket-api-test"
       }
     ]
   }
@@ -198,7 +205,9 @@ If you are using YAML:
     account:
       name: My Oracle Cloud Account
     displayName: myOracleDisplayName
-    computeEndPoint: myComputeEndPointUrl
+    compartmentId: ocid1.compartment.oc1..aaaaaaaa4vt34sarwn3j4czxypud3oulshkzr7gmqqbga4xpzp7wkjruqgiq
+    publishRegion: eu-frankfurt-1
+    bucketName: bucket-api-test
 
 If you are using JSON:
 
@@ -212,7 +221,9 @@ If you are using JSON:
               "name": "My Oracle Cloud Account"
         },
         "displayName": "myOracleDisplayName",
-        "computeEndPoint": "myComputeEndPointUrl"
+        "compartmentId":"ocid1.compartment.oc1..aaaaaaaa4vt34sarwn3j4czxypud3oulshkzr7gmqqbga4xpzp7wkjruqgiq",
+        "publishRegion":"eu-frankfurt-1",
+        "bucketName":"bucket-api-test"
       }
     ]
   }

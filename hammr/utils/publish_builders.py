@@ -321,7 +321,7 @@ def publish_openshift(builder, cred_account):
     return pimage
 
 def publish_oracleraw(builder, cred_account):
-    printer.out("The generation of the old oracle format is not supported anymore. Please generate in the new oracle format.", printer.ERROR)
+    printer.out("The publish of an image in the old oracle format is not supported. Please re-generate it in the new oracle format.", printer.ERROR)
     return
 
 def publish_oraclevmdk(builder, cred_account):

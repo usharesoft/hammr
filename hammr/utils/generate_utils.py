@@ -114,8 +114,8 @@ def generate_k5vmdk(image, builder, installProfile, api, login):
     return image, installProfile
 
 def generate_oracleraw(image, builder, installProfile, api, login):
-    image.compress = True
-    return image, installProfile
+    printer.ERROR("The generation in the old oracle format is not supported anymore.")
+    return
 
 def generate_oraclevmdk(image, builder, installProfile, api, login):
     image.compress = True
