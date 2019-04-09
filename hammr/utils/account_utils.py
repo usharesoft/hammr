@@ -267,6 +267,7 @@ def fill_google(account):
         myCertificate.type = "googleCertificate"
         myCertificate.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'type')
         myCertificate.name = ntpath.basename(account["cert"])
+        myCertificate.content_ = myCertificate.certStr
         myCredAccount.certificates.append(myCertificate)
 
     except IOError as e:
@@ -372,21 +373,57 @@ def fill_oracle(account):
     if not "name" in account:
         printer.out("name for Oracle account is missing", printer.ERROR)
         return
-    if not "login" in account:
-        printer.out("login for Oracle account is missing", printer.ERROR)
+    if not "tenancyID" in account:
+        printer.out("tenancyID for Oracle account is missing", printer.ERROR)
         return
-    if not "password" in account:
-        printer.out("password for Oracle account is missing", printer.ERROR)
+    if not "authUserID" in account:
+        printer.out("authUserID for Oracle account is missing", printer.ERROR)
         return
-    if not "domainName" in account:
-        printer.out("domain name for Oracle account is missing", printer.ERROR)
+    if not "keyFingerprint" in account:
+        printer.out("keyFingerprint for Oracle account is missing", printer.ERROR)
+        return
+    if not "homeRegion" in account:
+        printer.out("homeRegion for Oracle account is missing", printer.ERROR)
+        return
+    if not "cert" in account:
+        printer.out("cert for Oracle account is missing (Private Key)", printer.ERROR)
         return
 
     myCredAccount.name = account["name"]
-    myCredAccount.domainName = account["domainName"]
-    myCredAccount.login = account["login"]
-    myCredAccount.password = account["password"]
+    myCredAccount.tenancyID = account["tenancyID"]
+    myCredAccount.authUserID = account["authUserID"]
+    myCredAccount.keyFingerprint = account["keyFingerprint"]
+    myCredAccount.homeRegion = account["homeRegion"]
+    myCredAccount.version = "v2"
+
+    myCredAccount.certificates = pyxb.BIND()
+    myCredAccount.certificates._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'Certificates')
+
+    try:
+        myCertificate = certificate()
+        with open(account["cert"], "r") as myfile:
+            myCertificate.certStr = myfile.read()
+        myCertificate.type = "oraclePrivateKey"
+        myCertificate.type._ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'type')
+        myCertificate.name = ntpath.basename(account["cert"])
+        myCertificate.status = init_default_op_status()
+        myCertificate.content_ = myCertificate.certStr
+
+        myCredAccount.certificates.append(myCertificate)
+
+    except IOError as e:
+        printer.out("File error: " + str(e), printer.ERROR)
+        return
+
     return myCredAccount
+
+
+def init_complete_op_status():
+    my_status = status()
+    my_status.cancelled = False
+    my_status.complete = True
+    my_status.error = False
+    return my_status
 
 
 def get_target_platform_object(api, login, targetPlatformName):
