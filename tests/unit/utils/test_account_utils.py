@@ -12,13 +12,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import tempfile
 from unittest import TestCase
 
+from hammr.utils.account_utils import *
 from mock import patch
 
-from hammr.utils.account_utils import *
-
-from file_utils import *
 
 class TestK5(TestCase):
 
@@ -285,23 +284,10 @@ class TestAzure(TestCase):
 class TestOracle(TestCase):
 
     @patch("hammr.utils.account_utils.oracle")
-    def test_fill_oracle_should_return_cred_account_when_valid_entries(self, mock_oracle):
+    def test_fill_oracle_should_return_none_when_missing_name(self, mock_oracle):
         # given
-        account_given = self.build_account("testName", "testDomainName", "testLogin", "testPassword")
-
-        # when
-        account = fill_oracle(account_given)
-
-        # then
-        self.assertEquals(mock_oracle.call_count, 1)
-        self.assertEqual(account.name, account_given["name"])
-        self.assertEqual(account.domainName, account_given["domainName"])
-        self.assertEqual(account.login, account_given["login"])
-        self.assertEqual(account.password, account_given["password"])
-
-    def test_fill_oracle_should_return_none_when_missing_name(self):
-        # given
-        accountMocked = self.build_account(None, "testDomainName", "testLogin", "testPassword")
+        accountMocked = self.build_account(None, "test_tenancy_id", "test_auth_user_id", "test_key_fingerprint",
+                                           "test_home_region", "test_with_private_key_file")
 
         # when
         account = fill_oracle(accountMocked)
@@ -309,9 +295,10 @@ class TestOracle(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_oracle_should_return_none_when_missing_domain_name(self):
+    def test_fill_oracle_should_return_none_when_missing_tenancy_id(self):
         # given
-        accountMocked = self.build_account("testName", None, "testLogin", "testPassword")
+        accountMocked = self.build_account("test_name", None, "test_auth_user_id", "test_key_fingerprint",
+                                           "test_home_region", "test_with_private_key_file")
 
         # when
         account = fill_oracle(accountMocked)
@@ -319,9 +306,10 @@ class TestOracle(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_oracle_should_return_none_when_missing_login(self):
+    def test_fill_oracle_should_return_none_when_missing_auth_user_id(self):
         # given
-        accountMocked = self.build_account("testName", "testDomainName", None, "testPassword")
+        accountMocked = self.build_account("test_name", "test_tenancy_id", None, "test_key_fingerprint",
+                                           "test_home_region", "test_with_private_key_file")
 
         # when
         account = fill_oracle(accountMocked)
@@ -329,9 +317,10 @@ class TestOracle(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def test_fill_oracle_should_return_none_when_missing_password(self):
+    def test_fill_oracle_should_return_none_when_missing_key_fingerprint(self):
         # given
-        accountMocked = self.build_account("testName", "testDomainName", "testLogin", None)
+        accountMocked = self.build_account("test_name", "test_tenancy_id", "test_auth_user_id", None,
+                                           "test_home_region", "test_with_private_key_file")
 
         # when
         account = fill_oracle(accountMocked)
@@ -339,12 +328,38 @@ class TestOracle(TestCase):
         # then
         self.assertEqual(account, None)
 
-    def build_account(self, name, domain_name, login, password):
+    def test_fill_oracle_should_return_none_when_missing_home_region(self):
+        # given
+        accountMocked = self.build_account("test_name", "test_tenancy_id", "test_auth_user_id", "test_key_fingerprint",
+                                           None, "test_with_private_key_file")
+
+        # when
+        account = fill_oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def test_fill_oracle_should_return_none_when_missing_private_key(self):
+        # given
+        accountMocked = self.build_account("test_name", "test_tenancy_id", "test_auth_user_id",
+                                           "test_key_fingerprint",
+                                           "test_home_region", None)
+
+        # when
+        account = fill_oracle(accountMocked)
+
+        # then
+        self.assertEqual(account, None)
+
+    def build_account(self, name, tenancy_id, auth_user_id, key_fingerprint, home_region, private_key):
         account = {}
         if name is not None: account["name"] = name
-        if domain_name is not None: account["domainName"] = domain_name
-        if login is not None: account["login"] = login
-        if password is not None: account["password"] = password
+        if tenancy_id is not None: account["tenancyID"] = tenancy_id
+        if auth_user_id is not None: account["authUserID"] = auth_user_id
+        if key_fingerprint is not None: account["keyFingerprint"] = key_fingerprint
+        if home_region is not None: account["homeRegion"] = home_region
+        if private_key is not None:
+            account["cert"] = private_key
         return account
 
 class TestAWS(TestCase):
