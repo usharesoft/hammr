@@ -246,7 +246,7 @@ def print_deploy_info(image_object, status, deployed_instance_id):
     else:
         printer.out("Deployment is successful", printer.OK)
 
-        deployment = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Get()
+        deployment = image_object.api.Users(image_object.login).Deployments(Did=deployed_instance_id).Get()
         instance = deployment.instances.instance[-1]
 
         deployment_name = deployment.name
@@ -276,12 +276,12 @@ def print_deploy_info(image_object, status, deployed_instance_id):
 def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
     printer.out("Deployment in progress", printer.INFO)
 
-    status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+    status = image_object.api.Users(image_object.login).Deployments(Did=deployed_instance_id).Status.Getdeploystatus()
     bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
     bar.start()
     i = 1
     while not (status.message == "running" or status.message == "on-fire"):
-        status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+        status = image_object.api.Users(image_object.login).Deployments(Did=deployed_instance_id).Status.Getdeploystatus()
         time.sleep(1)
         bar.update(i)
         i += 2
@@ -289,9 +289,9 @@ def show_deploy_progress_without_percentage(image_object, deployed_instance_id):
     return status
 
 def show_deploy_progress_with_percentage(image_object, deployed_instance_id, bar_status, progress):
-    status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+    status = image_object.api.Users(image_object.login).Deployments(Did=deployed_instance_id).Status.Getdeploystatus()
     while not (status.message == "running" or status.message == "on-fire"):
-        status = image_object.api.Users(image_object.login).Deployments(deployed_instance_id).Status.Getdeploystatus()
+        status = image_object.api.Users(image_object.login).Deployments(Did=deployed_instance_id).Status.Getdeploystatus()
         time.sleep(1)
 
     bar_status.percentage = 100

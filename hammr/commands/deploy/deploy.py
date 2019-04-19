@@ -111,16 +111,15 @@ class Deploy(Cmd, CoreGlobal):
             # add arguments
             doParser = self.arg_terminate()
             doArgs = doParser.parse_args(shlex.split(args))
-
-            deployment = self.api.Users(self.login).Deployments(doArgs.id).Get()
+            deployment = self.api.Users(self.login).Deployments(Did=doArgs.id).Get()
             if doArgs.force or generics_utils.query_yes_no("Do you really want to terminate deployment with id '" + str(
                     doArgs.id) + "' named '" + deployment.name + "'"):
                 # When terminating a running deployment, we stop if the status goes to on-fire.
                 # But when terminating an on-fire deployment we stop if it is terminated.
                 # So we need to get the status before invoking the terminate.
-                status = self.api.Users(self.login).Deployments(doArgs.id).Status.Getdeploystatus()
+                status = self.api.Users(self.login).Deployments(Did=doArgs.id).Status.Getdeploystatus()
                 initial_status = status.message
-                self.api.Users(self.login).Deployments(doArgs.id).Terminate()
+                self.api.Users(self.login).Deployments(Did=doArgs.id).Terminate()
                 printer.out("Terminating the deployment")
                 bar = ProgressBar(widgets=[BouncingBar()], maxval=UnknownLength)
                 bar.start()
@@ -140,7 +139,7 @@ class Deploy(Cmd, CoreGlobal):
 
                 if deployment:
                     printer.out("Could not terminate the deployment.", printer.ERROR)
-                    status = self.api.Users(self.login).Deployments(doArgs.id).Status.Getdeploystatus()
+                    status = self.api.Users(self.login).Deployments(Did=doArgs.id).Status.Getdeploystatus()
                     if status.message == "on-fire" and status.detailedError:
                         printer.out(status.detailedErrorMsg, printer.ERROR)
                     return 1
