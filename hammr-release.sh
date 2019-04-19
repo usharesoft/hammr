@@ -185,7 +185,7 @@ fi
 # Verify uforge-python-sdk version is available on Pypi
 PYPI_URL="https://pypi.org/project"
 STATUS=$(curl -o /dev/null --silent --head --write-out '%{http_code}' "$PYPI_URL/uforge_python_sdk/$SDK_VERSION/")
-if [ $STATUS -ne 200 ]; then
+if [ $STATUS -ne 200 ] && [ $STATUS -ne 301 ]; then
   release_failed "uforge_python_sdk $SDK_VERSION is not available on $PYPI_URL"
 fi
 #Verify hammr version we are releasing is not on Pypi
