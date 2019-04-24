@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.12 (2018-04-29)
+-------------------------
+
+Evolutions:
+
+* Users can view information about an image with ``hammr image info`` command
+
 hammr 3.8.11 (2018-03-18)
 -------------------------
 

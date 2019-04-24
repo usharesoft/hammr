@@ -30,6 +30,7 @@ from hammr.utils.hammr_utils import *
 from hammr.utils.deployment_utils import *
 from hammr.utils.publish_utils import *
 from hammr.utils.publish_builders import *
+from hammr.utils import image_utils
 
 #This import and configuration avoid pyxb warnings about xmls
 import logging
@@ -107,6 +108,140 @@ class Image(Cmd, CoreGlobal):
     def help_list(self):
         doParser = self.arg_list()
         doParser.print_help()
+
+    def arg_info(self):
+        do_parser = ArgumentParser(prog=self.cmd_name + " info", add_help=True,
+                                   description="Displays detailed information about a machine image")
+        mandatory = do_parser.add_argument_group("mandatory arguments")
+        mandatory.add_argument('--id', dest='id', type=str, required=True,
+                               help="the ID of the machine image to retrieve")
+        return do_parser
+
+    def do_info(self, args):
+        try:
+            do_parser = self.arg_info()
+            do_args = do_parser.parse_args(shlex.split(args))
+            if not do_args:
+                return 2
+
+            image_list = self.get_all_images()
+
+            info_image = self.get_image(image_list, do_args.id)
+            if info_image is None:
+                printer.out("The image with id \"" + do_args.id + "\" doesn't exist.", printer.ERROR)
+                return 2
+
+            printer.out("Information about [" + info_image.name + "]:")
+
+            self.do_info_draw_general(info_image)
+            self.do_info_draw_publication(info_image)
+            return 0
+
+        except ArgumentParserError as error:
+            printer.out("In Arguments: " + str(error), printer.ERROR)
+            self.help_info()
+        except Exception as exception:
+            return handle_uforge_exception(exception)
+
+    def do_info_draw_general(self, info_image):
+        table = Texttable(0)
+        table.set_cols_dtype(["a", "t"])
+        table.set_cols_align(["l", "l"])
+
+        table.add_row(["Name", info_image.name])
+        table.add_row(["Format", info_image.targetFormat.name])
+        table.add_row(["Id", info_image.dbId])
+        table.add_row(["Version", info_image.version])
+        table.add_row(["Revision", info_image.revision])
+        table.add_row(["Uri", info_image.uri])
+
+        self.do_info_draw_source(info_image.parentUri, table)
+
+        table.add_row(["Created", info_image.created.strftime("%Y-%m-%d %H:%M:%S")])
+        table.add_row(["Size", size(info_image.fileSize)])
+        table.add_row(["Compressed", "Yes" if info_image.compress else "No"])
+
+        format_name = info_image.targetFormat.format.name
+        if format_name == "docker" or format_name == "openshift":
+            registring_name = None
+            if info_image.status.complete:
+                registring_name = info_image.registeringName
+            table.add_row(["RegisteringName",registring_name])
+            table.add_row(["Entrypoint", info_image.entrypoint.replace("\\", "")])
+
+        self.do_info_draw_generation(info_image, table)
+
+        print table.draw() + "\n"
+
+    def do_info_draw_source(self, parent_uri, table):
+        appliance_id = image_utils.get_uid_from_uri(parent_uri, "appliances")
+        if appliance_id:
+            app = self.api.Users(self.login).Appliances(appliance_id).Get()
+            table.add_row(["OS", app.distributionName + " " + app.archName])
+            table.add_row(["Template Id", app.dbId])
+            table.add_row(["Description", app.description])
+            return
+
+        scanned_instance_id = image_utils.get_uid_from_uri(parent_uri, "scannedinstances")
+        if scanned_instance_id:
+            scanned_instance = self.api.Users(self.login).Scannedinstances(scanned_instance_id).Get()
+            distro = scanned_instance.distribution
+            table.add_row(["OS", distro.name + " " + distro.version + " " + distro.arch])
+            table.add_row(["Scan Id", scanned_instance.dbId])
+            return
+
+        my_software_id = image_utils.get_uid_from_uri(parent_uri, "mysoftware")
+        template_id = image_utils.get_uid_from_uri(parent_uri, "templates")
+        if my_software_id and template_id:
+            my_software = self.api.Users(self.login).Mysoftware(my_software_id).Get()
+            container_template = self.api.Users(self.login).Mysoftware(my_software_id).Templates(template_id).Get()
+            distro = container_template.distribution
+            table.add_row(["OS", distro.name + " " + distro.version + " " + distro.arch])
+            table.add_row(["MySoftware Id", my_software.dbId])
+            table.add_row(["Description", my_software.description])
+            return
+
+    def do_info_draw_generation(self, info_image, table):
+        generation_status = image_utils.get_message_from_status(info_image.status)
+        if not generation_status:
+            generation_status = "Generating"
+        table.add_row(["Generation Status", generation_status])
+        table.add_row(["Generation Message", info_image.status.message])
+        if info_image.status.error:
+            table.add_row(["Detailed Error Message", info_image.status.errorMessage])
+
+    def do_info_draw_publication(self, info_image):
+        printer.out("Information about publications:")
+        pimages = self.api.Users(self.login).Pimages.Getall()
+        table = Texttable(0)
+        table.set_cols_align(["l", "l"])
+
+        has_pimage = False
+        for pimage in pimages.publishImages.publishImage:
+            if pimage.imageUri == info_image.uri:
+                has_pimage = True
+                cloud_id = None
+                publish_status = image_utils.get_message_from_status(pimage.status)
+                if not publish_status:
+                    publish_status = "Publishing"
+
+                if publish_status == "Done":
+                    cloud_id = pimage.cloudId
+                    format_name = info_image.targetFormat.format.name
+                    if format_name == "docker" or format_name == "openshift":
+                        cloud_id = pimage.namespace + "/" + pimage.repositoryName + ":" + pimage.tagName
+
+                table.add_row([publish_status, cloud_id])
+
+        if has_pimage:
+            table.header(["Status", "Cloud Id"])
+            print table.draw() + "\n"
+        else:
+            printer.out("No publication")
+
+    def help_info(self):
+        do_parser = self.arg_info()
+        do_parser.print_help()
 
     def arg_publish(self):
         do_parser = ArgumentParser(prog=self.cmd_name + " publish", add_help=True,
