@@ -46,6 +46,13 @@ Downloads a machine image to the local filesystem. The options are:
 	* ``--id`` (mandatory): the ID of the machine image to download
 	* ``--file`` (mandatory): the pathname where to store the machine image
 
+``info`` sub-command
+~~~~~~~~~~~~~~~~~~~~
+
+Displays detailed information about a machine image. The options are:
+
+	* ``--id`` (mandatory): the ID of the machine image to retrieve
+
 ``list`` sub-command
 ~~~~~~~~~~~~~~~~~~~~
 
