@@ -76,6 +76,26 @@ class TestTemplate(TestCase):
         # then
         self.assertEqual(2, return_value)
 
+    @patch('uforge.application.Api._Users._Imports._Uploads.Upload')
+    @patch('uforge.application.Api._Users._Imports.Import')
+    def test_do_create_should_return_2_when_image_already_exist(self, mock_api_imports_getall, mock_api_upload):
+        # given
+        yaml_path = find_relative_path_for("tests/integration/data/test-parsing.yml")
+        args = "--file " + yaml_path
+        template = self.create_template("url", "username", "password", "login", "password")
+
+        status = OpStatus()
+        status.error = True
+        status.message = "error"
+        status.errorMessage = "error"
+        mock_api_upload.return_value = status
+
+        # when
+        return_value = template.do_create(args)
+
+        # then
+        self.assertEqual(2, return_value)
+
     @patch('uforge.application.Api._Users._Appliances._Images.Generate')
     @patch('uforge.application.Api._Users._Targetformats.Getall')
     @patch('uforge.application.Api._Users._Appliances._Installprofile.Getdeprecated')

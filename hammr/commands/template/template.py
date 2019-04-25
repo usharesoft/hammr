@@ -588,6 +588,8 @@ class Template(Cmd, CoreGlobal):
                             printer.out(status.detailedErrorMsg)
                     else:
                         printer.out("Template create: "+status.message+"\n"+status.errorMessage, printer.ERROR)
+
+                    return 2
                 else:
                     if isImport:
                         printer.out("Template import: DONE", printer.OK)
