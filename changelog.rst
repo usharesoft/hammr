@@ -9,6 +9,7 @@ hammr 3.8.12 (2018-04-29)
 Evolutions:
 
 * Users can view information about an image with ``hammr image info`` command
+* Compatibility with UForge AppCenter 3.8.fp12-1 only
 
 hammr 3.8.11 (2018-03-18)
 -------------------------
