@@ -3,6 +3,13 @@
 Changelog
 =========
 
+hammr 3.8.13 (2019-06-10)
+-------------------------
+
+Evolutions:
+
+* ``hammr image download`` command now displays the ``docker pull`` command for Docker based images
+
 hammr 3.8.12 (2018-04-29)
 -------------------------
 
