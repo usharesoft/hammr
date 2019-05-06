@@ -44,7 +44,7 @@ Deploy an instance of a published image on the targeted cloud. The options are:
 Downloads a machine image to the local filesystem. The options are:
 
 	* ``--id`` (mandatory): the ID of the machine image to download
-	* ``--file`` (mandatory): the pathname where to store the machine image
+	* ``--file`` (optional): the pathname where to store the machine image
 
 ``info`` sub-command
 ~~~~~~~~~~~~~~~~~~~~
