@@ -337,6 +337,20 @@ class TestImage(TestCase):
         self.assertEqual(publish_image_retrieved.datastore, builder["datastore"])
         self.assertEqual(publish_image_retrieved.network, builder["network"])
 
+    @patch("ussclicore.utils.printer.out")
+    @patch("hammr.commands.image.image.Image.get_all_images")
+    def test_do_download_should_display_command_when_docker_format(self, get_all_images, printer):
+        # given
+        i = self.prepare_image()
+        image = info_utils.create_image_format_docker()
+        get_all_images.return_value = [image]
+
+        # when
+        i.do_download("--id " + str(image.dbId))
+
+        # then
+        printer.assert_called_with("docker pull " + image.registeringName)
+
     def prepare_image(self):
         i = image.Image()
         i.api = Api("url", username="username", password="password", headers=None,
