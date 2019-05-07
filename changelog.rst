@@ -10,7 +10,7 @@ Evolutions:
 
 * ``hammr image download`` command now displays the ``docker pull`` command for Docker based images
 
-hammr 3.8.12 (2018-04-29)
+hammr 3.8.12 (2019-04-29)
 -------------------------
 
 Evolutions:
@@ -18,7 +18,7 @@ Evolutions:
 * Users can view information about an image with ``hammr image info`` command
 * Compatibility with UForge AppCenter 3.8.fp12-1 only
 
-hammr 3.8.11 (2018-03-18)
+hammr 3.8.11 (2019-03-18)
 -------------------------
 
 Evolutions:
@@ -31,7 +31,7 @@ Bug fixes:
 * Travis build ignoring test failures
 * Remove ref to progress bar
 
-hammr 3.8.10 (2018-02-04)
+hammr 3.8.10 (2019-02-04)
 -------------------------
 
 Evolutions:
