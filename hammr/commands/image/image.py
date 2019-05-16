@@ -161,8 +161,7 @@ class Image(Cmd, CoreGlobal):
         table.add_row(["Size", size(info_image.fileSize)])
         table.add_row(["Compressed", "Yes" if info_image.compress else "No"])
 
-        format_name = info_image.targetFormat.format.name
-        if format_name == "docker" or format_name == "openshift":
+        if self.is_docker_based(info_image.targetFormat.format.name):
             registring_name = None
             if info_image.status.complete:
                 registring_name = info_image.registeringName
@@ -466,7 +465,8 @@ class Image(Cmd, CoreGlobal):
                                   description="Downloads a machine image to the local filesystem")
         mandatory = doParser.add_argument_group("mandatory arguments")
         mandatory.add_argument('--id', dest='id', required=True, help="the ID of the machine image to download")
-        mandatory.add_argument('--file', dest='file', required=True,
+        optional = doParser.add_argument_group("optional arguments")
+        optional.add_argument('--file', dest='file', required=False,
                                help="the pathname where to store the machine image")
         return doParser
 
@@ -489,13 +489,20 @@ class Image(Cmd, CoreGlobal):
                 if str(image.dbId) == str(doArgs.id):
                     dlImage = image
             if dlImage is not None and dlImage.status.complete and not dlImage.status.error and dlImage.compress:
-                download_url = self.api.getUrl() + "/" + dlImage.downloadUri
-                dlUtils = download_utils.Download(download_url, doArgs.file, not self.api.getDisableSslCertificateValidation())
-                try:
-                    dlUtils.start()
-                except Exception, e:
-                    return
-                printer.out("Image downloaded", printer.OK)
+                if self.is_docker_based(dlImage.targetFormat.format.name):
+                    printer.out("In order to download the image, please run:", printer.OK)
+                    printer.out("docker pull " + dlImage.registeringName)
+                else:
+                    if doArgs.file is None:
+                        printer.out("argument --file is required for this image", printer.ERROR)
+                        return 2
+                    download_url = self.api.getUrl() + "/" + dlImage.downloadUri
+                    dlUtils = download_utils.Download(download_url, doArgs.file, not self.api.getDisableSslCertificateValidation())
+                    try:
+                        dlUtils.start()
+                    except Exception, e:
+                        return 2
+                    printer.out("Image downloaded", printer.OK)
             elif dlImage is None:
                 printer.out("Unable to find the image to download in your library", printer.ERROR)
             elif not dlImage.status.complete:
@@ -705,3 +712,6 @@ class Image(Cmd, CoreGlobal):
     def initialize_text_table(self, width):
         table = Texttable(width)
         return table
+
+    def is_docker_based(self, format_name):
+        return format_name == "docker" or format_name == "openshift"

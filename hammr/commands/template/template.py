@@ -414,7 +414,6 @@ class Template(Cmd, CoreGlobal):
                             test = TestCase('Generation '+builder["type"])
                             test_results.append(test)
                         start_time = time.time()
-
                         format_type = builder["type"]
                         target_format = generate_utils.get_target_format_object(self.api, self.login, format_type)
                         if target_format is None:
@@ -494,6 +493,8 @@ class Template(Cmd, CoreGlobal):
                                 test=test_results[len(test_results)-1]
                                 test.elapsed_sec=time.time() - start_time
                                 test.add_error_info("Error", get_uforge_exception(e))
+                            else:
+                                return 2
                         else:
                             raise
                 if do_args.junit is not None:
@@ -587,6 +588,8 @@ class Template(Cmd, CoreGlobal):
                             printer.out(status.detailedErrorMsg)
                     else:
                         printer.out("Template create: "+status.message+"\n"+status.errorMessage, printer.ERROR)
+
+                    return 2
                 else:
                     if isImport:
                         printer.out("Template import: DONE", printer.OK)

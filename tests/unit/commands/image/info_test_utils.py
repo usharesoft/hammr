@@ -49,7 +49,7 @@ def create_image_format_docker():
     image = create_image()
     image.targetFormat.name = "docker"
     image.targetFormat.format.name = "docker"
-    image.registeringName = "registering name"
+    image.registeringName = "registry/1/qwerty"
     image.entrypoint = "['/usr/sbin/httpd','-DFOREGROUND']"
 
     return image
