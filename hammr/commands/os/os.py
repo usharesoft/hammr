@@ -52,7 +52,7 @@ class Os(Cmd, CoreGlobal):
                 table.header(["Id", "Name", "Version", "Architecture", "Release Date", "Profiles"])
                 distributions = generics_utils.order_list_object_by(distributions.distribution, "name")
                 for distribution in distributions:
-                    profiles = self.api.Distributions(distribution.dbId).Profiles.Getall()
+                    profiles = self.api.Distributions(Id=distribution.dbId).Profiles.Getall()
                     profiles = profiles.distribProfiles.distribProfile
                     if len(profiles) > 0:
                         profile_text=""
@@ -99,9 +99,9 @@ class Os(Cmd, CoreGlobal):
 
             #call UForge API
             printer.out("Search package '"+doArgs.pkg+"' ...")
-            distribution = self.api.Distributions(doArgs.id).Get()
+            distribution = self.api.Distributions(Id=doArgs.id).Get()
             printer.out("for OS '"+distribution.name+"', version "+distribution.version)
-            pkgs = self.api.Distributions(distribution.dbId).Pkgs.Getall(Query="name=="+doArgs.pkg)
+            pkgs = self.api.Distributions(Id=distribution.dbId).Pkgs.Getall(Query="name=="+doArgs.pkg)
             pkgs = pkgs.pkgs.pkg
             if pkgs is None or len(pkgs) == 0:
                 printer.out("No package found")
