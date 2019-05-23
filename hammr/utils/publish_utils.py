@@ -90,6 +90,7 @@ def print_publish_status(image_object, source, image, published_image, builder, 
     else:
         printer.out("Publication to " + account_name + " is ok", printer.OK)
         published_image = image_object.get_publish_image_from_publish_id(published_image.dbId)
+        printer.out("Publish ID : " + str(published_image.dbId))
         if published_image.cloudId is not None and published_image.cloudId != "":
             printer.out("Cloud ID : " + published_image.cloudId)
 

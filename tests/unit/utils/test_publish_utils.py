@@ -20,7 +20,8 @@ from uforge.application import Api
 from uforge.objects.uforge import *
 from uforge.objects import uforge
 from tests.unit.utils.file_utils import find_relative_path_for
-from mock import patch
+from mock import patch, call
+
 from hammr.commands.image import image
 
 class TestPublishUtils(TestCase):
@@ -81,6 +82,29 @@ class TestPublishUtils(TestCase):
         # then
         self.assertEqual(type(published_image), type(PublishImageAws()))
 
+    @patch("ussclicore.utils.printer.out")
+    @patch('progressbar.ProgressBar.finish')
+    @patch('progressbar.ProgressBar.start')
+    @patch('hammr.commands.image.image.Image.get_publish_image_from_publish_id')
+    def test_print_publish_status_prints_ids_when_build_successful(self, mock_get_publish_image, mock_progressbar_start, mock_progressbar_finish, printer):
+        #given
+        image_object = self.build_image_object()
+        published_image = self.build_image_to_publish("complete", True, self.app_uri)
+        account_name = "my_account"
+        mock_get_publish_image.return_value = published_image
+        mock_progressbar_start.return_value = ProgressBar(None, None)
+        mock_progressbar_finish.return_value = None
+
+        #when
+        print_publish_status(image_object, None, None, published_image, None, account_name)
+
+        #then
+        calls = []
+        calls.append(call('Publication to ' + account_name + ' is ok', 'OK'))
+        calls.append(call('Publish ID : ' + str(published_image.dbId)))
+        calls.append(call('Cloud ID : ' + published_image.cloudId))
+        printer.assert_has_calls(calls)
+
     def test_call_publish_webservice_raises_exception_for_wrong_image_uri(self):
         # given
         image = self.build_image_to_publish("complete", True, 'wrong/uri/')
@@ -103,6 +127,7 @@ class TestPublishUtils(TestCase):
     def build_image_to_publish(self, status, status_complete, uri):
         image = Image()
         image.dbId = 1234
+        image.cloudId = "abcd-5678"
         image.uri = uri
         image.status = status
         image.status.complete = status_complete
