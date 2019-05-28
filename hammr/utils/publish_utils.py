@@ -86,7 +86,7 @@ def print_publish_status(image_object, source, image, published_image, builder, 
             printer.out(status.detailedErrorMsg)
     elif status.cancelled:
         printer.out("\nPublication to '" + builder["account"][
-            "name"] + "' canceled: " + status.message.printer.WARNING)
+            "name"] + "' canceled: " + status.message, printer.WARNING)
     else:
         printer.out("Publication to " + account_name + " is ok", printer.OK)
         published_image = image_object.get_publish_image_from_publish_id(published_image.dbId)
