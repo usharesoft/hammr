@@ -9,6 +9,13 @@ hammr 3.8.13 (2019-06-10)
 Evolutions:
 
 * ``hammr image download`` command now displays the ``docker pull`` command for Docker based images
+* ``hammr image publish`` command now displays also the ID of the published image
+* Compatibility with UForge AppCenter 3.8.fp13-1 only
+
+Bug fixes:
+
+* ``hammr template create`` returns 0 when appliance already exists
+* ``hammr template build`` returns 0 when image is already being generated
 
 hammr 3.8.12 (2019-04-29)
 -------------------------
