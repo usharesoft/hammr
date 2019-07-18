@@ -28,8 +28,7 @@ Hammr supports the following platforms and machine image formats:
 
 Documentation
 =============
-Please visit:
-* Website: [http://hammr.io](http://hammr.io)
+Please visit: [http://docs.usharesoft.com/projects/hammr/en/latest](http://docs.usharesoft.com/projects/hammr/en/latest)
 
 
 Installation
