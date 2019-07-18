@@ -67,7 +67,6 @@ setup (
   author = 'Joris Bremond',
   author_email = 'joris.bremond@usharesoft.com',
   license="Apache License 2.0",
-  url = 'http://hammr.io',
   classifiers=(
         'Development Status :: 4 - Beta',
         'Environment :: Console',

@@ -7,8 +7,6 @@ This guide contains a complete reference of all features provided by hammr. If y
 
 Any questions or comments, please get in touch by using the `mailing list <https://groups.google.com/forum/#!forum/hammr>`_.
 
-Hammr main website: `hammr.io <http://www.hammr.io>`_.
-
 Get the source code on `GitHub <https://github.com/usharesoft/hammr>`_.
 
 Contents:
